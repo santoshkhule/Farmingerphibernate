@@ -1,0 +1,24 @@
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:3307/farminghibernate</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.connection.password">root</property>
+		<property name="show_sql">true</property>
+		<property name="hbm2ddl.auto">update</property>
+
+		<mapping class="san.farm.login.entity.LoginUser" />
+		<mapping class="san.farm.adminuser.entity.UserTypeEntity" />
+		<mapping class="san.farm.adminuser.entity.EmployeeInfoEntity" />
+		<mapping class="san.farm.adminuser.entity.ConfigSiteInformationEntity" />
+		<mapping class="san.farm.adminuser.entity.ConfigCropEntity" />
+		<mapping class="san.farm.adminuser.entity.ConfigFarmTaskEntity" />
+		<mapping class="san.farm.adminuser.entity.AssignCropToSiteEntity" />
+		<mapping class="san.farm.adminuser.entity.AssignCropToSiteRefEntity" />
+		<mapping class="san.farm.adminuser.entity.AssignEmployeeToFarmEntity" />		
+		<mapping class="san.farm.adminuser.entity.SalaryProcessingEntity" />
+
+	</session-factory>
+</hibernate-configuration>
