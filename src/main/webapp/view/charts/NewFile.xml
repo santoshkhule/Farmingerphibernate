@@ -1,0 +1,48 @@
+<chart palette="3" caption="Break-up of Annual Revenue" subcaption="In Million $" xaxisname="Year" yaxisname="Sales in M$" numdivlines="3" numberprefix="$" numbersuffix="M" showsum="1" useroundedges="1" bgcolor="FFFFFF,FFFFFF" showborder="0">
+<categories font="Arial" fontsize="12" fontcolor="000000">
+<category label="2001" />
+<category label="2002" />
+<category label="2003" />
+<category label="2004" />
+<category label="2005" />
+</categories>
+<dataset>
+<dataset seriesname="Product A" color="AFD8F8" showvalues="0">
+<set value="30" />
+<set value="26" />
+<set value="29" />
+<set value="31" />
+<set value="34" />
+</dataset>
+<dataset seriesname="Product B" color="F6BD0F" showvalues="0">
+<set value="21" />
+<set value="28" />
+<set value="39" />
+<set value="41" />
+<set value="24" />
+</dataset>
+</dataset>
+<dataset>
+<dataset seriesname="Service A" color="8BBA00" showvalues="0">
+<set value="27" />
+<set value="25" />
+<set value="28" />
+<set value="26" />
+<set value="10" />
+</dataset>
+<dataset seriesname="Service B" color="A66EDD" showvalues="0">
+<set value="17" />
+<set value="15" />
+<set value="18" />
+<set value="16" />
+<set value="10" />
+</dataset>
+<dataset seriesname="Service C" color="F984A1" showvalues="0">
+<set value="12" />
+<set value="17" />
+<set value="16" />
+<set value="15" />
+<set value="12" />
+</dataset>
+</dataset>
+</chart>
