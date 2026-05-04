@@ -8,7 +8,7 @@
     <description></description>
     <display-name>UserTypeController</display-name>
     <servlet-name>UserTypeController</servlet-name>
-    <servlet-class>controller.adminuser.com.san.farm.UserTypeController
+    <servlet-class>com.san.farm.adminuser.controller.UserTypeController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -19,8 +19,8 @@
     <description></description>
     <display-name>RegisterUserController</display-name>
     <servlet-name>RegisterUserController</servlet-name>
-    <servlet-class>controller.adminuser.com.san.farm.RegisterUserController
-			</servlet-class>
+    <servlet-class>com.san.farm.adminuser.controller.RegisterUserController
+    </servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>RegisterUserController</servlet-name>
@@ -30,7 +30,7 @@
     <description></description>
     <display-name>ConfigSiteInformationController</display-name>
     <servlet-name>ConfigSiteInformationController</servlet-name>
-    <servlet-class>controller.adminuser.com.san.farm.ConfigSiteInformationController
+    <servlet-class>com.san.farm.adminuser.controller.ConfigSiteInformationController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -41,7 +41,7 @@
     <description></description>
     <display-name>ConfigCropController</display-name>
     <servlet-name>ConfigCropController</servlet-name>
-    <servlet-class>controller.adminuser.com.san.farm.ConfigCropController
+    <servlet-class>com.san.farm.adminuser.controller.ConfigCropController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -52,7 +52,7 @@
     <description></description>
     <display-name>ConfigFarmTaskController</display-name>
     <servlet-name>ConfigFarmTaskController</servlet-name>
-    <servlet-class>controller.adminuser.com.san.farm.ConfigFarmTaskController
+    <servlet-class>com.san.farm.adminuser.controller.ConfigFarmTaskController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -63,7 +63,7 @@
     <description></description>
     <display-name>EmployeeInfoController</display-name>
     <servlet-name>EmployeeInfoController</servlet-name>
-    <servlet-class>controller.adminuser.com.san.farm.EmployeeInfoController
+    <servlet-class>com.san.farm.adminuser.controller.EmployeeInfoController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -74,7 +74,7 @@
     <description></description>
     <display-name>AssignCropToSiteController</display-name>
     <servlet-name>AssignCropToSiteController</servlet-name>
-    <servlet-class>controller.adminuser.com.san.farm.AssignCropToSiteController
+    <servlet-class>com.san.farm.adminuser.controller.AssignCropToSiteController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
