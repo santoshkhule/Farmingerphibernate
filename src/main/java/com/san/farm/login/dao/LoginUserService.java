@@ -1,4 +1,4 @@
-package san.farm.login.dao;
+package com.san.farm.login.dao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
-import san.farm.login.entity.LoginUser;
-import san.farm.util.HibernateUtil;
+import com.san.farm.login.entity.LoginUser;
+import com.san.farm.util.HibernateUtil;
 
 /**
  * Class Developed for Business Level Operation Fetching values from

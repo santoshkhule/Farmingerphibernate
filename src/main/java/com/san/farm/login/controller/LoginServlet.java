@@ -1,4 +1,4 @@
-package san.farm.login.controller;
+package com.san.farm.login.controller;
 
 import java.io.IOException;
 

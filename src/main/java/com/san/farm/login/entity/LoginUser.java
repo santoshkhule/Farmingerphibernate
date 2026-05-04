@@ -1,4 +1,4 @@
-package san.farm.login.entity;
+package com.san.farm.login.entity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -8,7 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import san.farm.adminuser.entity.UserTypeEntity;
+import com.san.farm.adminuser.entity.UserTypeEntity;
 
 @Entity
 @Table(name="loginuser")
