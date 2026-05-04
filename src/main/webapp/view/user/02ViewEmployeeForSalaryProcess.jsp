@@ -1,9 +1,9 @@
 
-<%@page import="san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
-<%@page import="san.farm.util.FarmUtility"%>
-<%@page import="san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
+<%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
+<%@page import="com.san.farm.util.FarmUtility"%>
+<%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="java.util.List"%>
-<%@page import="san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
+<%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>

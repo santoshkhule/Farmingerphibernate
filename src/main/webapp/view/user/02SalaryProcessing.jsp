@@ -1,8 +1,8 @@
 
-<%@page import="san.farm.util.FarmUtility"%>
-<%@page import="san.farm.adminuser.entity.SalaryProcessingEntity"%>
+<%@page import="com.san.farm.util.FarmUtility"%>
+<%@page import="com.san.farm.adminuser.entity.SalaryProcessingEntity"%>
 <%@page import="java.util.List"%>
-<%@page import="san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.Connection"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"

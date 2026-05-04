@@ -1,7 +1,7 @@
-<%@page import="san.farm.adminuser.entity.AssignCropToSiteRefEntity"%>
-<%@page import="san.farm.adminuser.entity.ConfigCropEntity"%>
-<%@page import="san.farm.adminuser.entity.AssignCropToSiteEntity"%>
-<%@page import="san.farm.adminuser.dao.AssignCropToSiteService"%>
+<%@page import="com.san.farm.adminuser.entity.AssignCropToSiteRefEntity"%>
+<%@page import="com.san.farm.adminuser.entity.ConfigCropEntity"%>
+<%@page import="com.san.farm.adminuser.entity.AssignCropToSiteEntity"%>
+<%@page import="com.san.farm.adminuser.dao.AssignCropToSiteService"%>
 <%@page import="java.util.List"%>
 <%
 try{

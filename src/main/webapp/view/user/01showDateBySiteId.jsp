@@ -1,7 +1,7 @@
-<%@page import="san.farm.util.FarmUtility"%>
-<%@page import="san.farm.adminuser.entity.AssignCropToSiteEntity"%>
+<%@page import="com.san.farm.util.FarmUtility"%>
+<%@page import="com.san.farm.adminuser.entity.AssignCropToSiteEntity"%>
 <%@page import="java.util.List"%>
-<%@page import="san.farm.adminuser.dao.AssignCropToSiteService"%>
+<%@page import="com.san.farm.adminuser.dao.AssignCropToSiteService"%>
 <%	
 try{
 	if(null!=request.getParameter("siteId") && !request.getParameter("siteId").equalsIgnoreCase("")){	

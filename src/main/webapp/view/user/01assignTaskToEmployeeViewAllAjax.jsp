@@ -1,10 +1,10 @@
-<%@page import="san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
+<%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
 <%@page import="java.sql.Date"%>
 <%@page import="java.util.List"%>
-<%@page import="san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
+<%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page
 	import="san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
-<%@page import="san.farm.util.FarmUtility"%>
+<%@page import="com.san.farm.util.FarmUtility"%>
 
 <%
 

@@ -1,8 +1,8 @@
-<%@page import="san.farm.login.dao.LoginUserService"%>
-<%@page import="san.farm.login.entity.LoginUser"%>
-<%@page import="san.farm.adminuser.entity.UserTypeEntity"%>
+<%@page import="com.san.farm.login.dao.LoginUserService"%>
+<%@page import="com.san.farm.login.entity.LoginUser"%>
+<%@page import="com.san.farm.adminuser.entity.UserTypeEntity"%>
 <%@page import="java.util.List"%>
-<%@page import="san.farm.adminuser.dao.UserTypeService"%>
+<%@page import="com.san.farm.adminuser.dao.UserTypeService"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

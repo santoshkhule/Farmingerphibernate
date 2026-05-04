@@ -1,6 +1,6 @@
-<%@page import="san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
+<%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
 <%@page import="java.util.List"%>
-<%@page import="san.farm.adminuser.dao.ConfigFarmTaskService"%>
+<%@page import="com.san.farm.adminuser.dao.ConfigFarmTaskService"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>

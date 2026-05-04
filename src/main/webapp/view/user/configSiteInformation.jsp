@@ -1,6 +1,6 @@
 <%@page import="java.util.List"%>
-<%@page import="san.farm.adminuser.dao.ConfigSiteInformationService"%>
-<%@page import="san.farm.adminuser.entity.ConfigSiteInformationEntity"%>
+<%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
+<%@page import="com.san.farm.adminuser.entity.ConfigSiteInformationEntity"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html >

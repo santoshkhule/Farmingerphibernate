@@ -1,6 +1,6 @@
-<%@page import="san.farm.adminuser.entity.ConfigCropEntity"%>
+<%@page import="com.san.farm.adminuser.entity.ConfigCropEntity"%>
 <%@page import="java.util.List"%>
-<%@page import="san.farm.adminuser.dao.ConfigCropService"%>
+<%@page import="com.san.farm.adminuser.dao.ConfigCropService"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
