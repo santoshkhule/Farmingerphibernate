@@ -39,7 +39,7 @@ public class AssignEmployeeToFarmEntity {
 	@JoinColumn(name="cropId")
 	private ConfigCropEntity cropEntity;	
 	
-	@ManyToMany(fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(name="AssignTaskTOEmployee",joinColumns={@JoinColumn(name="assignResourceId")},inverseJoinColumns={@JoinColumn(name="taskId")})
 	private List<ConfigFarmTaskEntity> listFarmTaskEntities=new ArrayList<ConfigFarmTaskEntity>();
 		
