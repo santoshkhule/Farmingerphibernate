@@ -24,16 +24,16 @@
 		<property name="hibernate.show_sql">true</property>
 		<property name="hibernate.format_sql">true</property>
 
-		<mapping class="entity.login.com.san.farm.LoginUser" />
-		<mapping class="entity.adminuser.com.san.farm.UserTypeEntity" />
-		<mapping class="entity.adminuser.com.san.farm.EmployeeInfoEntity" />
-		<mapping class="entity.adminuser.com.san.farm.ConfigSiteInformationEntity" />
-		<mapping class="entity.adminuser.com.san.farm.ConfigCropEntity" />
-		<mapping class="entity.adminuser.com.san.farm.ConfigFarmTaskEntity" />
-		<mapping class="entity.adminuser.com.san.farm.AssignCropToSiteEntity" />
-		<mapping class="entity.adminuser.com.san.farm.AssignCropToSiteRefEntity" />
-		<mapping class="entity.adminuser.com.san.farm.AssignEmployeeToFarmEntity" />
-		<mapping class="entity.adminuser.com.san.farm.SalaryProcessingEntity" />
+		<mapping class="com.san.farm.login.entity.LoginUser" />
+		<mapping class="com.san.farm.adminuser.entity.UserTypeEntity" />
+		<mapping class="com.san.farm.adminuser.entity.EmployeeInfoEntity" />
+		<mapping class="com.san.farm.adminuser.entity.ConfigSiteInformationEntity" />
+		<mapping class="com.san.farm.adminuser.entity.ConfigCropEntity" />
+		<mapping class="com.san.farm.adminuser.entity.ConfigFarmTaskEntity" />
+		<mapping class="com.san.farm.adminuser.entity.AssignCropToSiteEntity" />
+		<mapping class="com.san.farm.adminuser.entity.AssignCropToSiteRefEntity" />
+		<mapping class="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity" />
+		<mapping class="com.san.farm.adminuser.entity.SalaryProcessingEntity" />
 
 	</session-factory>
 </hibernate-configuration>
