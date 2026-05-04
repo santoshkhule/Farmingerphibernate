@@ -8,7 +8,7 @@
     <description></description>
     <display-name>UserTypeController</display-name>
     <servlet-name>UserTypeController</servlet-name>
-    <servlet-class>san.farm.adminuser.controller.UserTypeController
+    <servlet-class>controller.adminuser.com.san.farm.UserTypeController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -19,7 +19,7 @@
     <description></description>
     <display-name>RegisterUserController</display-name>
     <servlet-name>RegisterUserController</servlet-name>
-    <servlet-class>san.farm.adminuser.controller.RegisterUserController
+    <servlet-class>controller.adminuser.com.san.farm.RegisterUserController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -30,7 +30,7 @@
     <description></description>
     <display-name>ConfigSiteInformationController</display-name>
     <servlet-name>ConfigSiteInformationController</servlet-name>
-    <servlet-class>san.farm.adminuser.controller.ConfigSiteInformationController
+    <servlet-class>controller.adminuser.com.san.farm.ConfigSiteInformationController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -41,7 +41,7 @@
     <description></description>
     <display-name>ConfigCropController</display-name>
     <servlet-name>ConfigCropController</servlet-name>
-    <servlet-class>san.farm.adminuser.controller.ConfigCropController
+    <servlet-class>controller.adminuser.com.san.farm.ConfigCropController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -52,7 +52,7 @@
     <description></description>
     <display-name>ConfigFarmTaskController</display-name>
     <servlet-name>ConfigFarmTaskController</servlet-name>
-    <servlet-class>san.farm.adminuser.controller.ConfigFarmTaskController
+    <servlet-class>controller.adminuser.com.san.farm.ConfigFarmTaskController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -63,7 +63,7 @@
     <description></description>
     <display-name>EmployeeInfoController</display-name>
     <servlet-name>EmployeeInfoController</servlet-name>
-    <servlet-class>san.farm.adminuser.controller.EmployeeInfoController
+    <servlet-class>controller.adminuser.com.san.farm.EmployeeInfoController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
@@ -74,11 +74,29 @@
     <description></description>
     <display-name>AssignCropToSiteController</display-name>
     <servlet-name>AssignCropToSiteController</servlet-name>
-    <servlet-class>san.farm.adminuser.controller.AssignCropToSiteController
+    <servlet-class>controller.adminuser.com.san.farm.AssignCropToSiteController
 			</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>AssignCropToSiteController</servlet-name>
     <url-pattern>/AssignCropToSiteController</url-pattern>
+  </servlet-mapping>
+
+  <!-- H2 Web Console Servlet
+  Access it at: http://localhost:8080/FarmingERP/h2-console
+  Use JDBC URL: jdbc:h2:file:./farmingErpDb with username sa and blank password.
+  -->
+  <servlet>
+    <servlet-name>H2Console</servlet-name>
+    <servlet-class>org.h2.server.web.WebServlet</servlet-class>
+    <init-param>
+      <param-name>webAllowOthers</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>H2Console</servlet-name>
+    <url-pattern>/h2-console/*</url-pattern>
   </servlet-mapping>
 </web-app>
