@@ -8,6 +8,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.san.farm.adminuser.entity.AssignCropToSiteEntity;
 import com.san.farm.util.HibernateUtil;
@@ -100,8 +102,16 @@ public class AssignCropToSiteService {
 		Session session=HibernateUtil.opensession();
 		//list=session.createQuery("from AssignCropToSiteEntity").list();
 		try{
-			listOFAssignCropToSite=session.createQuery("from AssignCropToSiteEntity").list();
-		//listOFAssignCropToSite=session.createCriteria(AssignCropToSiteEntity.class).list();
+			//listOFAssignCropToSite=session.createQuery("from AssignCropToSiteEntity").list();
+			List<AssignCropToSiteEntity> list = session
+					.createQuery(
+							"SELECT DISTINCT a FROM AssignCropToSiteEntity a " +
+									"LEFT JOIN FETCH a.cropToSiteRefEntity",
+							AssignCropToSiteEntity.class)
+					.getResultList();
+			return list;
+
+			//listOFAssignCropToSite=session.createCriteria(AssignCropToSiteEntity.class).list();
 		}catch(HibernateException exception){			
 			exception.printStackTrace();
 		}finally{
