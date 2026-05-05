@@ -25,7 +25,7 @@ public class AssignCropToSiteEntity {
 	@JoinColumn(name="siteInfoId")
 	private ConfigSiteInformationEntity siteInformationEntity;
 
-	@OneToMany(mappedBy="cropToSiteEntity",targetEntity=AssignCropToSiteRefEntity.class,cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="cropToSiteEntity",targetEntity=AssignCropToSiteRefEntity.class,cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	private List<AssignCropToSiteRefEntity> cropToSiteRefEntity;
 	
 	/**
