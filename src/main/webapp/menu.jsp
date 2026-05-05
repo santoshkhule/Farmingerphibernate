@@ -6,7 +6,7 @@
 		<ul>
 			<li style="margin-left: 2em"><a href="configuration.jsp">Configuration</a>
 				<ul>
-					<li><a href="configuration.jsp">user Type</a></li>
+					<li><a href="configuration.jsp">Basic Config</a></li>
 					<li><a href="registerUser.jsp">Register User</a></li>
 					<li><a href="assignCropToSite.jsp">Assign Crop To Site</a></li>
 

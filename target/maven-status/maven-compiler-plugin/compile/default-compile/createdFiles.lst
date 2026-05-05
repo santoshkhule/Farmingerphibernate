@@ -34,6 +34,7 @@ com/san/farm/adminuser/dao/ConfigFarmTaskService.class
 com/san/farm/adminuser/controller/AssignCropToSiteController.class
 com/san/farm/adminuser/entity/ConfigSiteInformationEntity.class
 com/san/farm/util/FarmUtility.class
+com/san/farm/util/Log4jInitListener.class
 com/san/farm/adminuser/dao/SalaryProcessingDao.class
 com/san/farm/adminuser/controller/UserTypeController.class
 com/san/farm/adminuser/entity/AssignEmployeeToFarmEntity.class

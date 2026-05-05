@@ -2,6 +2,8 @@ package com.san.farm.util;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class loads properties from given properties file and read properties
@@ -55,14 +57,31 @@ public class FarmConstants {
 	 * @return value of the property
 	 */
 	public String getFarmProperty(String key) {
-
 		String value = Symbols.EMPTY.getSymbol();
-	//	String value=null;
 		if (properties != null) {
 			value = properties.getProperty(key);
 		}
+		if (value == null) {
+			value = Symbols.EMPTY.getSymbol();
+		}
+		return resolveSystemProperties(value);
+	}
 
-		return value;
+	private static final Pattern PLACEHOLDER = Pattern.compile("\\$\\{([^}]+)\\}");
+
+	private String resolveSystemProperties(String value) {
+		if (value == null || !value.contains("${")) {
+			return value;
+		}
+		Matcher matcher = PLACEHOLDER.matcher(value);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			String propName = matcher.group(1);
+			String propValue = System.getProperty(propName, matcher.group(0));
+			matcher.appendReplacement(sb, Matcher.quoteReplacement(propValue));
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
 	}
 
 	/**
