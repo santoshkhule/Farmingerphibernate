@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="../../css/style.css">
 <title>View All Employee</title>
 </head>
 <body>	
