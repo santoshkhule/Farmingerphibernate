@@ -21,13 +21,14 @@ import com.san.farm.util.HibernateUtil;
  * Class Developed for Business Level Operation Fetching Objects from AssignCropToSiteController.java
  */
 public class AssignCropToSiteService {
+	private static final Logger logger = LoggerFactory.getLogger(AssignCropToSiteService.class);
 	/**
 	 * Insert Operation:Fecthing Object from AssignCropToSiteController.java Inserting values into userType User table
 	 * @param AssignCropToSiteEntity object
 	 * @return boolean
 	 */
 	public boolean saveAssignCropToSite(AssignCropToSiteEntity cropToSiteEntity){
-		/*System.out.println("Inside Save User Type:====>>>>>>>>>>>>");*/
+		logger.debug("Saving AssignCropToSite entity");
 		Session session=HibernateUtil.opensession();
 		Transaction transaction=session.beginTransaction(); 
 		boolean flag=false;
@@ -35,11 +36,12 @@ public class AssignCropToSiteService {
 			session.save(cropToSiteEntity);
 			transaction.commit();
 			flag=true;
+			logger.info("AssignCropToSite saved successfully");
 		}catch(HibernateException exception){
 			if(transaction!=null){
 				transaction.rollback();
 			}
-			exception.printStackTrace();
+			logger.error("Error saving AssignCropToSite", exception);
 		}finally{
 			session.close();
 		}
@@ -52,6 +54,7 @@ public class AssignCropToSiteService {
 	 * 
 	 **/
 	public boolean updateAssignCropToSite(AssignCropToSiteEntity cropToSiteEntity){
+		logger.debug("Updating AssignCropToSite entity with id: {}", cropToSiteEntity);
 		Session session=HibernateUtil.opensession();
 		Transaction transaction=session.beginTransaction(); 
 		boolean flag=false;
@@ -59,11 +62,12 @@ public class AssignCropToSiteService {
 			session.update(cropToSiteEntity);
 			transaction.commit();
 			flag=true;
+			logger.info("AssignCropToSite updated successfully");
 		}catch(HibernateException exception){
 			if(transaction!=null){
 				transaction.rollback();
 			}
-			exception.printStackTrace();
+			logger.error("Error updating AssignCropToSite", exception);
 		}finally{
 			session.close();
 		}
@@ -75,6 +79,7 @@ public class AssignCropToSiteService {
 	 * @return boolean 
 	 **/
 	public boolean deleteAssignCropToSite(final int cropToSiteId){
+		logger.debug("Deleting AssignCropToSite with id: {}", cropToSiteId);
 		Session session=HibernateUtil.opensession();
 		Transaction transaction=session.beginTransaction(); 
 		boolean flag=false;
@@ -83,11 +88,12 @@ public class AssignCropToSiteService {
 			session.delete(cropToSiteEntity);
 			transaction.commit();
 			flag=true;
+			logger.info("AssignCropToSite deleted successfully with id: {}", cropToSiteId);
 		}catch(HibernateException exception){
 			if(transaction!=null){
 				transaction.rollback();
 			}
-			exception.printStackTrace();
+			logger.error("Error deleting AssignCropToSite with id: {}", cropToSiteId, exception);
 		}finally{
 			session.close();
 		}
@@ -98,22 +104,21 @@ public class AssignCropToSiteService {
 	 * @return list	 
 	 * */
 	public List<AssignCropToSiteEntity> getListOFAssignCropToSite(){
+		logger.debug("Fetching all AssignCropToSite records");
 		List<AssignCropToSiteEntity> listOFAssignCropToSite=new ArrayList<AssignCropToSiteEntity>();
 		Session session=HibernateUtil.opensession();
-		//list=session.createQuery("from AssignCropToSiteEntity").list();
 		try{
-			//listOFAssignCropToSite=session.createQuery("from AssignCropToSiteEntity").list();
 			List<AssignCropToSiteEntity> list = session
 					.createQuery(
 							"SELECT DISTINCT a FROM AssignCropToSiteEntity a " +
 									"LEFT JOIN FETCH a.cropToSiteRefEntity",
 							AssignCropToSiteEntity.class)
 					.getResultList();
+			logger.info("Retrieved {} AssignCropToSite records", list.size());
 			return list;
 
-			//listOFAssignCropToSite=session.createCriteria(AssignCropToSiteEntity.class).list();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignCropToSite records", exception);
 		}finally{
 			session.close();
 		}
@@ -124,13 +129,14 @@ public class AssignCropToSiteService {
 	 * @return cropToSiteEntity	 
 	 * */
 	public List<AssignCropToSiteEntity> getAssignCropToSiteInfoByFilter(String qry){
+		logger.debug("Fetching AssignCropToSite with filter query");
 		List<AssignCropToSiteEntity> cropToSiteList=new ArrayList<AssignCropToSiteEntity>();
 		Session session=HibernateUtil.opensession();
 		try{
 			cropToSiteList=session.createQuery(qry).list();
-			//cropToSiteList=session.createCriteria(AssignCropToSiteEntity.class).add(Restrictions.eq("siteInfoId", siteId)).list();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			logger.info("Retrieved {} AssignCropToSite records with filter", cropToSiteList.size());
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignCropToSite with filter", exception);
 		}finally{
 			session.close();
 		}
@@ -141,13 +147,14 @@ public class AssignCropToSiteService {
 	 * @return cropToSiteEntity	 
 	 * */
 	public AssignCropToSiteEntity getAssignCropToSiteInfoBySiteIdDate(String qry){
+		logger.debug("Fetching single AssignCropToSite record");
 		AssignCropToSiteEntity cropToSiteEntity=new AssignCropToSiteEntity();
 		Session session=HibernateUtil.opensession();
 		try{
 			cropToSiteEntity=(AssignCropToSiteEntity)session.createQuery(qry).uniqueResult();
-			//cropToSiteList=session.createCriteria(AssignCropToSiteEntity.class).add(Restrictions.eq("siteInfoId", siteId)).list();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			logger.info("Retrieved AssignCropToSite record successfully");
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignCropToSite record", exception);
 		}finally{
 			session.close();
 		}
@@ -158,12 +165,14 @@ public class AssignCropToSiteService {
 	 * @return cropToSiteEntity	 
 	 * */
 	public AssignCropToSiteEntity getAssignCropToSiteInfoByCropToSiteId(final int cropToSiteId){
+		logger.debug("Fetching AssignCropToSite with id: {}", cropToSiteId);
 		AssignCropToSiteEntity cropToSiteEntity=new AssignCropToSiteEntity();
 		Session session=HibernateUtil.opensession();
 		try{
-			cropToSiteEntity=(AssignCropToSiteEntity)session.get(AssignCropToSiteEntity.class, cropToSiteId);			
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			cropToSiteEntity=(AssignCropToSiteEntity)session.get(AssignCropToSiteEntity.class, cropToSiteId);
+			logger.info("Retrieved AssignCropToSite with id: {}", cropToSiteId);
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignCropToSite with id: {}", cropToSiteId, exception);
 		}finally{
 			session.close();
 		}
@@ -174,14 +183,16 @@ public class AssignCropToSiteService {
 	 * @return cropToSiteEntity
 	 * */
 	public AssignCropToSiteEntity getAssignCropToSiteInfoBySiteIdDateCropId(final int siteInfoId,final Date assignFarmDate,final int cropId){
-		AssignCropToSiteEntity cropToSiteEntity=new AssignCropToSiteEntity();		
+		logger.debug("Fetching AssignCropToSite for siteId: {}, date: {}, cropId: {}", siteInfoId, assignFarmDate, cropId);
+		AssignCropToSiteEntity cropToSiteEntity=new AssignCropToSiteEntity();
 		Session session=HibernateUtil.opensession();
 		try{
 			String query="from AssignCropToSiteEntity where cropAssignDate='"+assignFarmDate+"' and siteInfoId="+siteInfoId;
 			Query query2=session.createQuery(query);
 			cropToSiteEntity=(AssignCropToSiteEntity)query2.uniqueResult();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			logger.info("Retrieved AssignCropToSite successfully");
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignCropToSite for siteId: {}, date: {}", siteInfoId, assignFarmDate, exception);
 		}finally{
 			session.close();
 		}
@@ -192,15 +203,16 @@ public class AssignCropToSiteService {
 	 * @return cropToSiteEntity
 	 * */
 	public Object getTestAssignCropToSiteInfoBySiteIdDateCropId(final int siteInfoId,final Date assignFarmDate,final int cropId){
-		Object cropToSiteEntity=new Object();		
+		logger.debug("Test fetching AssignCropToSite");
+		Object cropToSiteEntity=new Object();
 		Session session=HibernateUtil.opensession();
 		try{
 			String query="ACS.siteInformationEntity,ACSR.configCropEntity from AssignCropToSiteRefEntity ACSR,AssignCropToSiteEntity ACS where ACS.assignCroptoSiteId=5";
-			//String query="ACS.siteInformationEntity,ACSR.configCropEntity from AssignCropToSiteRefEntity ACSR,AssignCropToSiteEntity ACS where ACS.cropAssignDate='"+assignFarmDate+"' and ACS.siteInfoId="+siteInfoId+" and ACS.assignCroptoSiteId=ACSR.cropToSiteEntity.getassignCroptoSiteId";
 			Query query2=session.createQuery(query);
 			cropToSiteEntity=(Object)query2.uniqueResult();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			logger.info("Test fetch successful");
+		}catch(HibernateException exception){
+			logger.error("Error in test fetch", exception);
 		}finally{
 			session.close();
 		}

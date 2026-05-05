@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.san.farm.adminuser.dao.AssignCropToSiteRefService;
 import com.san.farm.adminuser.dao.AssignCropToSiteService;
 import com.san.farm.adminuser.dao.ConfigCropService;
@@ -31,9 +34,11 @@ import com.san.farm.util.FarmUtility;
  */
 public class AssignCropToSiteController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(AssignCropToSiteController.class);
 
 	protected void doProcess(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		logger.debug("Processing AssignCropToSite request");
 		try {
 			// variable Declaration
 			int cropToSiteId = 0;
@@ -57,8 +62,7 @@ public class AssignCropToSiteController extends HttpServlet {
 			AssignCropToSiteService cropToSiteService = new AssignCropToSiteService();
 			AssignCropToSiteRefService cropToSiteRefService=new AssignCropToSiteRefService();
 			AssignCropToSiteEntity cropToSiteEntity = new AssignCropToSiteEntity();
-			//cropToSiteRefService.deleteAssignCropToSiteRef(cropToSiteId);
-			
+
 			ConfigSiteInformationService informationService = new ConfigSiteInformationService();
 			ConfigSiteInformationEntity siteInformationEntity = informationService.getSiteInfoBySiteInfoId(siteInfoId);			
 			List<AssignCropToSiteRefEntity> cropToSiteRefEntities=new ArrayList<AssignCropToSiteRefEntity>();
@@ -73,7 +77,6 @@ public class AssignCropToSiteController extends HttpServlet {
 					cropToSiteRefEntity.setCropToSiteEntity(cropToSiteEntity);					
 					cropToSiteRefEntity.setConfigCropEntity(cropEntity);
 					cropToSiteRefEntities.add(cropToSiteRefEntity);
-					//cropToSiteRefService.saveAssignCropToSiteRef(cropToSiteRefEntity);					
 				}
 			}
 		
@@ -82,27 +85,33 @@ public class AssignCropToSiteController extends HttpServlet {
 			cropToSiteEntity.setSiteInformationEntity(siteInformationEntity);
 			cropToSiteEntity.setCropAssignDate(cropAssignDate);
 			cropToSiteEntity.setCropToSiteRefEntity(cropToSiteRefEntities);
+
 			// insert operation
 			if (null != request.getParameter("add")) {
+				logger.info("Adding new crop assignment for siteId: {}, date: {}", siteInfoId, cropAssignDate);
 				cropToSiteService.saveAssignCropToSite(cropToSiteEntity);
+				logger.info("Crop assignment added successfully");
 			}
+
 			// Edit operation
 			if (null != request.getParameter("edit")) {
-				/*AssignCropToSiteEntity cropToSiteEntity2=cropToSiteService.getAssignCropToSiteInfoByCropToSiteId(cropToSiteId);
-				cropToSiteEntity2.setCropToSiteRefEntity(null);*/
+				logger.info("Updating crop assignment with id: {}", cropToSiteId);
 				cropToSiteRefService.deleteAssignCropToSiteRef(cropToSiteId);
 				cropToSiteEntity.setAssignCroptoSiteId(cropToSiteId);
-			//	cropToSiteRefService.deleteAssignCropToSiteRef(cropToSiteId);
 				cropToSiteService.updateAssignCropToSite(cropToSiteEntity);
+				logger.info("Crop assignment updated successfully");
 			}
 					
 			// Delete Operation
 			if (null != request.getParameter("delete")) {
+				logger.info("Deleting crop assignment with id: {}", cropToSiteId);
 				cropToSiteService.deleteAssignCropToSite(cropToSiteId);
+				logger.info("Crop assignment deleted successfully");
 			}
 		} catch (Exception exception) {
-			exception.printStackTrace();
+			logger.error("Error processing AssignCropToSite request", exception);
 		} finally {
+			logger.debug("Redirecting to assignCropToSite.jsp");
 			response.sendRedirect("view/user/assignCropToSite.jsp");
 		}
 	}

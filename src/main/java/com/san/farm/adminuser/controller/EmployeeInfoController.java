@@ -15,6 +15,9 @@ import com.san.farm.util.FarmUtility;
 import com.san.farm.util.MyFileRenamePolicy;
 import com.san.farm.util.Symbols;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.oreilly.servlet.MultipartRequest;
 
 /**
@@ -27,9 +30,11 @@ import com.oreilly.servlet.MultipartRequest;
  */
 public class EmployeeInfoController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(EmployeeInfoController.class);
 
 	protected void doProcess(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		logger.debug("Processing EmployeeInfo request");
 		try{
 			MyFileRenamePolicy objFileRenamePolicy=new MyFileRenamePolicy();
 			
@@ -60,8 +65,8 @@ public class EmployeeInfoController extends HttpServlet {
 			if (null != mrequest.getParameter("emailId")) {
 				emailId = mrequest.getParameter("emailId");
 			}
-			if (null != mrequest.getParameter("birthDate")) {				
-				birthDate=Date.valueOf(FarmUtility.convertfrom_ddmmyyToyymmdd(mrequest.getParameter("birthDate")));				
+			if (null != mrequest.getParameter("birthDate") && !mrequest.getParameter("birthDate").isEmpty()) {
+				birthDate=Date.valueOf(FarmUtility.convertfrom_ddmmyyToyymmdd(mrequest.getParameter("birthDate")));
 			}
 			if (null != mrequest.getParameter("localAddress")) {
 				localAddress = mrequest.getParameter("localAddress");
@@ -107,21 +112,28 @@ public class EmployeeInfoController extends HttpServlet {
 			
 			//Insert Operation
 			if (null != mrequest.getParameter("add")) {
+				logger.info("Adding new employee: {} {}", firstName, lastName);
 				employeeInfoService.saveAuthEmployeeInfo(employeeInfoEntity);
+				logger.info("Employee added successfully");
 			}
 			//Edit Operation
 			if (null != mrequest.getParameter("edit")) {
 				employeeInfoEntity.setEmployeeInfoId(employeeInfoId);
+				logger.info("Updating employee with id: {}", employeeInfoId);
 				employeeInfoService.updateAuthEmployeeInfo(employeeInfoEntity);
+				logger.info("Employee updated successfully");
 			}
 			//Delete Operation
 			if (null != mrequest.getParameter("delete")) {
 				employeeInfoEntity.setEmployeeInfoId(employeeInfoId);
+				logger.info("Deleting employee with id: {}", employeeInfoId);
 				employeeInfoService.deleteAuthEmployeeInfo(employeeInfoEntity);
+				logger.info("Employee deleted successfully");
 			}
 		}catch(Exception ex){
-			ex.printStackTrace();
+			logger.error("Error processing EmployeeInfo request", ex);
 		}finally{
+			logger.debug("Redirecting to employeeViewAll.jsp");
 			response.sendRedirect("view/user/employeeViewAll.jsp");
 		}
 		

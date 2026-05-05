@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.san.farm.adminuser.dao.UserTypeService;
 import com.san.farm.adminuser.entity.UserTypeEntity;
 import com.san.farm.login.dao.LoginUserService;
@@ -22,60 +25,72 @@ import com.san.farm.login.entity.LoginUser;
 
 public class RegisterUserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(RegisterUserController.class);
        
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		logger.debug("Processing RegisterUser request");
 		String uname=null,password=null,curPasswrd=null;
 		int userTypeId=0;
 		long loginUserId=0;
 		boolean isValid=false,isCurPwdValid=false;
-		uname=request.getParameter("emailId");
-		password=request.getParameter("passwrd");
-		userTypeId=Integer.parseInt(request.getParameter("selUserTypeId"));
-		curPasswrd=request.getParameter("curPasswrd");
-		
-		UserTypeService userTypeService=new UserTypeService();
-		UserTypeEntity userTypeEntity=userTypeService.getUsertypeIdByUserTypeId(userTypeId);
-		
-		LoginUserService loginUserService=new LoginUserService();
-		LoginUser loginUser=new LoginUser();
-		loginUser.setUname(uname);
-		loginUser.setPassword(password);
-		loginUser.setUserTypeEntity(userTypeEntity);
-		
-		//insert Operation
-		if(null!=request.getParameter("add")){
-			loginUserService.saveLoginUser(loginUser);
-			
-			/*EmployeeInfoService authEmployeeInfoService=new EmployeeInfoService();
-			EmployeeInfoAuthEntity authEmployeeInfo=new EmployeeInfoAuthEntity();
-			authEmployeeInfo.setLoginUser(loginUser);
-			authEmployeeInfoService.saveAuthEmployeeInfo(authEmployeeInfo);*/
+		try {
+			uname=request.getParameter("emailId");
+			password=request.getParameter("passwrd");
+			userTypeId=Integer.parseInt(request.getParameter("selUserTypeId"));
+			curPasswrd=request.getParameter("curPasswrd");
+
+			UserTypeService userTypeService=new UserTypeService();
+			UserTypeEntity userTypeEntity=userTypeService.getUsertypeIdByUserTypeId(userTypeId);
+
+			LoginUserService loginUserService=new LoginUserService();
+			LoginUser loginUser=new LoginUser();
+			loginUser.setUname(uname);
+			loginUser.setPassword(password);
+			loginUser.setUserTypeEntity(userTypeEntity);
+
+			//insert Operation
+			if(null!=request.getParameter("add")){
+				logger.info("Registering new user: {}", uname);
+				loginUserService.saveLoginUser(loginUser);
+				logger.info("User registered successfully");
+
+				/*EmployeeInfoService authEmployeeInfoService=new EmployeeInfoService();
+				EmployeeInfoAuthEntity authEmployeeInfo=new EmployeeInfoAuthEntity();
+				authEmployeeInfo.setLoginUser(loginUser);
+				authEmployeeInfoService.saveAuthEmployeeInfo(authEmployeeInfo);*/
+			}
+			//update operation
+			if(null!=request.getParameter("edit")){
+				LoginUser user=new LoginUser();
+				loginUserId=Long.parseLong(request.getParameter("loginUserId"));
+				user=loginUserService.getLoginUserInfoByLoginId(loginUserId);
+				logger.debug("Validating current password for loginUserId: {}", loginUserId);
+				if(user.getPassword().equals(curPasswrd)){
+					logger.info("Password validation successful, updating user with id: {}", loginUserId);
+					loginUser.setLoginUserId(loginUserId);
+					loginUserService.updateLoginUser(loginUser);
+					logger.info("User updated successfully");
+				}else{
+					logger.warn("Password validation failed for loginUserId: {}", loginUserId);
+					isCurPwdValid=true;
+				}
+			}
+			//Delete Operation
+			if(null!=request.getParameter("delete")){
+				loginUserId=Long.parseLong(request.getParameter("loginUserId"));
+				logger.info("Deleting user with id: {}", loginUserId);
+				loginUserService.deleteLoginUser(loginUserId);
+				logger.info("User deleted successfully");
+			}
+		} catch (Exception exception) {
+			logger.error("Error processing RegisterUser request", exception);
+		} finally {
+			logger.debug("Redirecting to registerUser.jsp");
+			response.sendRedirect("view/user/registerUser.jsp?isValid="+isValid+"&isCurPwdValid="+isCurPwdValid);
 		}
-		//update operation		
-		if(null!=request.getParameter("edit")){
-			LoginUser user=new LoginUser();
-			loginUserId=Long.parseLong(request.getParameter("loginUserId"));
-			user=loginUserService.getLoginUserInfoByLoginId(loginUserId);
-			System.out.println("user.getPassword().equals(curPasswrd):==>"+user.getPassword()+" "+curPasswrd);
-			if(user.getPassword().equals(curPasswrd)){
-				System.out.println("Success");
-				loginUser.setLoginUserId(loginUserId);
-				loginUserService.updateLoginUser(loginUser);	
-			}else{
-				System.out.println("failed");
-				isCurPwdValid=true;
-			}					
-		}
-		//Delete Operation
-		if(null!=request.getParameter("delete")){
-			loginUserId=Long.parseLong(request.getParameter("loginUserId"));	
-			loginUserService.deleteLoginUser(loginUserId);			
-		}
-		response.sendRedirect("view/user/registerUser.jsp?isValid="+isValid+"&isCurPwdValid="+isCurPwdValid);
-		
 	}
 
 	/**
