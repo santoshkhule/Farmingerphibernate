@@ -27,6 +27,13 @@
 	});
 </script>
 <script type="text/javascript">
+	function clearAllFilters() {
+		document.getElementById("txtDate").value = "";
+		document.getElementById("txtName").value = "";
+		document.getElementById("work_status").value = "-1";
+		document.getElementById("selWorkId").value = "-1";
+		showAllEmployeeByFilterId();
+	}
 	function showAllEmployeeByFilterId() {
 		var fromDate = document.getElementById("txtDate").value;		
 		var empName = document.getElementById("txtName").value;
@@ -119,6 +126,7 @@
 						<option value="Pending">Pending</option>
 						<option value="Reject">Reject</option>
 				</select></td>
+				<td><input type="button" value="Clear All" onclick="clearAllFilters()"></td>
 			</tr>
 		</table>
 		<hr>
