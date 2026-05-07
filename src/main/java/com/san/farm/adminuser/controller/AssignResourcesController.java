@@ -1,22 +1,28 @@
 package com.san.farm.adminuser.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.san.farm.adminuser.dao.AssignCropToSiteService;
 import com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService;
 import com.san.farm.adminuser.entity.AssignCropToSiteEntity;
+import com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity;
+import com.san.farm.adminuser.entity.SalaryProcessingEntity;
 import com.san.farm.util.FarmUtility;
+import com.san.farm.util.HibernateUtil;
 import com.san.farm.util.Symbols;
 
 @WebServlet("/AssignResourcesController")
@@ -26,7 +32,6 @@ public class AssignResourcesController extends HttpServlet {
 
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.debug("Processing AssignResources request");
-		PrintWriter out=response.getWriter();
 		try{
 			//Variable Initialization
 			int empInfoCnt=0,employeeInfoId=0,farmTaskId=0,siteInfoId=0,cropId=0,assignResourceId=0;
@@ -83,18 +88,91 @@ public class AssignResourcesController extends HttpServlet {
 		}
 	}
     
+	private void doView(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		logger.debug("Processing view single assignment request");
+		Session hibSession = null;
+		try {
+			String radParam = request.getParameter("radAssignWorkId");
+			if (radParam == null || radParam.trim().isEmpty()) {
+				response.sendRedirect("view/user/01assignTaskToEmployeeViewAll.jsp");
+				return;
+			}
+
+			int assignWorkId = Integer.parseInt(radParam.trim());
+			hibSession = HibernateUtil.opensession();
+
+			List<AssignEmployeeToFarmEntity> results = hibSession.createQuery(
+				"SELECT DISTINCT a FROM AssignEmployeeToFarmEntity a " +
+				"LEFT JOIN FETCH a.listFarmTaskEntities " +
+				"WHERE a.assignResourceId = :id",
+				AssignEmployeeToFarmEntity.class)
+				.setParameter("id", assignWorkId)
+				.getResultList();
+			AssignEmployeeToFarmEntity assignment = results.isEmpty() ? null : results.get(0);
+
+			if (assignment != null) {
+				List<SalaryProcessingEntity> salaryList = hibSession.createQuery(
+					"FROM SalaryProcessingEntity s WHERE s.employeeToFarm.assignResourceId = :id",
+					SalaryProcessingEntity.class)
+					.setParameter("id", assignWorkId)
+					.list();
+
+				double ttlTransactionPaid = 0;
+				for (SalaryProcessingEntity sal : salaryList) {
+					ttlTransactionPaid += sal.getAmount();
+				}
+
+				double balanceAmount = assignment.getAmount() - (assignment.getAdvPayment() + ttlTransactionPaid);
+				double excessAmount = 0;
+				if (balanceAmount < 0) {
+					excessAmount = -balanceAmount;
+					balanceAmount = 0;
+				}
+
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+				String formattedDate = assignment.getAssignWorkDate() != null
+						? sdf.format(assignment.getAssignWorkDate()) : "";
+
+				request.setAttribute("assignment", assignment);
+				request.setAttribute("ttlTransactionPaid", ttlTransactionPaid);
+				request.setAttribute("balanceAmount", balanceAmount);
+				request.setAttribute("excessAmount", excessAmount);
+				request.setAttribute("formattedDate", formattedDate);
+
+				logger.info("Assignment {} loaded for view", assignWorkId);
+			}
+		} catch (Exception ex) {
+			logger.error("Error loading assignment for view", ex);
+		} finally {
+			if (hibSession != null && hibSession.isOpen()) {
+				hibSession.close();
+			}
+		}
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/view/user/assignTaskToEmployeeSingleView.jsp");
+		dispatcher.forward(request, response);
+	}
+
     /**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doProcess(request, response);
+		if (request.getParameter("sbtView") != null) {
+			doView(request, response);
+		} else {
+			doProcess(request, response);
+		}
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doProcess(request, response);
+		if (request.getParameter("sbtView") != null) {
+			doView(request, response);
+		} else {
+			doProcess(request, response);
+		}
 	}
 
 }

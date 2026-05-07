@@ -32,7 +32,7 @@
 		var empName = document.getElementById("txtName").value;
 		var work_status = document.getElementById("work_status").value;
 		var work_Id = document.getElementById("selWorkId").value;
-		alert(fromDate+" "+empName+" "+work_status+" "+work_Id);
+		//alert(fromDate+" "+empName+" "+work_status+" "+work_Id);
 		if (window.XMLHttpRequest) {
 			xmlhttp = new XMLHttpRequest();
 		} else {
@@ -63,14 +63,22 @@
 		$("#imgEdit"+id).show();
 		tempId=id;
 	}
-	function actionEditDelete(id,action){
-		alert(action+" "+"../../AssignResourcesController?assignResourceId="+id);
-		if(action=="delete"){
-			window.location="../../AssignResourcesController?assignResourceId="+id+"&action=delete";
-		}else{
-			//window.location="";
+	function doDelete() {
+		var selected = document.querySelector('input[name="radAssignWorkId"]:checked');
+		if (selected == null) {
+			alert("Please select a record to delete.");
+			return;
 		}
-		
+		if (confirm("Are you sure you want to delete this assignment?")) {
+			window.location = "../../AssignResourcesController?assignResourceId=" + selected.value + "&action=delete";
+		}
+	}
+	function actionEditDelete(id, action) {
+		if (action == "delete") {
+			if (confirm("Are you sure you want to delete this assignment?")) {
+				window.location = "../../AssignResourcesController?assignResourceId=" + id + "&action=delete";
+			}
+		}
 	}
 </script>
 <body>
@@ -120,9 +128,8 @@
 					<td><input type="submit" name="sbtEdit" value="Edit"
 						onclick="this.form.action='assignTaskToEmployee.jsp'"></td>
 					<td><input type="submit" name="sbtView" value="View"
-						onclick="this.form.action='assignTaskToEmployeeSingleView.jsp',target='_blank'"></td>
-					<td><input type="submit" name="sbtDelete" value="Delete"
-						onclick="this.form.action='action/assignTaskToEmployeeAction.jsp'"></td>
+						onclick="this.form.action='../../AssignResourcesController'"></td>
+					<td><input type="button" name="sbtDelete" value="Delete" onclick="doDelete()"></td>
 				</tr>
 			</table>
 			<div id="showTable">
@@ -158,7 +165,7 @@
 					%>
 					<tr id="rowId<%=cnt%>" ondblclick="showEditDelete(<%=cnt%>)">
 						<td><input type="radio" name="radAssignWorkId"
-							id="radAssignWorkId" value="" required="required"></td>
+							id="radAssignWorkId" value="<%=employeeToFarm.getAssignResourceId()%>"></td>
 						<td><%=cnt%></td>
 						<td>
 							<%
