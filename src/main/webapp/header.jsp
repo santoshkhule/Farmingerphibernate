@@ -1,5 +1,5 @@
 
-<img src="../../img/header.jpg" width="100%" height="50px">
+<img src="<%=request.getContextPath()%>/img/header.jpg" width="100%" height="50px">
 <div style="background: #c0c0c0; width: 100%; height: 30px;">
 	<%@include file="menu.jsp"%>
 	<!-- <div align="right">
