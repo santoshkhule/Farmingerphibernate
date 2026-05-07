@@ -7,6 +7,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.san.farm.adminuser.entity.ConfigFarmTaskEntity;
 import com.san.farm.util.HibernateUtil;
@@ -18,25 +20,27 @@ import com.san.farm.util.HibernateUtil;
  * Class Developed for Business Level Operation Fetching Objects from ConfigFarmTaskController.java
  */
 public class ConfigFarmTaskService {
+	private static final Logger logger = LoggerFactory.getLogger(ConfigFarmTaskService.class);
 	/**
 	 * Insert Operation:Fecthing Object from ConfigFarmTaskController.java Inserting values into Farm Task User table
 	 * @param ConfigFarmTaskEntity object
 	 * @return boolean
 	 */
 	public boolean saveFarmTask(ConfigFarmTaskEntity configFarmTaskEntity){
-		System.out.println("Inside Save User Type:====>>>>>>>>>>>>");
+		logger.debug("Saving ConfigFarmTask entity");
 		Session session=HibernateUtil.opensession();
-		Transaction transaction=session.beginTransaction(); 
+		Transaction transaction=session.beginTransaction();
 		boolean flag=false;
 		try{
 			session.save(configFarmTaskEntity);
 			transaction.commit();
 			flag=true;
+			logger.info("FarmTask saved successfully");
 		}catch(HibernateException exception){
 			if(transaction!=null){
 				transaction.rollback();
 			}
-			exception.printStackTrace();
+			logger.error("Error saving FarmTask", exception);
 		}finally{
 			session.close();
 		}
@@ -46,21 +50,23 @@ public class ConfigFarmTaskService {
 	 * Update Operation:Fecthing Object from ConfigFarmTaskController.java Updating values into Farm Task User table
 	 * @param ConfigFarmTaskEntity object
 	 * @return boolean
-	 * 
+	 *
 	 **/
 	public boolean updateFarmTask(ConfigFarmTaskEntity configFarmTaskEntity){
+		logger.debug("Updating ConfigFarmTask entity");
 		Session session=HibernateUtil.opensession();
-		Transaction transaction=session.beginTransaction(); 
+		Transaction transaction=session.beginTransaction();
 		boolean flag=false;
 		try{
 			session.update(configFarmTaskEntity);
 			transaction.commit();
 			flag=true;
+			logger.info("FarmTask updated successfully");
 		}catch(HibernateException exception){
 			if(transaction!=null){
 				transaction.rollback();
 			}
-			exception.printStackTrace();
+			logger.error("Error updating FarmTask", exception);
 		}finally{
 			session.close();
 		}
@@ -69,56 +75,60 @@ public class ConfigFarmTaskService {
 	/**
 	 * Delete Operation:Fecthing Object from ConfigFarmTaskController.java Deleting Data from Farm Task User table
 	 * @param ConfigFarmTaskEntity object
-	 * @return boolean 
+	 * @return boolean
 	 **/
 	public boolean deleteFarmTask(int taskId){
+		logger.debug("Deleting ConfigFarmTask with taskId: {}", taskId);
 		Session session=HibernateUtil.opensession();
-		Transaction transaction=session.beginTransaction(); 
+		Transaction transaction=session.beginTransaction();
 		boolean flag=false;
 		try{
 			ConfigFarmTaskEntity configFarmTaskEntity=(ConfigFarmTaskEntity)session.get(ConfigFarmTaskEntity.class, taskId);
 			session.delete(configFarmTaskEntity);
 			transaction.commit();
 			flag=true;
+			logger.info("FarmTask deleted successfully for taskId: {}", taskId);
 		}catch(HibernateException exception){
 			if(transaction!=null){
 				transaction.rollback();
 			}
-			exception.printStackTrace();
+			logger.error("Error deleting FarmTask for taskId: {}", taskId, exception);
 		}finally{
 			session.close();
 		}
 		return flag;
 	}
 	/**
-	 * Fetch Operation:Fecthing Data From DB 
-	 * @return list	 
+	 * Fetch Operation:Fecthing Data From DB
+	 * @return list
 	 * */
 	public List<ConfigFarmTaskEntity> fetch(){
+		logger.debug("Fetching all ConfigFarmTask records");
 		List<ConfigFarmTaskEntity> list=new ArrayList<ConfigFarmTaskEntity>();
 		Session session=HibernateUtil.opensession();
 		try{
-		list=session.createQuery("from ConfigFarmTaskEntity").list();
-			//list=session.createCriteria(ConfigFarmTaskEntity.class).list();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			list=session.createQuery("from ConfigFarmTaskEntity").list();
+			logger.info("Retrieved {} FarmTask records", list.size());
+		}catch(HibernateException exception){
+			logger.error("Error fetching FarmTask list", exception);
 		}finally{
 			session.close();
 		}
 		return list;
-		
 	}
 	/**
-	 * Fetch Operation:Taking cropId from ConfigFarmTaskController.java and Fetching respective Data From DB 
-	 * @return ConfigFarmTaskEntity	 
+	 * Fetch Operation:Taking cropId from ConfigFarmTaskController.java and Fetching respective Data From DB
+	 * @return ConfigFarmTaskEntity
 	 * */
 	public ConfigFarmTaskEntity getFarmTaskIdByTaskId(int taskId){
+		logger.debug("Fetching ConfigFarmTask by taskId: {}", taskId);
 		ConfigFarmTaskEntity configFarmTaskEntity=new ConfigFarmTaskEntity();
-		Session session=HibernateUtil.opensession();	
+		Session session=HibernateUtil.opensession();
 		try{
 			configFarmTaskEntity=(ConfigFarmTaskEntity)session.createCriteria(ConfigFarmTaskEntity.class).add(Restrictions.eq("taskId", taskId)).uniqueResult();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			logger.info("Retrieved FarmTask for taskId: {}", taskId);
+		}catch(HibernateException exception){
+			logger.error("Error fetching FarmTask for taskId: {}", taskId, exception);
 		}finally{
 			session.close();
 		}

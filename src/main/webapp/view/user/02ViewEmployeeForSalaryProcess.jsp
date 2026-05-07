@@ -181,10 +181,9 @@ function showAllEmployeeByFilterId() {
 						</td>
 						<td>
 							<%
-								/*if(employeeToFarm.getTaskToEmployeeEntities()!=null){
-									for(ConfigCropEntity crop:employeeToFarm.getTaskToEmployeeEntities().)
-									out.println(employeeToFarm.getCropToSiteEntity().getSiteInformationEntity().getSiteName());
-								}*/
+								if(employeeToFarm.getCropEntity()!=null && employeeToFarm.getCropEntity().getCropName()!=null){
+									out.println(employeeToFarm.getCropEntity().getCropName());
+								}
 							%>
 						</td>
 						<td>
@@ -216,45 +215,23 @@ function showAllEmployeeByFilterId() {
 							%>
 						</td>						
 						<%
-							double ttl_transaction_paid_amount = 0;
-								double excessAmount = 0;
-								double balanceAmount = 0;
-								try {
-									balanceAmount=employeeToFarm.getAmount()-employeeToFarm.getAdvPayment();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
-								balanceAmount = ttl_transaction_paid_amount;
+							double excessAmount = 0;
+							double balanceAmount = 0;
+							try {
+								balanceAmount = employeeToFarm.getAmount() - employeeToFarm.getAdvPayment();
 								if (balanceAmount < 0) {
 									excessAmount = -balanceAmount;
 									balanceAmount = 0;
 								}
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
 						%>
-						<td>
-							<%								
-								out.println(employeeToFarm.getAmount());								
-							%>
-						</td>
-						<td>
-							<%
-								out.println(employeeToFarm.getAdvPayment());
-							%>
-						</td>
-						<td>
-							<%
-								out.print(balanceAmount);
-							%>
-						</td>
-						<td>
-							<%
-								out.print(balanceAmount);
-							%>
-						</td>
-						<td>
-							<%
-								out.print(balanceAmount);
-							%>
-						</td>
+						<td><%=employeeToFarm.getAmount()%></td>
+						<td><%=employeeToFarm.getAdvPayment()%></td>
+						<td>0</td>
+						<td><%=balanceAmount%></td>
+						<td><%=excessAmount%></td>
 				</tr>
 					<%} %>
 

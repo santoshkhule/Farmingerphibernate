@@ -119,6 +119,12 @@ public class EmployeeInfoController extends HttpServlet {
 			//Edit Operation
 			if (null != mrequest.getParameter("edit")) {
 				employeeInfoEntity.setEmployeeInfoId(employeeInfoId);
+				if (empPicPath == null) {
+					EmployeeInfoEntity existing = employeeInfoService.getEmployeeById(employeeInfoId);
+					if (existing != null) {
+						employeeInfoEntity.setEmpPicPath(existing.getEmpPicPath());
+					}
+				}
 				logger.info("Updating employee with id: {}", employeeInfoId);
 				employeeInfoService.updateAuthEmployeeInfo(employeeInfoEntity);
 				logger.info("Employee updated successfully");

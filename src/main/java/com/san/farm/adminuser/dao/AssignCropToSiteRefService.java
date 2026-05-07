@@ -7,6 +7,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.san.farm.adminuser.entity.AssignCropToSiteEntity;
 import com.san.farm.adminuser.entity.AssignCropToSiteRefEntity;
@@ -19,111 +21,95 @@ import com.san.farm.util.HibernateUtil;
  * Class Developed for Business Level Operation Fetching Objects from AssignCropToSiteController.java
  */
 public class AssignCropToSiteRefService {
-	/**
-	 * Insert Operation:Fecthing Object from AssignCropToSiteController.java Inserting values into userType User table
-	 * @param AssignCropToSiteEntity object
-	 * @return boolean
-	 */
-	public boolean saveAssignCropToSiteRef(AssignCropToSiteRefEntity cropToSiteRefEntity){		
+	private static final Logger logger = LoggerFactory.getLogger(AssignCropToSiteRefService.class);
+
+	public boolean saveAssignCropToSiteRef(AssignCropToSiteRefEntity cropToSiteRefEntity){
+		logger.debug("Saving AssignCropToSiteRef entity");
 		Session session=HibernateUtil.opensession();
-		Transaction transaction=session.beginTransaction(); 
+		Transaction transaction=session.beginTransaction();
 		boolean flag=false;
 		try{
 			session.save(cropToSiteRefEntity);
 			transaction.commit();
 			flag=true;
+			logger.info("AssignCropToSiteRef saved successfully");
 		}catch(HibernateException exception){
-			if(transaction!=null){
-				transaction.rollback();
-			}
-			exception.printStackTrace();
+			if(transaction!=null){ transaction.rollback(); }
+			logger.error("Error saving AssignCropToSiteRef", exception);
 		}finally{
 			session.close();
 		}
 		return flag;
 	}
-	/**
-	 * Update Operation:Fecthing Object from AssignCropToSiteRefController.java Updating values into userType User table
-	 * @param AssignCropToSiteRefEntity object
-	 * @return boolean
-	 * 
-	 **/
+
 	public boolean updateAssignCropToSiteRef(AssignCropToSiteRefEntity cropToSiteRefEntity){
+		logger.debug("Updating AssignCropToSiteRef entity");
 		Session session=HibernateUtil.opensession();
-		Transaction transaction=session.beginTransaction(); 
+		Transaction transaction=session.beginTransaction();
 		boolean flag=false;
 		try{
 			session.update(cropToSiteRefEntity);
 			transaction.commit();
 			flag=true;
+			logger.info("AssignCropToSiteRef updated successfully");
 		}catch(HibernateException exception){
-			if(transaction!=null){
-				transaction.rollback();
-			}
-			exception.printStackTrace();
+			if(transaction!=null){ transaction.rollback(); }
+			logger.error("Error updating AssignCropToSiteRef", exception);
 		}finally{
 			session.close();
 		}
 		return flag;
 	}
-	/**
-	 * Delete Operation:Fecthing Object from AssignCropToSiteRefController.java Deleting Data from userType User table
-	 * @param AssignCropToSiteRefEntity object
-	 * @return boolean 
-	 **/
+
 	public boolean deleteAssignCropToSiteRef(final int cropToSiteId){
+		logger.debug("Deleting AssignCropToSiteRef records for cropToSiteId: {}", cropToSiteId);
 		AssignCropToSiteService cropToSiteService=new AssignCropToSiteService();
 		String qry="from AssignCropToSiteEntity where assignCroptoSiteId="+cropToSiteId;
-		AssignCropToSiteEntity CropToSite=cropToSiteService.getAssignCropToSiteInfoBySiteIdDate(qry);		
-		Session session=null;		
-		boolean flag=false;			
-			session=HibernateUtil.opensession();
-			Transaction transaction=session.beginTransaction(); 			
-			try{
-				for(AssignCropToSiteRefEntity cropToSiteRefEntity1:CropToSite.getCropToSiteRefEntity()){							
-					session.delete(cropToSiteRefEntity1);								
-					transaction.commit();
-					flag=true;
-				}
-			}catch(HibernateException exception){
-				if(transaction!=null){
-					transaction.rollback();
-				}
-				exception.printStackTrace();
-			}finally{
-				session.close();
-			}	
-		
+		AssignCropToSiteEntity CropToSite=cropToSiteService.getAssignCropToSiteInfoBySiteIdDate(qry);
+		Session session=null;
+		boolean flag=false;
+		session=HibernateUtil.opensession();
+		Transaction transaction=session.beginTransaction();
+		try{
+			for(AssignCropToSiteRefEntity cropToSiteRefEntity1:CropToSite.getCropToSiteRefEntity()){
+				session.delete(cropToSiteRefEntity1);
+				transaction.commit();
+				flag=true;
+			}
+			logger.info("AssignCropToSiteRef records deleted for cropToSiteId: {}", cropToSiteId);
+		}catch(HibernateException exception){
+			if(transaction!=null){ transaction.rollback(); }
+			logger.error("Error deleting AssignCropToSiteRef for cropToSiteId: {}", cropToSiteId, exception);
+		}finally{
+			session.close();
+		}
 		return flag;
 	}
-	/**
-	 * Fetch Operation:Fecthing Data From DB 
-	 * @return list	 
-	 * */
+
 	public List<AssignCropToSiteRefEntity> getListOFAssignCropToSiteRefBycropToSiteId(final int cropToSiteId){
+		logger.debug("Fetching AssignCropToSiteRef list for cropToSiteId: {}", cropToSiteId);
 		List<AssignCropToSiteRefEntity> listOFAssignCropToSiteRef=new ArrayList<AssignCropToSiteRefEntity>();
 		Session session=HibernateUtil.opensession();
-		//list=session.createQuery("from AssignCropToSiteEntity").list();
 		try{
 			listOFAssignCropToSiteRef=session.createQuery("from AssignCropToSiteRefEntity where AssignCropToSiteId="+cropToSiteId).list();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			logger.info("Retrieved {} AssignCropToSiteRef records", listOFAssignCropToSiteRef.size());
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignCropToSiteRef for cropToSiteId: {}", cropToSiteId, exception);
 		}finally{
 			session.close();
 		}
 		return listOFAssignCropToSiteRef;
 	}
-	/**
-	 * Fetch Operation:Taking cropId from AssignCropToSiteController.java and Fetching respective Data From DB 
-	 * @return cropToSiteRefEntity	 
-	 * */
+
 	public AssignCropToSiteRefEntity getAssignCropToSiteRefByAssignCropToSiteRefId(int assignCropToSiteRefId){
+		logger.debug("Fetching AssignCropToSiteRef by id: {}", assignCropToSiteRefId);
 		AssignCropToSiteRefEntity cropToSiteRefEntity=new AssignCropToSiteRefEntity();
 		Session session=HibernateUtil.opensession();
 		try{
 			cropToSiteRefEntity=(AssignCropToSiteRefEntity)session.createCriteria(AssignCropToSiteRefEntity.class).add(Restrictions.eq("assignCropToSiteRefId", assignCropToSiteRefId)).uniqueResult();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			logger.info("Retrieved AssignCropToSiteRef with id: {}", assignCropToSiteRefId);
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignCropToSiteRef with id: {}", assignCropToSiteRefId, exception);
 		}finally{
 			session.close();
 		}

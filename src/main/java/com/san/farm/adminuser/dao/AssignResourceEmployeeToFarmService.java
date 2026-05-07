@@ -3,9 +3,12 @@ package com.san.farm.adminuser.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity;
 import com.san.farm.util.HibernateUtil;
@@ -17,24 +20,21 @@ import com.san.farm.util.HibernateUtil;
  * Class Developed for Business Level Operation Fetching Objects from AssignResourceEmployeeToFarmController.java
  */
 public class AssignResourceEmployeeToFarmService {
-	/**
-	 * Insert Operation:Fecthing Object from AssignResourceEmployeeToFarmController.java Inserting values into userType User table
-	 * @param AssignEmployeeToFarmEntity object
-	 * @return boolean
-	 */
-	public boolean saveEmployeeToFarm(AssignEmployeeToFarmEntity employeeToFarm){		
+	private static final Logger logger = LoggerFactory.getLogger(AssignResourceEmployeeToFarmService.class);
+
+	public boolean saveEmployeeToFarm(AssignEmployeeToFarmEntity employeeToFarm){
+		logger.debug("Saving AssignEmployeeToFarm entity");
 		Session session=HibernateUtil.opensession();
-		Transaction transaction=session.beginTransaction(); 
+		Transaction transaction=session.beginTransaction();
 		boolean flag=false;
 		try{
 			session.save(employeeToFarm);
 			transaction.commit();
 			flag=true;
+			logger.info("AssignEmployeeToFarm saved successfully");
 		}catch(HibernateException exception){
-			if(transaction!=null){
-				transaction.rollback();
-			}
-			exception.printStackTrace();
+			if(transaction!=null){ transaction.rollback(); }
+			logger.error("Error saving AssignEmployeeToFarm", exception);
 		}finally{
 			session.close();
 		}
@@ -44,21 +44,23 @@ public class AssignResourceEmployeeToFarmService {
 	 * Update Operation:Fecthing Object from AssignResourceEmployeeToFarmController.java Updating values into table
 	 * @param AssignEmployeeToFarmEntity object
 	 * @return boolean
-	 * 
+	 *
 	 **/
 	public boolean updateEmployeeToFarm(AssignEmployeeToFarmEntity employeeToFarm){
+		logger.debug("Updating AssignEmployeeToFarm entity");
 		Session session=HibernateUtil.opensession();
-		Transaction transaction=session.beginTransaction(); 
+		Transaction transaction=session.beginTransaction();
 		boolean flag=false;
 		try{
 			session.update(employeeToFarm);
 			transaction.commit();
 			flag=true;
+			logger.info("AssignEmployeeToFarm updated successfully");
 		}catch(HibernateException exception){
 			if(transaction!=null){
 				transaction.rollback();
 			}
-			exception.printStackTrace();
+			logger.error("Error updating AssignEmployeeToFarm", exception);
 		}finally{
 			session.close();
 		}
@@ -67,22 +69,24 @@ public class AssignResourceEmployeeToFarmService {
 	/**
 	 * Delete Operation:Fecthing Object from AssignResourceEmployeeToFarmController.java Deleting Data from table
 	 * @param AssignEmployeeToFarmEntity object
-	 * @return boolean 
+	 * @return boolean
 	 **/
 	public boolean deleteAssignResources(final int assignResourceId){
+		logger.debug("Deleting AssignEmployeeToFarm with assignResourceId: {}", assignResourceId);
 		Session session=HibernateUtil.opensession();
-		Transaction transaction=session.beginTransaction(); 
+		Transaction transaction=session.beginTransaction();
 		boolean flag=false;
 		try{
 			AssignEmployeeToFarmEntity employeeToFarm=(AssignEmployeeToFarmEntity)session.get(AssignEmployeeToFarmEntity.class, assignResourceId);
 			session.delete(employeeToFarm);
 			transaction.commit();
 			flag=true;
+			logger.info("AssignEmployeeToFarm deleted successfully for assignResourceId: {}", assignResourceId);
 		}catch(HibernateException exception){
 			if(transaction!=null){
 				transaction.rollback();
 			}
-			exception.printStackTrace();
+			logger.error("Error deleting AssignEmployeeToFarm for assignResourceId: {}", assignResourceId, exception);
 		}finally{
 			session.close();
 		}
@@ -90,89 +94,81 @@ public class AssignResourceEmployeeToFarmService {
 	}
 	/**
 	 * Fetch Operation:Fecthing Data From DB called from 01assignTaskToEmployeeViewAll.jsp
-	 * @return list	 
+	 * @return list
 	 * */
 	public List<AssignEmployeeToFarmEntity> getListOFEmployeeToFarm(){
+		logger.debug("Fetching all AssignEmployeeToFarm records");
 		List<AssignEmployeeToFarmEntity> listOFEmployeeToFarm=new ArrayList<AssignEmployeeToFarmEntity>();
-		Session session=HibernateUtil.opensession();		
+		Session session=HibernateUtil.opensession();
 		try{
 			listOFEmployeeToFarm=session.createQuery("from AssignEmployeeToFarmEntity").list();
-		//listOFEmployeeToFarm=session.createCriteria(AssignEmployeeToFarmEntity.class).list();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			for(AssignEmployeeToFarmEntity entity:listOFEmployeeToFarm){
+				Hibernate.initialize(entity.getListFarmTaskEntities());
+			}
+			logger.info("Retrieved {} AssignEmployeeToFarm records", listOFEmployeeToFarm.size());
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignEmployeeToFarm list", exception);
 		}finally{
 			session.close();
 		}
 		return listOFEmployeeToFarm;
 	}
-	
+
 	/**
-	 * Fetch Operation:Fetching list Data From DB 
-	 * @return employeeToFarm	 
+	 * Fetch Operation:Fetching list Data From DB
+	 * @return employeeToFarm
 	 * */
 	public List<AssignEmployeeToFarmEntity> getEmployeeToFarmInfoByFilter(String qry){
+		logger.debug("Fetching AssignEmployeeToFarm list by filter query");
 		List<AssignEmployeeToFarmEntity> cropToSiteList=new ArrayList<AssignEmployeeToFarmEntity>();
 		Session session=HibernateUtil.opensession();
 		try{
 			cropToSiteList=session.createQuery(qry).list();
-			//cropToSiteList=session.createCriteria(AssignEmployeeToFarmEntity.class).add(Restrictions.eq("siteInfoId", siteId)).list();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			for(AssignEmployeeToFarmEntity entity:cropToSiteList){
+				Hibernate.initialize(entity.getListFarmTaskEntities());
+			}
+			logger.info("Retrieved {} AssignEmployeeToFarm records by filter", cropToSiteList.size());
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignEmployeeToFarm by filter", exception);
 		}finally{
 			session.close();
 		}
 		return cropToSiteList;
 	}
 	/**
-	 * Fetch Operation:Fetching Data From DB 
-	 * @return employeeToFarm	 
+	 * Fetch Operation:Fetching Data From DB
+	 * @return employeeToFarm
 	 * */
 	public AssignEmployeeToFarmEntity getEmployeeToFarmInfoByEmployeeInfoIdDate(String qry){
+		logger.debug("Fetching single AssignEmployeeToFarm by query");
 		AssignEmployeeToFarmEntity employeeToFarm=new AssignEmployeeToFarmEntity();
 		Session session=HibernateUtil.opensession();
 		try{
-			employeeToFarm=(AssignEmployeeToFarmEntity)session.createQuery(qry).uniqueResult();			
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			employeeToFarm=(AssignEmployeeToFarmEntity)session.createQuery(qry).uniqueResult();
+			logger.info("Retrieved AssignEmployeeToFarm record by query");
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignEmployeeToFarm by query", exception);
 		}finally{
 			session.close();
 		}
 		return employeeToFarm;
 	}
 	/**
-	 * Fetch Operation:Fetching All Data From DB called from 01assignTaskToEmployeeViewAll.jsp 
-	 * @return employeeToFarm	 
-	 * *//*
-	public List<AssignEmployeeToFarmEntity> getAllEmployeeToFarm(){
-		List<AssignEmployeeToFarmEntity> employeeToFarmList=new ArrayList<AssignEmployeeToFarmEntity>();
-		Session session=HibernateUtil.opensession();		
-		try{
-			String qry="from AssignEmployeeToFarmEntity";
-			
-			list=session.createQuery(qry).list();
-			System.out.println(list.size());
-			
-			
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
-		}finally{
-			session.close();
-		}
-		return employeeToFarmList;
-	}*/
-	
-	/**
 	 * Fetch Operation:Fecthing Data From DB called from 01assignTaskToEmployeeViewAll.jsp
-	 * @return list	 
+	 * @return list
 	 * */
 	public List<AssignEmployeeToFarmEntity> getListOFEmployeeToFarmByQry(final String query){
+		logger.debug("Fetching AssignEmployeeToFarm list by query");
 		List<AssignEmployeeToFarmEntity> listOFEmployeeToFarm=new ArrayList<AssignEmployeeToFarmEntity>();
-		Session session=HibernateUtil.opensession();		
+		Session session=HibernateUtil.opensession();
 		try{
 			listOFEmployeeToFarm=session.createQuery(query).list();
-		//listOFEmployeeToFarm=session.createCriteria(AssignEmployeeToFarmEntity.class).list();
-		}catch(HibernateException exception){			
-			exception.printStackTrace();
+			for(AssignEmployeeToFarmEntity entity:listOFEmployeeToFarm){
+				Hibernate.initialize(entity.getListFarmTaskEntities());
+			}
+			logger.info("Retrieved {} AssignEmployeeToFarm records by query", listOFEmployeeToFarm.size());
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignEmployeeToFarm list by query", exception);
 		}finally{
 			session.close();
 		}

@@ -6,6 +6,8 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.san.farm.adminuser.entity.SalaryProcessingEntity;
 import com.san.farm.util.HibernateUtil;
@@ -17,24 +19,27 @@ import com.san.farm.util.HibernateUtil;
 	 * Class Developed for Business Level Operation Fetching Objects from SalaryProcessingServlet.java
 	 */
 public class SalaryProcessingDao {
+		private static final Logger logger = LoggerFactory.getLogger(SalaryProcessingDao.class);
 		/**
 		 * Insert Operation:Fecthing Object from SalaryProcessingServlet.java Inserting values into userType User table
 		 * @param SalaryProcessingEntity object
 		 * @return boolean
 		 */
-		public boolean saveSalaryTransaction(SalaryProcessingEntity salaryProcess){			
+		public boolean saveSalaryTransaction(SalaryProcessingEntity salaryProcess){
+			logger.debug("Saving SalaryProcessing entity");
 			Session session=HibernateUtil.opensession();
-			Transaction transaction=session.beginTransaction(); 
+			Transaction transaction=session.beginTransaction();
 			boolean flag=false;
 			try{
 				session.save(salaryProcess);
 				transaction.commit();
 				flag=true;
+				logger.info("SalaryTransaction saved successfully");
 			}catch(HibernateException exception){
 				if(transaction!=null){
 					transaction.rollback();
 				}
-				exception.printStackTrace();
+				logger.error("Error saving SalaryTransaction", exception);
 			}finally{
 				session.close();
 			}
@@ -44,21 +49,23 @@ public class SalaryProcessingDao {
 		 * Update Operation:Fecthing Object from SalaryProcessingServlet.java Updating values into userType User table
 		 * @param SalaryProcessingEntity object
 		 * @return boolean
-		 * 
+		 *
 		 **/
 		public boolean updateSalaryTransaction(SalaryProcessingEntity salaryProcess){
+			logger.debug("Updating SalaryProcessing entity");
 			Session session=HibernateUtil.opensession();
-			Transaction transaction=session.beginTransaction(); 
+			Transaction transaction=session.beginTransaction();
 			boolean flag=false;
 			try{
 				session.update(salaryProcess);
 				transaction.commit();
 				flag=true;
+				logger.info("SalaryTransaction updated successfully");
 			}catch(HibernateException exception){
 				if(transaction!=null){
 					transaction.rollback();
 				}
-				exception.printStackTrace();
+				logger.error("Error updating SalaryTransaction", exception);
 			}finally{
 				session.close();
 			}
@@ -67,22 +74,24 @@ public class SalaryProcessingDao {
 		/**
 		 * Delete Operation:Fecthing Object from SalaryProcessingServlet.java Deleting Data from userType User table
 		 * @param SalaryProcessingEntity object
-		 * @return boolean 
+		 * @return boolean
 		 **/
 		public boolean deleteSalaryTransaction(final int cropToSiteId){
+			logger.debug("Deleting SalaryTransaction with id: {}", cropToSiteId);
 			Session session=HibernateUtil.opensession();
-			Transaction transaction=session.beginTransaction(); 
+			Transaction transaction=session.beginTransaction();
 			boolean flag=false;
 			try{
 				SalaryProcessingEntity salaryProcess=(SalaryProcessingEntity)session.get(SalaryProcessingEntity.class, cropToSiteId);
 				session.delete(salaryProcess);
 				transaction.commit();
 				flag=true;
+				logger.info("SalaryTransaction deleted successfully for id: {}", cropToSiteId);
 			}catch(HibernateException exception){
 				if(transaction!=null){
 					transaction.rollback();
 				}
-				exception.printStackTrace();
+				logger.error("Error deleting SalaryTransaction for id: {}", cropToSiteId, exception);
 			}finally{
 				session.close();
 			}
@@ -90,18 +99,20 @@ public class SalaryProcessingDao {
 		}
 		/**
 		 * fetch Operation:Fetching All Data from  User table
-		 * @param AssignResourceId		 
-		 * @return list 
+		 * @param AssignResourceId
+		 * @return list
 		 **/
-		
+
 		@SuppressWarnings("unchecked")
 		public List<SalaryProcessingEntity> getAllSalaryTransactionByAssignResourceId(final int assignResourceId){
+			logger.debug("Fetching SalaryTransactions for assignResourceId: {}", assignResourceId);
 			List<SalaryProcessingEntity> processingEntities=new ArrayList<SalaryProcessingEntity>();
-			Session session=HibernateUtil.opensession();			
+			Session session=HibernateUtil.opensession();
 			try{
-				processingEntities=session.createQuery("from SalaryProcessingEntity where assignResourceId="+assignResourceId).list();				
-			}catch(HibernateException exception){				
-				exception.printStackTrace();
+				processingEntities=session.createQuery("from SalaryProcessingEntity where assignResourceId="+assignResourceId).list();
+				logger.info("Retrieved {} SalaryTransaction records for assignResourceId: {}", processingEntities.size(), assignResourceId);
+			}catch(HibernateException exception){
+				logger.error("Error fetching SalaryTransactions for assignResourceId: {}", assignResourceId, exception);
 			}finally{
 				session.close();
 			}

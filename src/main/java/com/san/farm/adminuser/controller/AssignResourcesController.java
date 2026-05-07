@@ -58,6 +58,7 @@ public class AssignResourcesController extends HttpServlet {
 				for(int i=1;i<=empInfoCnt;i++){
 					employeeInfoId=Integer.parseInt(request.getParameter("selEmpName"+i));
 					arrFarmTaskId=request.getParameterValues("selWork"+i);
+					if(arrFarmTaskId==null){ arrFarmTaskId=new String[0]; }
 					
 					amount=Double.parseDouble(request.getParameter("txtAmount"+i));
 					advPayment=Double.parseDouble(request.getParameter("txtAdvPayment"+i));
@@ -69,7 +70,7 @@ public class AssignResourcesController extends HttpServlet {
 
 					logger.debug("Assigning resources for employee {}, amount: {}", employeeInfoId, amount);
 					AssignResourceEmployeeToFarmController employeeToFarm=new AssignResourceEmployeeToFarmController();
-					employeeToFarm.assignEmployeeToFarm(employeeInfoId,arrFarmTaskId,amount,advPayment,assignWorkDate,typeOfWork,workStatus,comment,cropToSiteEntity);
+					employeeToFarm.assignEmployeeToFarm(employeeInfoId,arrFarmTaskId,amount,advPayment,assignWorkDate,typeOfWork,workStatus,comment,cropToSiteEntity,cropId);
 					
 				}
 				logger.info("All employee assignments processed successfully");
