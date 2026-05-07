@@ -3,6 +3,7 @@ package com.san.farm.adminuser.controller;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -18,8 +19,14 @@ import org.slf4j.LoggerFactory;
 
 import com.san.farm.adminuser.dao.AssignCropToSiteService;
 import com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService;
+import com.san.farm.adminuser.dao.ConfigCropService;
+import com.san.farm.adminuser.dao.ConfigFarmTaskService;
+import com.san.farm.adminuser.dao.EmployeeInfoService;
 import com.san.farm.adminuser.entity.AssignCropToSiteEntity;
 import com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity;
+import com.san.farm.adminuser.entity.ConfigCropEntity;
+import com.san.farm.adminuser.entity.ConfigFarmTaskEntity;
+import com.san.farm.adminuser.entity.EmployeeInfoEntity;
 import com.san.farm.adminuser.entity.SalaryProcessingEntity;
 import com.san.farm.util.FarmUtility;
 import com.san.farm.util.HibernateUtil;
@@ -153,12 +160,120 @@ public class AssignResourcesController extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
-    /**
+	private void doEditLoad(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		logger.debug("Processing edit load request");
+		Session hibSession = null;
+		try {
+			String radParam = request.getParameter("radAssignWorkId");
+			if (radParam == null || radParam.trim().isEmpty()) {
+				response.sendRedirect("view/user/01assignTaskToEmployeeViewAll.jsp");
+				return;
+			}
+			int assignResourceId = Integer.parseInt(radParam.trim());
+			hibSession = HibernateUtil.opensession();
+
+			List<AssignEmployeeToFarmEntity> results = hibSession.createQuery(
+				"SELECT DISTINCT a FROM AssignEmployeeToFarmEntity a " +
+				"LEFT JOIN FETCH a.listFarmTaskEntities " +
+				"WHERE a.assignResourceId = :id",
+				AssignEmployeeToFarmEntity.class)
+				.setParameter("id", assignResourceId)
+				.getResultList();
+			AssignEmployeeToFarmEntity assignment = results.isEmpty() ? null : results.get(0);
+
+			EmployeeInfoService empService = new EmployeeInfoService();
+			ConfigCropService cropService = new ConfigCropService();
+			ConfigFarmTaskService taskService = new ConfigFarmTaskService();
+			AssignCropToSiteService cropToSiteService = new AssignCropToSiteService();
+
+			request.setAttribute("assignment", assignment);
+			request.setAttribute("employees", empService.getListOfEmployee());
+			request.setAttribute("crops", cropService.fetch());
+			request.setAttribute("tasks", taskService.fetch());
+			request.setAttribute("cropToSites", cropToSiteService.getListOFAssignCropToSite());
+
+			if (assignment != null && assignment.getAssignWorkDate() != null) {
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+				request.setAttribute("formattedDate", sdf.format(assignment.getAssignWorkDate()));
+			}
+
+			logger.info("Assignment {} loaded for edit", assignResourceId);
+		} catch (Exception ex) {
+			logger.error("Error loading assignment for edit", ex);
+		} finally {
+			if (hibSession != null && hibSession.isOpen()) {
+				hibSession.close();
+			}
+		}
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/view/user/assignTaskToEmployee.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	private void doUpdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		logger.debug("Processing update assignment request");
+		try {
+			int assignResourceId = Integer.parseInt(request.getParameter("hdnAssignResourceId"));
+
+			AssignResourceEmployeeToFarmService service = new AssignResourceEmployeeToFarmService();
+			AssignEmployeeToFarmEntity assignment = service.getEmployeeToFarmById(assignResourceId);
+
+			if (assignment != null) {
+				assignment.setAssignWorkDate(Date.valueOf(
+					FarmUtility.convertfrom_ddmmyyToyymmdd(request.getParameter("txtDate"))));
+				assignment.setTypeOfWork(request.getParameter("selWorkType"));
+				assignment.setAmount(Double.parseDouble(request.getParameter("txtAmount")));
+				assignment.setAdvPayment(Double.parseDouble(request.getParameter("txtAdvPayment")));
+				assignment.setWorkStatus(request.getParameter("selWorkStatus"));
+				assignment.setComment(request.getParameter("txtComment"));
+
+				EmployeeInfoService empService = new EmployeeInfoService();
+				assignment.setEmployeeInfoEntity(empService.getEmployeeById(
+					Integer.parseInt(request.getParameter("selEmpId"))));
+
+				String cropToSiteParam = request.getParameter("selCropToSiteId");
+				if (cropToSiteParam != null && !cropToSiteParam.equals("-1")) {
+					AssignCropToSiteService cropToSiteService = new AssignCropToSiteService();
+					assignment.setCropToSiteEntity(cropToSiteService.getAssignCropToSiteInfoByCropToSiteId(
+						Integer.parseInt(cropToSiteParam)));
+				}
+
+				String cropIdParam = request.getParameter("selCropId");
+				if (cropIdParam != null && !cropIdParam.equals("-1")) {
+					ConfigCropService cropService = new ConfigCropService();
+					assignment.setCropEntity(cropService.getCropIdByCropId(Integer.parseInt(cropIdParam)));
+				}
+
+				String[] taskIds = request.getParameterValues("selWork");
+				List<ConfigFarmTaskEntity> taskList = new ArrayList<ConfigFarmTaskEntity>();
+				if (taskIds != null) {
+					ConfigFarmTaskService taskService = new ConfigFarmTaskService();
+					for (String taskIdStr : taskIds) {
+						ConfigFarmTaskEntity task = taskService.getFarmTaskIdByTaskId(Integer.parseInt(taskIdStr));
+						if (task != null) taskList.add(task);
+					}
+				}
+				assignment.setListFarmTaskEntities(taskList);
+
+				service.updateEmployeeToFarm(assignment);
+				logger.info("Assignment {} updated successfully", assignResourceId);
+			}
+		} catch (Exception ex) {
+			logger.error("Error updating assignment", ex);
+		} finally {
+			response.sendRedirect("view/user/01assignTaskToEmployeeViewAll.jsp");
+		}
+	}
+
+	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getParameter("sbtView") != null) {
 			doView(request, response);
+		} else if (request.getParameter("sbtEdit") != null) {
+			doEditLoad(request, response);
+		} else if (request.getParameter("sbtSave") != null) {
+			doUpdate(request, response);
 		} else {
 			doProcess(request, response);
 		}
@@ -170,6 +285,10 @@ public class AssignResourcesController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getParameter("sbtView") != null) {
 			doView(request, response);
+		} else if (request.getParameter("sbtEdit") != null) {
+			doEditLoad(request, response);
+		} else if (request.getParameter("sbtSave") != null) {
+			doUpdate(request, response);
 		} else {
 			doProcess(request, response);
 		}

@@ -134,7 +134,7 @@
 			<table>
 				<tr>
 					<td><input type="submit" name="sbtEdit" value="Edit"
-						onclick="this.form.action='assignTaskToEmployee.jsp'"></td>
+						onclick="this.form.action='../../AssignResourcesController'"></td>
 					<td><input type="submit" name="sbtView" value="View"
 						onclick="this.form.action='../../AssignResourcesController'"></td>
 					<td><input type="button" name="sbtDelete" value="Delete" onclick="doDelete()"></td>
