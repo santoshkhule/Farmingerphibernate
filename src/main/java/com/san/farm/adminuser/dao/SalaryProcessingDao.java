@@ -109,7 +109,7 @@ public class SalaryProcessingDao {
 			List<SalaryProcessingEntity> processingEntities=new ArrayList<SalaryProcessingEntity>();
 			Session session=HibernateUtil.opensession();
 			try{
-				processingEntities=session.createQuery("from SalaryProcessingEntity where assignResourceId="+assignResourceId).list();
+				processingEntities=session.createQuery("from SalaryProcessingEntity where employeeToFarm.assignResourceId="+assignResourceId).list();
 				logger.info("Retrieved {} SalaryTransaction records for assignResourceId: {}", processingEntities.size(), assignResourceId);
 			}catch(HibernateException exception){
 				logger.error("Error fetching SalaryTransactions for assignResourceId: {}", assignResourceId, exception);

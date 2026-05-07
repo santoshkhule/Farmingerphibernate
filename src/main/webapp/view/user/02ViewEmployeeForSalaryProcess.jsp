@@ -31,9 +31,12 @@
 	});
 </script>
 <script type="text/javascript">
-	function processSalary(assignResourceId){		
-		window.open("02SalaryProcessing.jsp?assignResourceId="+assignResourceId, "iframSalProcess");		
-	}	
+	function processSalary(assignResourceId){
+		var iframe = parent.document.querySelector('iframe[name="iframSalProcess"]');
+		if (iframe) {
+			iframe.src = '02SalaryProcessing.jsp?assignResourceId=' + assignResourceId;
+		}
+	}
 </script>
 <script type="text/javascript">
 function showAllEmployeeByFilterId() {

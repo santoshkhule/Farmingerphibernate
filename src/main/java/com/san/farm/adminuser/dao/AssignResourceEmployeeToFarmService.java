@@ -154,6 +154,29 @@ public class AssignResourceEmployeeToFarmService {
 		return employeeToFarm;
 	}
 	/**
+	 * Fetch by primary key — safe load by PK using session.get()
+	 * @param assignResourceId primary key
+	 * @return entity or null
+	 */
+	public AssignEmployeeToFarmEntity getEmployeeToFarmById(final int assignResourceId){
+		logger.debug("Fetching AssignEmployeeToFarm by id: {}", assignResourceId);
+		Session session = HibernateUtil.opensession();
+		AssignEmployeeToFarmEntity entity = null;
+		try{
+			entity = (AssignEmployeeToFarmEntity) session.get(AssignEmployeeToFarmEntity.class, assignResourceId);
+			if(entity != null){
+				Hibernate.initialize(entity.getListFarmTaskEntities());
+			}
+			logger.info("Retrieved AssignEmployeeToFarm for id: {}", assignResourceId);
+		}catch(HibernateException exception){
+			logger.error("Error fetching AssignEmployeeToFarm by id: {}", assignResourceId, exception);
+		}finally{
+			session.close();
+		}
+		return entity;
+	}
+
+	/**
 	 * Fetch Operation:Fecthing Data From DB called from 01assignTaskToEmployeeViewAll.jsp
 	 * @return list
 	 * */

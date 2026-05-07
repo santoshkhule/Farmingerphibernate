@@ -50,15 +50,12 @@
 			if(request.getParameter("assignResourceId")!=null){
 				int assignResourceId = Integer.parseInt(request.getParameter("assignResourceId"));
 
-				// Fetch the assignment record to get amount and advance
 				AssignResourceEmployeeToFarmService employeeToFarmService = new AssignResourceEmployeeToFarmService();
-				AssignEmployeeToFarmEntity employeeToFarm = employeeToFarmService
-						.getEmployeeToFarmInfoByEmployeeInfoIdDate(
-								"from AssignEmployeeToFarmEntity where assignResourceId=" + assignResourceId);
+				AssignEmployeeToFarmEntity employeeToFarm = employeeToFarmService.getEmployeeToFarmById(assignResourceId);
 
-				double amountToPay = (employeeToFarm != null) ? employeeToFarm.getAmount() : 0;
+				double amountToPay  = (employeeToFarm != null) ? employeeToFarm.getAmount()     : 0;
+				double advPayment   = (employeeToFarm != null) ? employeeToFarm.getAdvPayment()  : 0;
 
-				// Sum all salary transaction payments for this assignment
 				SalaryProcessingDao salaryProcessingDao = new SalaryProcessingDao();
 				List<SalaryProcessingEntity> processingEntities =
 						salaryProcessingDao.getAllSalaryTransactionByAssignResourceId(assignResourceId);
@@ -68,7 +65,8 @@
 					ttlPaid += pe.getAmount();
 				}
 
-				double balance = amountToPay - ttlPaid;
+				double totalPaid = advPayment + ttlPaid;
+				double balance = amountToPay - totalPaid;
 				double excess = 0;
 				if(balance < 0){
 					excess = -balance;
@@ -79,10 +77,18 @@
 			<tr>
 				<td style="text-align: right;">Amount To Pay:</td>
 				<td style="text-align: left;"><input type="text" name="amountToPay" value="<%=amountToPay%>" readonly="readonly"></td>
+				<td style="text-align: right;">Advance Paid:</td>
+				<td style="text-align: left;"><input type="text" value="<%=advPayment%>" readonly="readonly"></td>
 				<td style="text-align: right;">Amount Paid:</td>
 				<td style="text-align: left;"><input type="text" name="amountTopaid" value="<%=ttlPaid%>" readonly="readonly"></td>
+			</tr>
+			<tr>
+				<td style="text-align: right;">Total Paid:</td>
+				<td style="text-align: left;"><input type="text" value="<%=totalPaid%>" readonly="readonly"></td>
 				<td style="text-align: right;">Balance:</td>
-				<td style="text-align: left;"><input type="text" value="<%=balance%>" readonly="readonly" style="text-align: left;"></td>
+				<td style="text-align: left;"><input type="text" value="<%=balance%>" readonly="readonly"></td>
+				<td style="text-align: right;">Excess:</td>
+				<td style="text-align: left;"><input type="text" value="<%=excess%>" readonly="readonly"></td>
 			</tr>
 			<tr>
 				<td style="text-align: right;">Payment type:</td>
