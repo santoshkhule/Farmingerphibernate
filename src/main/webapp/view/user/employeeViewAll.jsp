@@ -1,6 +1,8 @@
 <%@page import="com.san.farm.adminuser.entity.EmployeeInfoEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.EmployeeInfoService"%>
+<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -70,14 +72,40 @@
 				<th>Address</th>
 				<th>Bank Name</th>
 				<th>Acc No</th>
+				<th>Total Amount</th>
+				<th>Amount Unpaid</th>
+				<th>Pay Status</th>
 			</tr>
 		</thead>
 		<tbody>
 			<%
 				EmployeeInfoService employeeInfoService=new EmployeeInfoService();
+				SalaryProcessingDao salaryProcessingDao=new SalaryProcessingDao();
+				AssignResourceEmployeeToFarmService assignService=new AssignResourceEmployeeToFarmService();
 				List<EmployeeInfoEntity> listOfEmployee=employeeInfoService.getListOfEmployee();
 				for(EmployeeInfoEntity entity:listOfEmployee){
 					if(entity!=null){
+						int empId=entity.getEmployeeInfoId();
+						double[] amountAdv=assignService.getTotalAmountAndAdvByEmployeeInfoId(empId);
+						double totalAssigned=amountAdv[0];
+						double totalAdv=amountAdv[1];
+						double totalSalaryPaid=salaryProcessingDao.getTotalSalaryPaidByEmployeeInfoId(empId);
+						double totalPaid=totalAdv+totalSalaryPaid;
+						String payStatus;
+						String payStatusColor;
+						if(totalAssigned==0){
+							payStatus="No Work";
+							payStatusColor="#888888";
+						}else if(totalPaid>=totalAssigned){
+							payStatus="Paid";
+							payStatusColor="#007700";
+						}else if(totalPaid>0){
+							payStatus="Partial";
+							payStatusColor="#cc7700";
+						}else{
+							payStatus="Unpaid";
+							payStatusColor="#cc0000";
+						}
 			%>
 			<tr align="center">
 				<td>
@@ -93,6 +121,9 @@
 				<td><%if(null!=entity.getLocalAddress() && !entity.getLocalAddress().equalsIgnoreCase("")){out.print(entity.getLocalAddress());} %></td>
 				<td><%if(null!=entity.getBankName() && !entity.getBankName().equalsIgnoreCase("")){out.print(entity.getBankName());} %></td>
 				<td><%if(null!=entity.getAccountNumber() && !entity.getAccountNumber().equalsIgnoreCase("")){out.print(entity.getAccountNumber());} %></td>
+				<td><%=totalAssigned%></td>
+				<td style="color:#cc0000;"><%=(totalAssigned - totalPaid) > 0 ? (totalAssigned - totalPaid) : 0%></td>
+				<td style="font-weight:bold; color:<%=payStatusColor%>;"><%=payStatus%></td>
 			</tr>
 			<%}} %>
 		</tbody>

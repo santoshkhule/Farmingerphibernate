@@ -43,8 +43,8 @@ public class SalaryProcessingServlet extends HttpServlet {
 			String paymentType=Symbols.EMPTY.getSymbol(), bankName=Symbols.EMPTY.getSymbol();
 			String accountNumber=Symbols.EMPTY.getSymbol();
 			String comment=Symbols.EMPTY.getSymbol();
-			if(request.getParameter("amount")!=null){
-				amount=Double.parseDouble(request.getParameter("amount"));
+			if(request.getParameter("txtAmount")!=null && !request.getParameter("txtAmount").isEmpty()){
+				amount=Double.parseDouble(request.getParameter("txtAmount"));
 			}
 			if(request.getParameter("txtDate")!=null){
 				date=Date.valueOf(FarmUtility.convertfrom_ddmmyyToyymmdd(request.getParameter("txtDate")));
@@ -69,8 +69,7 @@ public class SalaryProcessingServlet extends HttpServlet {
 			}
 
 			AssignResourceEmployeeToFarmService employeeToFarmService=new AssignResourceEmployeeToFarmService();
-			String qry="from AssignEmployeeToFarmEntity where assignResourceId="+assignResourceId;
-			AssignEmployeeToFarmEntity employeeToFarm=employeeToFarmService.getEmployeeToFarmInfoByEmployeeInfoIdDate(qry);
+			AssignEmployeeToFarmEntity employeeToFarm=employeeToFarmService.getEmployeeToFarmById(assignResourceId);
 
 			SalaryProcessingEntity salaryProcess=new SalaryProcessingEntity();
 			salaryProcess.setAccountNumber(accountNumber);
@@ -92,6 +91,7 @@ public class SalaryProcessingServlet extends HttpServlet {
 				salaryProcessingDao.updateSalaryTransaction(salaryProcess);
 				logger.info("Salary transaction updated successfully");
 			}
+			response.sendRedirect(request.getContextPath() + "/view/user/02SalaryProcessing.jsp?assignResourceId=" + assignResourceId);
 		} catch (Exception exception) {
 			logger.error("Error processing SalaryProcessing request", exception);
 		}

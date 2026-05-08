@@ -180,6 +180,32 @@ public class AssignResourceEmployeeToFarmService {
 	 * Fetch Operation:Fecthing Data From DB called from 01assignTaskToEmployeeViewAll.jsp
 	 * @return list
 	 * */
+	/**
+	 * Returns [totalAmount, totalAdvPayment] summed across all assignments for an employee.
+	 * Index 0 = total amount to pay, index 1 = total advance paid.
+	 */
+	public double[] getTotalAmountAndAdvByEmployeeInfoId(final int employeeInfoId){
+		logger.debug("Fetching total amount and advance for employeeInfoId: {}", employeeInfoId);
+		double[] result = {0, 0};
+		Session session = HibernateUtil.opensession();
+		try{
+			Object[] row = (Object[]) session.createQuery(
+				"SELECT SUM(aef.amount), SUM(aef.advPayment) FROM AssignEmployeeToFarmEntity aef " +
+				"WHERE aef.employeeInfoEntity.employeeInfoId = " + employeeInfoId)
+				.uniqueResult();
+			if(row != null){
+				if(row[0] != null) result[0] = ((Number) row[0]).doubleValue();
+				if(row[1] != null) result[1] = ((Number) row[1]).doubleValue();
+			}
+			logger.debug("Employee {} — totalAmount: {}, totalAdv: {}", employeeInfoId, result[0], result[1]);
+		}catch(HibernateException exception){
+			logger.error("Error fetching total amount/adv for employeeInfoId: {}", employeeInfoId, exception);
+		}finally{
+			session.close();
+		}
+		return result;
+	}
+
 	public List<AssignEmployeeToFarmEntity> getListOFEmployeeToFarmByQry(final String query){
 		logger.debug("Fetching AssignEmployeeToFarm list by query");
 		List<AssignEmployeeToFarmEntity> listOFEmployeeToFarm=new ArrayList<AssignEmployeeToFarmEntity>();
