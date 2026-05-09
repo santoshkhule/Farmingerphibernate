@@ -50,12 +50,25 @@ public class UserTypeController extends HttpServlet {
 				logger.info("User type updated successfully");
 			}
 
-			//delete Operation
+			//delete single Operation
 			if(request.getParameter("delete")!=null){
 				userTypeId=Integer.parseInt(request.getParameter("userTypeId"));
 				logger.info("Deleting user type with id: {}", userTypeId);
 				userTypeService.deleteUserType(userTypeId);
 				logger.info("User type deleted successfully");
+			}
+
+			//delete selected (bulk) Operation
+			if(request.getParameter("deleteSelected")!=null){
+				String[] ids=request.getParameterValues("deleteIds");
+				if(ids!=null){
+					logger.info("Bulk deleting {} user type(s)", ids.length);
+					for(String id : ids){
+						int delId=Integer.parseInt(id);
+						userTypeService.deleteUserType(delId);
+						logger.info("Deleted user type id: {}", delId);
+					}
+				}
 			}
 		} catch (Exception exception) {
 			logger.error("Error processing UserType request", exception);
