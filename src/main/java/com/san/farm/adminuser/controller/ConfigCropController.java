@@ -64,6 +64,18 @@ public class ConfigCropController extends HttpServlet {
 				configCropService.deleteCrop(cropId);
 				logger.info("Crop deleted successfully");
 			}
+
+			//bulk delete Operation
+			if(request.getParameter("deleteSelected")!=null){
+				String[] ids=request.getParameterValues("deleteIds");
+				if(ids!=null){
+					logger.info("Bulk deleting {} crop(s)", ids.length);
+					for(String id : ids){
+						configCropService.deleteCrop(Integer.parseInt(id));
+						logger.info("Deleted crop id: {}", id);
+					}
+				}
+			}
 		} catch (Exception exception) {
 			logger.error("Error processing ConfigCrop request", exception);
 		} finally {
