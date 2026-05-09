@@ -75,6 +75,18 @@ public class ConfigSiteInformationController extends HttpServlet {
 				configSiteInformationService.deleteSiteInformation(siteInfoId);
 				logger.info("Site information deleted successfully");
 			}
+
+			//bulk delete operation
+			if(request.getParameter("deleteSelected")!=null){
+				String[] ids=request.getParameterValues("deleteIds");
+				if(ids!=null){
+					logger.info("Bulk deleting {} site record(s)", ids.length);
+					for(String id : ids){
+						configSiteInformationService.deleteSiteInformation(Integer.parseInt(id));
+						logger.info("Deleted site id: {}", id);
+					}
+				}
+			}
 		} catch (Exception exception) {
 			logger.error("Error processing ConfigSiteInformation request", exception);
 		} finally {
