@@ -64,6 +64,18 @@ public class ConfigFarmTaskController extends HttpServlet {
 				configCropService.deleteFarmTask(taskId);
 				logger.info("Farm task deleted successfully");
 			}
+
+			//bulk delete Operation
+			if(request.getParameter("deleteSelected")!=null){
+				String[] ids=request.getParameterValues("deleteIds");
+				if(ids!=null){
+					logger.info("Bulk deleting {} farm task(s)", ids.length);
+					for(String id : ids){
+						configCropService.deleteFarmTask(Integer.parseInt(id));
+						logger.info("Deleted farm task id: {}", id);
+					}
+				}
+			}
 		} catch (Exception exception) {
 			logger.error("Error processing ConfigFarmTask request", exception);
 		} finally {
