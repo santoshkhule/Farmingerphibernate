@@ -812,3 +812,123 @@ function previewPhoto(input) {
 ```
 
 This shows the selected image immediately without a server round-trip, both in add and edit modes.
+
+---
+
+## Configuration Iframe vs Standalone Page — When to Use Each
+
+Not every migrated JSP belongs in the `configuration.jsp` iframe. Use this rule:
+
+| Feature type | Where it lives | Has header/footer? |
+|---|---|---|
+| Simple lookup / reference data (User Type, Crops, Brand, Fertilizer, Units) | `configuration.jsp` iframe | No |
+| Transactional or entity-level feature (Vendor, Employee, etc.) | Own menu item + standalone page | Yes — include `header.jsp` / `footer.jsp` |
+
+### Making a JSP a standalone page (menu-accessible)
+
+Add header and footer includes inside `<body>`:
+
+```jsp
+<body>
+<%@include file="../../header.jsp"%>
+<fieldset><legend>Vendor</legend>
+  ...
+</fieldset>
+<%@include file="../../footer.jsp"%>
+</body>
+```
+
+Do **not** include `header.jsp` in pages that are embedded as iframes — it causes a nested menu bar inside the iframe.
+
+### Removing a page from the configuration iframe
+
+When a feature is promoted to its own menu item, remove both its `<th>` and `<td><iframe>` from `configuration.jsp`:
+
+```html
+<!-- Remove this pair -->
+<th>Vendor</th>
+...
+<td><iframe width="100%" height="550px" src="addVendor.jsp"></iframe></td>
+```
+
+---
+
+## Adding a New Top-Level Menu Item with Dropdown
+
+The menu in `menu.jsp` uses the `#nicefooter` CSS hover-dropdown pattern. Each `<li>` floats left; hovering reveals a nested `<ul>`.
+
+### Add the new item before the Logout `<li>`
+
+```html
+<li><a href="<%=request.getContextPath()%>/view/user/addVendor.jsp">Vendor</a>
+    <ul>
+        <li><a href="<%=request.getContextPath()%>/view/user/addVendor.jsp">Add Vendor</a></li>
+    </ul></li>
+```
+
+### Adjust the Logout margin
+
+The Logout `<a>` uses a hard-coded `margin-left` to push it to the right of all menu items. Each new top-level item is roughly 10em wide. Subtract that amount from the margin when adding a new item:
+
+```html
+<!-- Before adding Vendor: margin-left:47em -->
+<!-- After adding Vendor:  margin-left:37em -->
+<li><a style="margin-left:37em;color: green;" href="...logout.jsp">Logout</a></li>
+```
+
+### CSS — how the dropdown works
+
+The dropdown is pure CSS hover — no JS needed:
+
+```css
+#nicefooter li ul          { display: none; position: absolute; }   /* hidden by default */
+#nicefooter li:hover ul    { display: block; background: white; ... } /* shown on hover */
+#nicefooter li ul li       { clear: both; background: white; }
+#nicefooter li ul li a     { color: blue; width: 7em; }
+```
+
+The nested `<ul>` width is fixed at `8em` (`width: 8em` in `li:hover ul`). If dropdown text is longer than 8em, increase this value in `style.css`.
+
+### Multi-field editRow for pages with many fields (Vendor pattern)
+
+When a row has more than one editable field, pass all values as JS arguments and populate each field:
+
+```javascript
+function editRow(id, vendorName, shopName, perContactNo, ofcContactNo, address, emailId) {
+    document.getElementById('vendorId').value     = id;
+    document.getElementById('vendorName').value   = vendorName;
+    document.getElementById('shopName').value     = shopName;
+    document.getElementById('perContactNo').value = perContactNo;
+    document.getElementById('ofcContactNo').value = ofcContactNo;
+    document.getElementById('address').value      = address;
+    document.getElementById('emailId').value      = emailId;
+    ...
+}
+```
+
+Call it from the row's Edit button — escape single quotes and strip newlines from each string value before embedding in the `onclick`:
+
+```jsp
+<%
+    String eVendorName = vendor.getVendorName()   != null ? vendor.getVendorName().replace("'", "\\'")   : "";
+    String eAddress    = vendor.getAddress()      != null
+                         ? vendor.getAddress().replace("'", "\\'").replace("\n", " ").replace("\r", "") : "";
+%>
+<button type="button" class="btn-row-edit"
+    onclick="editRow(<%=vendor.getVendorId()%>,'<%=eVendorName%>','<%=eShopName%>',
+             '<%=ePerContact%>','<%=eOfcContact%>','<%=eAddress%>','<%=eEmailId%>')">Edit</button>
+```
+
+The `resetForm()` function must clear **all** fields — not just the name — or old values linger after the user clicks Cancel:
+
+```javascript
+function resetForm() {
+    document.getElementById('vendorName').value   = '';
+    document.getElementById('shopName').value     = '';
+    document.getElementById('perContactNo').value = '';
+    document.getElementById('ofcContactNo').value = '';
+    document.getElementById('address').value      = '';
+    document.getElementById('emailId').value      = '';
+    ...
+}
+```
