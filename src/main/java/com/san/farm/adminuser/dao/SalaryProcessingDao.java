@@ -119,6 +119,24 @@ public class SalaryProcessingDao {
 			return processingEntities;
 		}
 
+		public double getTotalSalaryPaidByAssignResourceId(final int assignResourceId){
+			logger.debug("Fetching total salary paid for assignResourceId: {}", assignResourceId);
+			double total = 0;
+			Session session = HibernateUtil.opensession();
+			try{
+				Object result = session.createQuery(
+					"SELECT SUM(sp.amount) FROM SalaryProcessingEntity sp " +
+					"WHERE sp.employeeToFarm.assignResourceId = " + assignResourceId)
+					.uniqueResult();
+				if(result != null) total = ((Number) result).doubleValue();
+			}catch(HibernateException exception){
+				logger.error("Error fetching total salary paid for assignResourceId: {}", assignResourceId, exception);
+			}finally{
+				session.close();
+			}
+			return total;
+		}
+
 		public double getTotalSalaryPaidByEmployeeInfoId(final int employeeInfoId){
 			logger.debug("Fetching total salary paid for employeeInfoId: {}", employeeInfoId);
 			double total = 0;

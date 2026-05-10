@@ -4,9 +4,7 @@
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.ResultSet"%>
-<%@page import="java.sql.Statement"%>
+<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -64,8 +62,6 @@ function showAllEmployeeByFilterId() {
 </script>
 <body>
 	<%
-		Connection con = null;
-		Statement st = null;
 		double ttlAmountToPay = 0;
 		double ttlAmountPaid = 0;
 		double ttlAdvancedPaid = 0;
@@ -141,11 +137,11 @@ function showAllEmployeeByFilterId() {
 
 						int cnt = 0;
 						AssignResourceEmployeeToFarmService employeeToFarmService=new AssignResourceEmployeeToFarmService();
+						SalaryProcessingDao salaryProcessingDao = new SalaryProcessingDao();
 						List<AssignEmployeeToFarmEntity> employeeToFarmEntities=employeeToFarmService.getListOFEmployeeToFarm();
 						for(AssignEmployeeToFarmEntity employeeToFarm:employeeToFarmEntities){
 						cnt++;
 						int assignResourceId = employeeToFarm.getAssignResourceId();
-						int emp_id = 0;
 				%>
 				<tr>
 					<td><input type="radio" name="radAssignWorkId"
@@ -218,21 +214,23 @@ function showAllEmployeeByFilterId() {
 							%>
 						</td>						
 						<%
-							double excessAmount = 0;
-							double balanceAmount = 0;
-							try {
-								balanceAmount = employeeToFarm.getAmount() - employeeToFarm.getAdvPayment();
-								if (balanceAmount < 0) {
-									excessAmount = -balanceAmount;
-									balanceAmount = 0;
-								}
-							} catch (Exception ex) {
-								ex.printStackTrace();
+							double totalSalaryPaid = salaryProcessingDao.getTotalSalaryPaidByAssignResourceId(assignResourceId);
+							double totalPaid       = employeeToFarm.getAdvPayment() + totalSalaryPaid;
+							double excessAmount    = 0;
+							double balanceAmount   = employeeToFarm.getAmount() - totalPaid;
+							if (balanceAmount < 0) {
+								excessAmount = -balanceAmount;
+								balanceAmount = 0;
 							}
+							ttlAmountToPay  += employeeToFarm.getAmount();
+							ttlAdvancedPaid += employeeToFarm.getAdvPayment();
+							ttlAmountPaid   += totalSalaryPaid;
+							ttlBalance      += balanceAmount;
+							ttlExcessAmount += excessAmount;
 						%>
 						<td><%=employeeToFarm.getAmount()%></td>
 						<td><%=employeeToFarm.getAdvPayment()%></td>
-						<td>0</td>
+						<td><%=totalSalaryPaid%></td>
 						<td><%=balanceAmount%></td>
 						<td><%=excessAmount%></td>
 				</tr>

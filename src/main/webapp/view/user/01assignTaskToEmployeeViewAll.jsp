@@ -1,3 +1,4 @@
+<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigFarmTaskService"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigCropEntity"%>
@@ -162,7 +163,7 @@
 
 					<%
 						AssignResourceEmployeeToFarmService employeeToFarmService=new AssignResourceEmployeeToFarmService();
-						
+						SalaryProcessingDao salaryProcessingDao=new SalaryProcessingDao();
 						List<AssignEmployeeToFarmEntity> employeeToFarmEntities=null;
 						int cnt = 0;
 						try {
@@ -240,29 +241,14 @@
 							%>
 						</td>						
 						<%
-							double balanceAmount = 0;
-							try {
-								balanceAmount=employeeToFarm.getAmount()-employeeToFarm.getAdvPayment();
-								if (balanceAmount < 0) { balanceAmount = 0; }
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
+							double totalSalaryPaid = salaryProcessingDao.getTotalSalaryPaidByAssignResourceId(employeeToFarm.getAssignResourceId());
+							double totalPaid = employeeToFarm.getAdvPayment() + totalSalaryPaid;
+							double balanceAmount = employeeToFarm.getAmount() - totalPaid;
+							if (balanceAmount < 0) { balanceAmount = 0; }
 						%>
-						<td>
-							<%								
-								out.println(employeeToFarm.getAmount());								
-							%>
-						</td>
-						<td>
-							<%
-								out.println(employeeToFarm.getAdvPayment());
-							%>
-						</td>
-						<td>
-							<%
-								out.print(balanceAmount);
-							%>
-						</td>
+						<td><%=employeeToFarm.getAmount()%></td>
+						<td><%=totalSalaryPaid%></td>
+						<td><%=balanceAmount%></td>
 						<td  id="td<%=cnt%>" hidden="true" width="6%">
 							<img src="../../img/edit.jpg" height="17" width="30" id="imgEdit<%=cnt %>" hidden onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId() %>,'edit')">
 							<img src="../../img/delete.jpg" height="17" width="30" id="imgDelete<%=cnt %>" hidden onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId() %>,'delete')">

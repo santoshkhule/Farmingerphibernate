@@ -4,6 +4,7 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
+<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
 
 <%
@@ -47,6 +48,7 @@ if (taskIdParam != null && !taskIdParam.trim().isEmpty() && !taskIdParam.equals(
 
 <%
 AssignResourceEmployeeToFarmService employeeToFarmService = new AssignResourceEmployeeToFarmService();
+SalaryProcessingDao salaryProcessingDao = new SalaryProcessingDao();
 List<AssignEmployeeToFarmEntity> employeeToFarmEntities = null;
 int cnt = 0;
 
@@ -151,16 +153,13 @@ try {
             %>
         </td>
         <%
-        double balanceAmount = 0;
-        try {
-            balanceAmount = employeeToFarm.getAmount() - employeeToFarm.getAdvPayment();
-            if (balanceAmount < 0) balanceAmount = 0;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        double totalSalaryPaid = salaryProcessingDao.getTotalSalaryPaidByAssignResourceId(employeeToFarm.getAssignResourceId());
+        double totalPaid = employeeToFarm.getAdvPayment() + totalSalaryPaid;
+        double balanceAmount = employeeToFarm.getAmount() - totalPaid;
+        if (balanceAmount < 0) balanceAmount = 0;
         %>
         <td><%=employeeToFarm.getAmount()%></td>
-        <td><%=employeeToFarm.getAdvPayment()%></td>
+        <td><%=totalSalaryPaid%></td>
         <td><%=balanceAmount%></td>
     </tr>
 <%

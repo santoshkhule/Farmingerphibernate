@@ -38,6 +38,15 @@
     String fAccNo      = emp != null && emp.getAccountNumber() != null ? emp.getAccountNumber()  : "";
     String fPan        = emp != null && emp.getPanCardNo()     != null ? emp.getPanCardNo()      : "";
     String fComment    = emp != null && emp.getComment()       != null ? emp.getComment()        : "";
+    String fPhotoPath  = emp != null && emp.getEmpPicPath()   != null && !emp.getEmpPicPath().isEmpty()
+                         ? emp.getEmpPicPath() : "";
+    // empPicPath stores the full absolute path — extract just the filename for URL use
+    String fPhotoFileName = "";
+    if (!fPhotoPath.isEmpty()) {
+        String normalized = fPhotoPath.replace('\\', '/');
+        int lastSlash = normalized.lastIndexOf('/');
+        fPhotoFileName = lastSlash >= 0 ? normalized.substring(lastSlash + 1) : normalized;
+    }
 
     String pageTitle = isView ? "View Employee" : (isEdit ? "Edit Employee" : "Add Employee");
 %>
@@ -61,6 +70,21 @@
         <%}%>
     });
 </script>
+<script>
+    function previewPhoto(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = document.getElementById('imgPreview');
+                var ph  = document.getElementById('photoPlaceholder');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                ph.style.display  = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 <body>
 <%@include file="../../header.jsp" %>
     <h2><%=pageTitle%></h2>
@@ -70,14 +94,24 @@
         <input type="hidden" name="employeeInfoId" id="employeeInfoId" value="<%=fEmpId%>">
         <table border=0 style="width: 100%" cellSpacing=0>
             <tr>
-                <td rowspan="4">
-                <%if (!isView) {%>
-                Upload Employee Photo:
-                <input type="file" name="fileEmpPhoto" id="fileEmpPhoto">
-                <%}%>
-                </td>
-                <td style="text-align: center;" rowspan="4">
-                    <input type="hidden" name="hdnUploadedPhoto" value="">
+                <td rowspan="4" colspan="2" style="text-align:center; vertical-align:top; padding:10px; width:180px;">
+                    <%-- Photo preview --%>
+                    <img id="imgPreview"
+                         src="<%=fPhotoFileName.isEmpty() ? "" : "../../uploads/" + fPhotoFileName%>"
+                         style="width:130px; height:155px; object-fit:cover; border:1px solid #aaa; display:<%=fPhotoFileName.isEmpty() ? "none" : "block"%>; margin:0 auto;">
+                    <div id="photoPlaceholder"
+                         style="width:130px; height:155px; background:#e8e8e8; border:1px solid #aaa;
+                                display:<%=fPhotoFileName.isEmpty() ? "flex" : "none"%>;
+                                align-items:center; justify-content:center;
+                                color:#999; font-size:13px; margin:0 auto;">
+                        No Photo
+                    </div>
+                    <%if (!isView) {%>
+                    <div style="margin-top:6px; font-size:12px; color:#555;">Upload Photo:</div>
+                    <input type="file" name="fileEmpPhoto" id="fileEmpPhoto" accept="image/*"
+                           style="width:140px; font-size:11px; margin-top:3px;"
+                           onchange="previewPhoto(this)">
+                    <%}%>
                 </td>
             </tr>
             <tr>
