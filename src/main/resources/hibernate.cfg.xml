@@ -34,6 +34,7 @@
 		<mapping class="com.san.farm.adminuser.entity.AssignCropToSiteRefEntity" />
 		<mapping class="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity" />
 		<mapping class="com.san.farm.adminuser.entity.SalaryProcessingEntity" />
+		<mapping class="com.san.farm.adminuser.entity.BrandEntity" />
 
 	</session-factory>
 </hibernate-configuration>

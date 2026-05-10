@@ -578,3 +578,237 @@ response.sendRedirect("view/user/userType.jsp");
 | Page shows old data after save | Servlet has no redirect — browser re-renders stale cached JSP | Add `response.sendRedirect(...)` at end of save/update block |
 | `SUM` returns null instead of 0 | HQL `SUM` on empty result set returns null, not 0 | Null-check: `if (result != null) total = ((Number) result).doubleValue()` |
 | Edit form fields blank after row click | JS reads wrong column index from `<td>` | Check `eq(N)` index — 0-based, account for any leading Select/Id columns |
+| `Connection/Statement cannot be resolved to a type` in JSP | Old JDBC imports removed but dead variable declarations remain in the scriptlet body | Remove both the `import` lines **and** the `Connection con = null; Statement st = null;` variable declarations in the body scriptlet |
+
+---
+
+## Migrating a New JDBC-Based Feature to Hibernate
+
+Use this checklist when an existing page uses raw JDBC (`DBfactory`, `Connection`, `Statement`, `ResultSet`) and needs to be converted to Hibernate.
+
+### Step 1 — Create the Entity
+
+```java
+package com.san.farm.adminuser.entity;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "Brand")          // matches the actual DB table name
+public class BrandEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int brandId;
+
+    private String brandName;
+
+    // standard getters / setters
+}
+```
+
+Rules:
+- `@Entity` + `@Table(name = "...")` — use the **exact** existing table name (case-sensitive on some DBs)
+- `@Id` + `@GeneratedValue` for auto-increment PK
+- Field names follow camelCase; Hibernate maps them to UPPERCASE column names by default (H2 is case-insensitive)
+
+### Step 2 — Register the entity in `hibernate.cfg.xml`
+
+```xml
+<mapping class="com.san.farm.adminuser.entity.BrandEntity" />
+```
+
+Add alongside the other `<mapping>` lines inside `<session-factory>`. Hibernate won't know about the entity (or auto-create the table) until it is registered here. Requires **Tomcat restart** to take effect.
+
+### Step 3 — Create the Service (DAO)
+
+```java
+public class BrandService {
+
+    public void saveBrand(BrandEntity brand) {
+        Session session = HibernateUtil.opensession();
+        Transaction tx = session.beginTransaction();
+        session.save(brand);
+        tx.commit();
+        session.close();
+    }
+
+    public void updateBrand(BrandEntity brand) {
+        Session session = HibernateUtil.opensession();
+        Transaction tx = session.beginTransaction();
+        session.update(brand);
+        tx.commit();
+        session.close();
+    }
+
+    public void deleteBrand(int brandId) {
+        Session session = HibernateUtil.opensession();
+        Transaction tx = session.beginTransaction();
+        BrandEntity brand = session.get(BrandEntity.class, brandId);
+        if (brand != null) session.delete(brand);
+        tx.commit();
+        session.close();
+    }
+
+    public List<BrandEntity> fetch() {
+        Session session = HibernateUtil.opensession();
+        List<BrandEntity> list = session.createQuery(
+            "FROM BrandEntity ORDER BY brandName", BrandEntity.class).list();
+        session.close();
+        return list;
+    }
+}
+```
+
+Key points:
+- Always open a fresh session per operation (this project does not use session-per-request or connection pooling)
+- `session.get(Class, PK)` for delete — safe (returns null if not found, no exception)
+- Always commit before closing on write operations
+
+### Step 4 — Create the Controller (Servlet)
+
+```java
+public class BrandController extends HttpServlet {
+
+    protected void doProcess(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        BrandService brandService = new BrandService();
+        BrandEntity brand = new BrandEntity();
+
+        if (request.getParameter("add") != null) {
+            brand.setBrandName(request.getParameter("brandName"));
+            brandService.saveBrand(brand);
+        }
+        if (request.getParameter("edit") != null) {
+            brand.setBrandId(Integer.parseInt(request.getParameter("brandId")));
+            brand.setBrandName(request.getParameter("brandName"));
+            brandService.updateBrand(brand);
+        }
+        if (request.getParameter("delete") != null) {
+            brandService.deleteBrand(Integer.parseInt(request.getParameter("brandId")));
+        }
+        if (request.getParameter("deleteSelected") != null) {
+            String[] ids = request.getParameterValues("deleteIds");
+            if (ids != null) {
+                for (String id : ids) brandService.deleteBrand(Integer.parseInt(id));
+            }
+        }
+
+        response.sendRedirect("view/user/addBrand.jsp");
+    }
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException { doProcess(req, res); }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException { doProcess(req, res); }
+}
+```
+
+`response.sendRedirect("view/user/addBrand.jsp")` is placed in `finally` (or unconditionally after all branches) so the JSP always re-renders fresh data after any operation.
+
+### Step 5 — Register the Servlet in `web.xml`
+
+```xml
+<servlet>
+    <servlet-name>BrandController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.BrandController</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>BrandController</servlet-name>
+    <url-pattern>/BrandController</url-pattern>
+</servlet-mapping>
+```
+
+Requires **Tomcat restart** to take effect.
+
+### Step 6 — Rewrite the JSP
+
+Replace all JDBC code with the Service call. The JSP only needs to open the service, fetch the list, and render it:
+
+```jsp
+<%@page import="com.san.farm.adminuser.entity.BrandEntity"%>
+<%@page import="java.util.List"%>
+<%@page import="com.san.farm.adminuser.dao.BrandService"%>
+...
+<%
+    BrandService brandService = new BrandService();
+    List<BrandEntity> brandList = brandService.fetch();
+    for (BrandEntity brand : brandList) {
+        String eName = brand.getBrandName() != null ? brand.getBrandName().replace("'", "\\'") : "";
+%>
+    <tr id="row-<%=brand.getBrandId()%>">
+        <td><%=brand.getBrandId()%></td>
+        <td><%=brand.getBrandName()%></td>
+        ...
+    </tr>
+<%} %>
+```
+
+Remove: all `import java.sql.*`, `DBfactory`, `Connection`, `Statement`, `ResultSet`, and any reference to old action JSPs (`action/addBrandAction.jsp`).
+
+Form action must point to the new servlet (path relative to context root):
+
+```html
+<!-- From a JSP at view/user/addBrand.jsp, go up two levels to reach context root -->
+<form method="post" action="../../BrandController">
+```
+
+### Step 7 — Embed in an existing iframe page
+
+If the new JSP is displayed inside an iframe on a configuration page (`configuration.jsp`), add a `<th>` + `<td><iframe>` pair:
+
+```html
+<th>Brand</th>
+...
+<td><iframe width="100%" height="550px" src="addBrand.jsp"></iframe></td>
+```
+
+---
+
+## Photo Upload — Extracting Filename from Full Absolute Path
+
+`MyFileRenamePolicy.rename()` stores the **full absolute path** in the rename map, not just the filename. This path ends up in `EmployeeInfoEntity.empPicPath` in the database.
+
+Using the full path directly as an `<img src="">` attribute breaks (the URL would be `/view/user//Users/...`). Extract just the filename:
+
+```java
+// In JSP scriptlet (edit mode)
+String fPhotoPath = emp != null && emp.getEmpPicPath() != null && !emp.getEmpPicPath().isEmpty()
+                    ? emp.getEmpPicPath() : "";
+String fPhotoFileName = "";
+if (!fPhotoPath.isEmpty()) {
+    String normalized = fPhotoPath.replace('\\', '/');
+    int lastSlash = normalized.lastIndexOf('/');
+    fPhotoFileName = lastSlash >= 0 ? normalized.substring(lastSlash + 1) : normalized;
+}
+```
+
+Then use only `fPhotoFileName` in the `<img>` tag:
+
+```html
+<img id="imgPreview"
+     src="../../uploads/<%=fPhotoFileName%>"
+     style="<%=fPhotoFileName.isEmpty() ? "display:none;" : "max-width:120px;max-height:120px;"%>">
+<div id="photoPlaceholder" style="<%=fPhotoFileName.isEmpty() ? "" : "display:none;"%>">No Photo</div>
+```
+
+### Instant preview for new uploads (FileReader API)
+
+```html
+<input type="file" name="empPhoto" accept="image/*" onchange="previewPhoto(this)">
+
+<script>
+function previewPhoto(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imgPreview').src = e.target.result;
+            document.getElementById('imgPreview').style.display = 'block';
+            var ph = document.getElementById('photoPlaceholder');
+            if (ph) ph.style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+```
+
+This shows the selected image immediately without a server round-trip, both in add and edit modes.

@@ -66,6 +66,16 @@
   </servlet-mapping>
   <servlet>
     <description></description>
+    <display-name>BrandController</display-name>
+    <servlet-name>BrandController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.BrandController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BrandController</servlet-name>
+    <url-pattern>/BrandController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
     <display-name>EmployeeInfoController</display-name>
     <servlet-name>EmployeeInfoController</servlet-name>
     <servlet-class>com.san.farm.adminuser.controller.EmployeeInfoController

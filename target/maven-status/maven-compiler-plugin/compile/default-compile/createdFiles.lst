@@ -1,5 +1,6 @@
 com/san/farm/util/MyFileRenamePolicy.class
 com/san/farm/adminuser/controller/AssignResourceEmployeeToFarmController.class
+com/san/farm/adminuser/controller/BrandController.class
 com/oreilly/servlet/MultipartRequest.class
 com/san/farm/adminuser/controller/EmployeeInfoController.class
 com/oreilly/servlet/multipart/FileRenamePolicy.class
@@ -9,6 +10,7 @@ com/san/farm/adminuser/entity/UserTypeEntity.class
 com/san/farm/adminuser/dao/AssignResourceEmployeeToFarmService.class
 com/san/farm/util/Symbols.class
 com/san/farm/adminuser/entity/EmployeeInfoEntity.class
+com/san/farm/adminuser/dao/BrandService.class
 com/san/farm/adminuser/dao/UserTypeService.class
 com/san/farm/adminuser/dao/ConfigCropService.class
 com/san/farm/adminuser/entity/AssignCropToSiteEntity.class
@@ -29,6 +31,7 @@ com/san/farm/util/HibernateUtil.class
 com/san/farm/adminuser/entity/SalaryProcessingEntity.class
 com/san/farm/adminuser/controller/ConfigSiteInformationController.class
 com/san/farm/login/dao/LoginUserService.class
+com/san/farm/adminuser/entity/BrandEntity.class
 com/san/farm/adminuser/dao/AssignCropToSiteRefService.class
 com/san/farm/adminuser/dao/ConfigFarmTaskService.class
 com/san/farm/adminuser/controller/AssignCropToSiteController.class
