@@ -221,6 +221,7 @@
 			<td style="text-align:center; white-space:nowrap;">
 				<button type="button" class="btn-row-edit" id="btnEdit<%=id%>" onclick="editRow(<%=id%>)">Edit</button>
 				<form method="post" action="../../AssignVendorToProductController" style="display:inline" id="frmEdit<%=id%>">
+					<input type="hidden" name="edit" value="edit">
 					<input type="hidden" name="assignVendorProductId" value="<%=id%>">
 					<input type="hidden" name="vendorId"       value="<%=vendor_id%>">
 					<input type="hidden" name="redirectTarget"  value="viewIframe">
@@ -241,7 +242,6 @@
 							document.getElementById('hidDesc<%=id%>').value   = document.getElementById('inpDesc<%=id%>').value;
 							document.getElementById('hidComment<%=id%>').value= document.getElementById('inpComment<%=id%>').value;
 							document.getElementById('frmEdit<%=id%>').submit();">Save</button>
-					<input type="submit" class="btn-update" name="edit" value="edit" style="display:none; position:absolute; left:-9999px">
 				</form>
 				<button type="button" class="btn-cancel" id="btnCancel<%=id%>" style="display:none" onclick="cancelEdit(<%=id%>)">Cancel</button>
 			</td>
