@@ -7,9 +7,9 @@
 			<li style="margin-left: 2em"><a href="<%=request.getContextPath()%>/view/user/configuration.jsp">Configuration</a>
 				<ul>
 					<li><a href="<%=request.getContextPath()%>/view/user/configuration.jsp">Basic Config</a></li>
+					<li><a href="<%=request.getContextPath()%>/view/user/configureCatSubCatBrand.jsp">Configure Items</a></li>
 					<li><a href="<%=request.getContextPath()%>/view/user/registerUser.jsp">Register User</a></li>
 					<li><a href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Assign Crop To Site</a></li>
-
 				</ul></li>
 			<li><a href="<%=request.getContextPath()%>/view/user/employeeViewAll.jsp">Employee</a>
 				<ul>

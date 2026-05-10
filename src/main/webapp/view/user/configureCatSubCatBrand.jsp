@@ -8,6 +8,7 @@
 <title>Category / Product / Brand / Units</title>
 </head>
 <body>
+<%@include file="../../header.jsp"%>
 <fieldset><legend>Category / Product / Brand / Units</legend>
 	<table border="1" cellspacing="0" style="width:100%">
 		<tr>
@@ -24,5 +25,6 @@
 		</tr>
 	</table>
 </fieldset>
+<%@include file="../../footer.jsp"%>
 </body>
 </html>
