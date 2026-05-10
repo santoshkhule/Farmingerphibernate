@@ -10,7 +10,7 @@ $(document).ready(function () {
                     search:           '',
                     searchPlaceholder:'Search...',
                     lengthMenu:       'Show _MENU_ entries',
-                    info:             '_START_–_END_ of _TOTAL_',
+                    info:             '_START_ - _END_ of _TOTAL_',
                     infoEmpty:        '0 entries',
                     emptyTable:       'No records found',
                     paginate: { previous: '&#8249;', next: '&#8250;' }
