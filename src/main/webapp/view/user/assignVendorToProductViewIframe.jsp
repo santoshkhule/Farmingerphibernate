@@ -10,8 +10,7 @@
 <title>Vendor Product Assignments</title>
 <style>
 	#bulkBar { display:none; background:#fdecea; border:1px solid #e06060; padding:6px 12px; border-radius:3px; margin-bottom:8px; }
-	#editBanner { display:none; background:#fff3cd; border:1px solid #ffc107; color:#856404; padding:4px 10px; border-radius:3px; margin-bottom:6px; font-weight:bold; }
-	.tbl-data th { background:#dce8ff; padding:5px 8px; font-size:12px; }
+.tbl-data th { background:#dce8ff; padding:5px 8px; font-size:12px; }
 	.tbl-data td { padding:4px 6px; font-size:12px; }
 	.tbl-data tr.selected-row { background:#c2d7f9 !important; font-weight:bold; }
 	.tbl-data tbody tr:nth-child(even) { background:#f5f8ff; }
@@ -48,8 +47,6 @@
 		if (editingRowEl) editingRowEl.classList.add('selected-row');
 
 		showEdit(id, true);
-		document.getElementById('editBanner').style.display = 'block';
-		document.getElementById('editBanner').innerText = 'Editing row id: ' + id;
 	}
 
 	function showEdit(id, editing) {
@@ -70,7 +67,6 @@
 	function cancelEdit(id) {
 		if (editingRowEl) { editingRowEl.classList.remove('selected-row'); editingRowEl = null; }
 		showEdit(id, false);
-		document.getElementById('editBanner').style.display = 'none';
 	}
 
 	function toggleSelectAll(chk) {
@@ -129,8 +125,6 @@
 		AssignVendorToProductService avpService = new AssignVendorToProductService();
 		List<AssignVendorToProductEntity> assignList = avpService.fetchByVendor(vendor_id);
 %>
-	<div id="editBanner"></div>
-
 	<div id="bulkBar">
 		<span id="selCount">0</span> record(s) selected &nbsp;
 		<button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
