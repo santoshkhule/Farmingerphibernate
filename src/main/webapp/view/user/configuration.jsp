@@ -15,18 +15,12 @@
 			<th>Site Information</th>
 			<th>Crops</th>
 			<th>Farming Task</th>
-			<th>Brand</th>
-			<th>Fertilizer</th>
-			<th>Units</th>
 		</tr>
 		<tr>
 			<td><iframe width="100%" height="550px" src="userType.jsp"></iframe></td>
 			<td><iframe width="100%" height="550px" src="configSiteInformation.jsp"></iframe></td>
 			<td><iframe width="100%" height="550px" src="configCrop.jsp"></iframe></td>
 			<td><iframe width="100%" height="550px" src="configFarmTask.jsp"></iframe></td>
-			<td><iframe width="100%" height="550px" src="addBrand.jsp"></iframe></td>
-			<td><iframe width="100%" height="550px" src="addFertilizer.jsp"></iframe></td>
-			<td><iframe width="100%" height="550px" src="addUnits.jsp"></iframe></td>
 		</tr>
 	</table>
 	</fieldset>
