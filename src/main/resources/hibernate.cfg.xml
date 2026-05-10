@@ -38,6 +38,7 @@
 		<mapping class="com.san.farm.adminuser.entity.FertilizerEntity" />
 		<mapping class="com.san.farm.adminuser.entity.UnitEntity" />
 		<mapping class="com.san.farm.adminuser.entity.VendorEntity" />
+		<mapping class="com.san.farm.adminuser.entity.AssignVendorToProductEntity" />
 
 	</session-factory>
 </hibernate-configuration>

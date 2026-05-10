@@ -120,6 +120,14 @@
     <servlet-name>VendorController</servlet-name>
     <url-pattern>/VendorController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>AssignVendorToProductController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.AssignVendorToProductController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AssignVendorToProductController</servlet-name>
+    <url-pattern>/AssignVendorToProductController</url-pattern>
+  </servlet-mapping>
 
   <!-- H2 Web Console Servlet
   Access it at: http://localhost:8080/FarmingERP/h2-console
