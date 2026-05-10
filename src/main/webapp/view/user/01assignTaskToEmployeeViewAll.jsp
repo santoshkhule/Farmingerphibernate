@@ -13,8 +13,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>View All Assign Task</title>
+<link rel="stylesheet" href="../../css/style.css" type="text/css">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
 <script src="../../js/jquery-1.9.1.js"></script>
+<script src="../../js/datatables.min.js"></script>
 <script src="../../js/jquery-ui.js"></script>
 </head>
 <script>
@@ -48,7 +50,12 @@
 		}
 		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+				var tbl = $('#showTable table.tbl-data');
+				if (tbl.length && $.fn.DataTable.isDataTable(tbl)) {
+					tbl.DataTable().destroy();
+				}
 				document.getElementById("showTable").innerHTML = xmlhttp.responseText;
+				initAssignTable();
 			}
 		};
 
@@ -88,9 +95,28 @@
 			}
 		}
 	}
+	function initAssignTable() {
+		var tbl = $('#showTable table.tbl-data');
+		if (tbl.length && !$.fn.DataTable.isDataTable(tbl)) {
+			tbl.DataTable({
+				pageLength: 25,
+				lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']],
+				autoWidth: false,
+				language: {
+					search: '', searchPlaceholder: 'Search...',
+					lengthMenu: 'Show _MENU_ entries',
+					info: '_START_ - _END_ of _TOTAL_',
+					infoEmpty: '0 entries',
+					emptyTable: 'No records found',
+					paginate: { previous: '&#8249;', next: '&#8250;' }
+				},
+				dom: '<"dt-toolbar"lf>rt<"dt-footer"ip>'
+			});
+		}
+	}
+	$(document).ready(function() { initAssignTable(); });
 </script>
 <body>
-	<%@include file="../../header.jsp"%>
 	<!-- <h2>View All Employee Assign Task</h2> <hr>-->
 
 	<fieldset style="height: 575px">
@@ -142,7 +168,7 @@
 				</tr>
 			</table>
 			<div id="showTable">
-				<table border="1" width=100%>
+				<table border="1" width="100%" class="tbl-data" cellspacing="0">
 					<tr>
 						<th>Select</th>
 						<th>Sr. No.</th>

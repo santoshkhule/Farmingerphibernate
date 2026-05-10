@@ -30,7 +30,7 @@ if (taskIdParam != null && !taskIdParam.trim().isEmpty() && !taskIdParam.equals(
 }
 %>
 
-<table border="1" width="100%">
+<table border="1" width="100%" class="tbl-data" cellspacing="0">
     <tr>
         <th>Select</th>
         <th>Sr. No.</th>
