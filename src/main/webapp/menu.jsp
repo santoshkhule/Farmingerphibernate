@@ -28,13 +28,12 @@
 			<li><a href="<%=request.getContextPath()%>/view/user/02employeeSalaryProcess.jsp">Account</a>
 				<ul>
 					<li><a href="<%=request.getContextPath()%>/view/user/02employeeSalaryProcess.jsp">Process Salary</a></li>
-					<li><a href="#">America</a>
-						<ul>
-							<li><a href="#">India</a></li>
-						</ul></li>
-
 				</ul></li>
-				<li><a style="margin-left:47em;color: green;" href="<%=request.getContextPath()%>/logout.jsp">Logout</a></li>
+			<li><a href="<%=request.getContextPath()%>/view/user/addVendor.jsp">Vendor</a>
+				<ul>
+					<li><a href="<%=request.getContextPath()%>/view/user/addVendor.jsp">Add Vendor</a></li>
+				</ul></li>
+				<li><a style="margin-left:37em;color: green;" href="<%=request.getContextPath()%>/logout.jsp">Logout</a></li>
 		</ul>
 	</div>
 

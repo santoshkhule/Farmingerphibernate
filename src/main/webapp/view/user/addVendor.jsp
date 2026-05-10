@@ -127,6 +127,7 @@
 	}
 </script>
 <body>
+<%@include file="../../header.jsp"%>
 <fieldset><legend>Vendor</legend>
 
 	<form method="post" id="frmVendor" action="../../VendorController">
@@ -200,5 +201,6 @@
 		</tbody>
 	</table>
 </fieldset>
+<%@include file="../../footer.jsp"%>
 </body>
 </html>
