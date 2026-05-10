@@ -33,6 +33,7 @@
 				<ul>
 					<li><a href="<%=request.getContextPath()%>/view/user/addVendor.jsp">Add Vendor</a></li>
 					<li><a href="<%=request.getContextPath()%>/view/user/assignVendorToProduct.jsp">Assign Vendor To Product</a></li>
+					<li><a href="<%=request.getContextPath()%>/view/user/assignVendorToProductView.jsp">View Vendor Products</a></li>
 				</ul></li>
 				<li><a style="margin-left:37em;color: green;" href="<%=request.getContextPath()%>/logout.jsp">Logout</a></li>
 		</ul>

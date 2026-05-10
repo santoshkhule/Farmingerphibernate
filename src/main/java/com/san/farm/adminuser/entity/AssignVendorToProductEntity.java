@@ -19,39 +19,45 @@ public class AssignVendorToProductEntity {
 	private VendorEntity vendorEntity;
 
 	@ManyToOne(fetch = FetchType.EAGER)
+	private CategoryEntity categoryEntity;
+
+	@ManyToOne(fetch = FetchType.EAGER)
 	private FertilizerEntity fertilizerEntity;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	private BrandEntity brandEntity;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	private UnitEntity unitEntity;
+
 	private double price;
+	private String prodDesc;
+	private String comment;
 
-	public int getAssignVendorProductId() {
-		return assignVendorProductId;
-	}
+	public int getAssignVendorProductId() { return assignVendorProductId; }
+	public void setAssignVendorProductId(int assignVendorProductId) { this.assignVendorProductId = assignVendorProductId; }
 
-	public void setAssignVendorProductId(int assignVendorProductId) {
-		this.assignVendorProductId = assignVendorProductId;
-	}
+	public VendorEntity getVendorEntity() { return vendorEntity; }
+	public void setVendorEntity(VendorEntity vendorEntity) { this.vendorEntity = vendorEntity; }
 
-	public VendorEntity getVendorEntity() {
-		return vendorEntity;
-	}
+	public CategoryEntity getCategoryEntity() { return categoryEntity; }
+	public void setCategoryEntity(CategoryEntity categoryEntity) { this.categoryEntity = categoryEntity; }
 
-	public void setVendorEntity(VendorEntity vendorEntity) {
-		this.vendorEntity = vendorEntity;
-	}
+	public FertilizerEntity getFertilizerEntity() { return fertilizerEntity; }
+	public void setFertilizerEntity(FertilizerEntity fertilizerEntity) { this.fertilizerEntity = fertilizerEntity; }
 
-	public FertilizerEntity getFertilizerEntity() {
-		return fertilizerEntity;
-	}
+	public BrandEntity getBrandEntity() { return brandEntity; }
+	public void setBrandEntity(BrandEntity brandEntity) { this.brandEntity = brandEntity; }
 
-	public void setFertilizerEntity(FertilizerEntity fertilizerEntity) {
-		this.fertilizerEntity = fertilizerEntity;
-	}
+	public UnitEntity getUnitEntity() { return unitEntity; }
+	public void setUnitEntity(UnitEntity unitEntity) { this.unitEntity = unitEntity; }
 
-	public double getPrice() {
-		return price;
-	}
+	public double getPrice() { return price; }
+	public void setPrice(double price) { this.price = price; }
 
-	public void setPrice(double price) {
-		this.price = price;
-	}
+	public String getProdDesc() { return prodDesc; }
+	public void setProdDesc(String prodDesc) { this.prodDesc = prodDesc; }
+
+	public String getComment() { return comment; }
+	public void setComment(String comment) { this.comment = comment; }
 }

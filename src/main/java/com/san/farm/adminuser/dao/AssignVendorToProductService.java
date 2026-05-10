@@ -24,9 +24,7 @@ public class AssignVendorToProductService {
 			session.save(entity);
 			tx.commit();
 			flag = true;
-			logger.info("AssignVendorToProduct saved: vendorId={} fertilizerId={}",
-				entity.getVendorEntity().getVendorId(),
-				entity.getFertilizerEntity().getFertilizerId());
+			logger.info("AssignVendorToProduct saved id={}", entity.getAssignVendorProductId());
 		} catch (HibernateException e) {
 			if (tx != null) tx.rollback();
 			logger.error("Error saving AssignVendorToProduct", e);
@@ -36,22 +34,40 @@ public class AssignVendorToProductService {
 		return flag;
 	}
 
-	public boolean delete(int assignVendorProductId) {
+	public boolean update(AssignVendorToProductEntity entity) {
+		Session session = HibernateUtil.opensession();
+		Transaction tx = session.beginTransaction();
+		boolean flag = false;
+		try {
+			session.update(entity);
+			tx.commit();
+			flag = true;
+			logger.info("AssignVendorToProduct updated id={}", entity.getAssignVendorProductId());
+		} catch (HibernateException e) {
+			if (tx != null) tx.rollback();
+			logger.error("Error updating AssignVendorToProduct", e);
+		} finally {
+			session.close();
+		}
+		return flag;
+	}
+
+	public boolean delete(int id) {
 		Session session = HibernateUtil.opensession();
 		Transaction tx = session.beginTransaction();
 		boolean flag = false;
 		try {
 			AssignVendorToProductEntity entity =
-				(AssignVendorToProductEntity) session.get(AssignVendorToProductEntity.class, assignVendorProductId);
+				(AssignVendorToProductEntity) session.get(AssignVendorToProductEntity.class, id);
 			if (entity != null) {
 				session.delete(entity);
 				tx.commit();
 				flag = true;
-				logger.info("AssignVendorToProduct deleted id: {}", assignVendorProductId);
+				logger.info("AssignVendorToProduct deleted id={}", id);
 			}
 		} catch (HibernateException e) {
 			if (tx != null) tx.rollback();
-			logger.error("Error deleting AssignVendorToProduct id: {}", assignVendorProductId, e);
+			logger.error("Error deleting AssignVendorToProduct id={}", id, e);
 		} finally {
 			session.close();
 		}
