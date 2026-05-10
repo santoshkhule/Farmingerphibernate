@@ -1,127 +1,492 @@
 @CHARSET "ISO-8859-1";
+@import url('datatables.min.css');
 
-fieldset legend{
-	font-weight: bold;
-	
-}
-fieldset{
-	border: solid;
-}
-.panel-head{
-	border-top-right-radius: 5px;
-	border-top-left-radius: 5px;
-	margin-left: 2em;
-}
-.panel{
-	
-	width: 100%;
-	overflow: auto;
-	
-}
+/* =====================================================
+   SANTOSH FARMING ERP - Design System
+   Theme: Agricultural / Forest Green
+   ===================================================== */
 
-body{
-	background: #FFF;
-	margin: 0;
-}
-table{
-	border-spacing: 0;
-		
-}
-table th{
-	background: gray;
-}
-h2{
-	font-style: oblique;
-	font-size: x-large;
-}
+:root {
+    /* Greens */
+    --sidebar-bg:     #1a3320;
+    --sidebar-brand:  #111f14;
+    --sidebar-hover:  rgba(255,255,255,0.09);
+    --sidebar-active: rgba(255,255,255,0.16);
+    --sidebar-border: rgba(255,255,255,0.08);
+    --sidebar-text:   #c8e6c9;
+    --sidebar-muted:  #6dac6d;
+    --sidebar-accent: #a5d6a7;
 
-#nicefooter ul {
-	padding: 0;
-	margin: 0;
-	list-style: none;
-}
+    --green-dk:  #1b5e20;
+    --green-md:  #2e7d32;
+    --green-lt:  #e8f5e9;
+    --green-bd:  #a5d6a7;
+    --green-row: #c8e6c9;
 
-#nicefooter li {
-	float: left;
-	position: relative;
-	padding: 3px 0px 3px 10px;
-	display: block;
-	margin-right: 2em;
-	/* border: 0px solid #0000; */
-	background: #c0c0c0;	
-}
+    /* Blues */
+    --blue-dk:   #1565c0;
+    --blue-md:   #1976d2;
+    --blue-lt:   #e3f2fd;
+    --blue-bd:   #90caf9;
 
-#nicefooter li a {
-	color: #000;
-	text-decoration: none;
-	display: block;
-	/* border-right: 1px solid #CC55FF; */
-	padding-right: 10px;
+    /* Danger */
+    --red-dk:    #b71c1c;
+    --red-md:    #c62828;
+    --red-lt:    #fdecea;
+    --red-bd:    #ef9a9a;
+
+    /* Amber */
+    --amber-lt:  #fff8e1;
+    --amber-bd:  #ffe082;
+
+    /* Grays */
+    --gray-50:   #fafafa;
+    --gray-100:  #f5f5f5;
+    --gray-200:  #eeeeee;
+    --gray-400:  #bdbdbd;
+    --gray-600:  #757575;
+    --gray-800:  #424242;
+    --text:      #212121;
+    --text-muted:#616161;
+
+    /* Shape */
+    --r-sm: 3px;
+    --r-md: 6px;
+    --r-lg: 12px;
+    --sh-sm: 0 1px 3px rgba(0,0,0,.12);
+    --sh-md: 0 3px 10px rgba(0,0,0,.18);
 }
 
-#nicefooter li a:hover {
-	color: #fff;
-	text-decoration: none;
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 10px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: #eaf2ea;
 }
 
-#nicefooter li ul li a {
-	color: blue;
-	text-decoration: none;
-	border: 0;
-	padding: 0;
-	display: block;
-	width: 7em;
+table  { border-spacing: 0; border-collapse: collapse; }
+h2     { font-size: 1.1em; font-weight: 700; color: var(--green-dk); margin: 8px 0 6px; }
+hr     { border: none; border-top: 1px solid var(--gray-200); margin: 8px 0; }
+a      { color: var(--blue-md); }
+
+/* =====================================================
+   SIDEBAR (used by shell.jsp)
+   ===================================================== */
+#sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
 }
 
-#nicefooter li ul li a:hover {
-	color: red;
-	text-decoration: none;
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+/* Brand */
+#sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 14px 14px;
+    background: var(--sidebar-brand);
+    border-bottom: 1px solid var(--sidebar-border);
+    flex-shrink: 0;
 }
 
-#nicefooter li ul {
-	display: none;
-	position: absolute;
+.brand-icon { font-size: 28px; line-height: 1; }
+
+.brand-text { display: flex; flex-direction: column; line-height: 1.3; }
+.brand-name { color: #fff; font-size: 13px; font-weight: 700; }
+.brand-sub  { color: var(--sidebar-muted); font-size: 10px; font-weight: 400; }
+
+/* Nav body */
+#sideNav { flex: 1; padding: 6px 0 4px; }
+
+.nav-group { margin-bottom: 2px; }
+
+.nav-group-title {
+    padding: 10px 14px 3px;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--sidebar-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
 }
 
-#nicefooter li ul,#nicefooter li:hover ul li ul {
-	display: none;
-	position: absolute;
+.nav-link {
+    display: block;
+    padding: 7px 12px 7px 22px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 12px;
+    transition: background 0.12s, color 0.12s, border-left-color 0.12s;
+    border-left: 3px solid transparent;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-#nicefooter li:hover ul {
-	display: block;
-	background: white;
-	border: 1px solid #c0c0c0;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	behavior: url('PIE.php');
-	height: auto;
-	width: 8em;
-	z-index: 1000;
-	padding: 5px;
+.nav-link:hover {
+    background: var(--sidebar-hover);
+    color: #fff;
+    border-left-color: var(--sidebar-accent);
+    text-decoration: none;
 }
 
-#nicefooter li ul li:hover ul {
-	display: block;
-	background: white;
-	border: 1px solid #c0c0c0;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	behavior: url('PIE.php');
-	height: auto;
-	width: 8em;
-	z-index: 1000;
-	padding: 5px;
-	margin-left: 70px;
-	margin-top: 0;
-	top: -5px;
+/* Sidebar footer */
+#sidebar-foot {
+    padding: 10px 12px;
+    border-top: 1px solid var(--sidebar-border);
+    background: var(--sidebar-brand);
+    flex-shrink: 0;
 }
 
-#nicefooter li ul li {
-	clear: both;
-	border-style: none;
-	background: white;
-	padding: 0;
+.nav-logout {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    color: #ef9a9a;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: var(--r-sm);
+    transition: background 0.12s, color 0.12s;
 }
+
+.nav-logout:hover {
+    background: rgba(239,154,154,0.12);
+    color: #ffcdd2;
+    text-decoration: none;
+}
+
+/* =====================================================
+   FIELDSET / LEGEND
+   ===================================================== */
+fieldset {
+    border: 1px solid var(--green-bd);
+    border-radius: var(--r-md);
+    padding: 12px 14px;
+    margin: 0 0 12px;
+    background: #fff;
+    box-shadow: var(--sh-sm);
+}
+
+fieldset legend {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--green-dk);
+    padding: 2px 8px;
+    background: #fff;
+    border-radius: var(--r-sm);
+}
+
+/* =====================================================
+   FORM PANEL
+   ===================================================== */
+.form-panel, #formPanel {
+    background: var(--blue-lt);
+    border: 1px solid var(--blue-bd);
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-radius: var(--r-md);
+    display: inline-block;
+    min-width: 400px;
+}
+
+.form-row { margin-bottom: 8px; }
+
+.form-panel label, #formPanel label {
+    font-weight: 600;
+    display: inline-block;
+    width: 140px;
+    text-align: right;
+    margin-right: 8px;
+    color: var(--gray-800);
+    font-size: 12px;
+}
+
+.form-panel select, .form-panel input[type=text],
+.form-panel input[type=password], .form-panel input[type=number],
+.form-panel textarea,
+#formPanel select, #formPanel input[type=text],
+#formPanel input[type=password], #formPanel input[type=number],
+#formPanel textarea {
+    width: 210px;
+    padding: 4px 7px;
+    border: 1px solid var(--gray-400);
+    border-radius: var(--r-sm);
+    font-size: 12px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-panel select:focus, .form-panel input:focus, .form-panel textarea:focus,
+#formPanel select:focus, #formPanel input:focus, #formPanel textarea:focus {
+    border-color: var(--blue-md);
+    box-shadow: 0 0 0 2px rgba(25,118,210,0.15);
+}
+
+.form-btns { text-align: center; margin-top: 10px; }
+
+/* =====================================================
+   TABLES
+   ===================================================== */
+.tbl-data { border-collapse: collapse; width: 100%; margin-top: 4px; }
+
+.tbl-data th {
+    background: var(--green-row);
+    color: var(--green-dk);
+    padding: 7px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid var(--green-bd);
+    white-space: nowrap;
+}
+
+.tbl-data td {
+    padding: 5px 7px;
+    font-size: 12px;
+    border: 1px solid var(--gray-200);
+    vertical-align: middle;
+}
+
+.tbl-data tbody tr:nth-child(even) { background: #f4faf4; }
+.tbl-data tbody tr:hover           { background: #dcedc8; }
+.tbl-data tr.selected-row          { background: #b2dfdb !important; font-weight: 600; }
+
+/* Legacy border="1" tables also get the theme */
+table[border="1"] th {
+    background: var(--green-row);
+    color: var(--green-dk);
+    padding: 6px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid var(--green-bd);
+}
+table[border="1"] td { padding: 5px 7px; font-size: 12px; }
+table[border="1"] tbody tr:nth-child(even) { background: #f4faf4; }
+table[border="1"] tbody tr:hover           { background: #dcedc8; }
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+.btn-add {
+    background: var(--green-md); color: #fff; border: none;
+    padding: 5px 14px; cursor: pointer; border-radius: var(--r-sm);
+    font-size: 12px; font-weight: 600; font-family: inherit;
+    transition: background 0.15s;
+}
+.btn-add:hover { background: var(--green-dk); }
+
+.btn-update {
+    background: var(--blue-md); color: #fff; border: none;
+    padding: 5px 14px; cursor: pointer; border-radius: var(--r-sm);
+    font-size: 12px; font-weight: 600; font-family: inherit;
+    transition: background 0.15s;
+}
+.btn-update:hover { background: var(--blue-dk); }
+
+.btn-delete {
+    background: var(--red-md); color: #fff; border: none;
+    padding: 5px 14px; cursor: pointer; border-radius: var(--r-sm);
+    font-size: 12px; font-weight: 600; font-family: inherit;
+    transition: background 0.15s;
+}
+.btn-delete:hover { background: var(--red-dk); }
+
+.btn-cancel {
+    background: var(--gray-600); color: #fff; border: none;
+    padding: 5px 14px; cursor: pointer; border-radius: var(--r-sm);
+    font-size: 12px; font-weight: 600; font-family: inherit;
+    transition: background 0.15s;
+}
+.btn-cancel:hover { background: var(--gray-800); }
+
+.btn-row-edit {
+    background: var(--blue-lt); border: 1px solid var(--blue-bd);
+    color: var(--blue-dk); padding: 2px 8px; cursor: pointer;
+    border-radius: var(--r-sm); font-size: 11px; font-family: inherit;
+    transition: background 0.1s;
+}
+.btn-row-edit:hover { background: #bbdefb; }
+
+.btn-action {
+    background: var(--gray-100); border: 1px solid var(--gray-400);
+    color: var(--gray-800); padding: 4px 12px; cursor: pointer;
+    border-radius: var(--r-sm); font-size: 12px; font-family: inherit;
+    transition: background 0.1s;
+}
+.btn-action:hover { background: var(--gray-200); }
+
+/* =====================================================
+   INLINE EDIT
+   ===================================================== */
+.edit-input {
+    width: 85px; padding: 2px 4px; font-size: 11px;
+    border: 1px solid var(--gray-400); border-radius: var(--r-sm); font-family: inherit;
+}
+.edit-select {
+    width: 95px; font-size: 11px;
+    border: 1px solid var(--gray-400); border-radius: var(--r-sm); font-family: inherit;
+}
+
+/* =====================================================
+   BANNERS & BARS
+   ===================================================== */
+#bulkBar, .bulk-bar {
+    display: none;
+    background: var(--red-lt); border: 1px solid var(--red-bd);
+    padding: 7px 12px; border-radius: var(--r-sm);
+    margin-bottom: 8px; font-size: 12px;
+}
+
+.info-bar {
+    background: var(--amber-lt); border: 1px solid var(--amber-bd);
+    color: #5d4037; padding: 5px 12px;
+    border-radius: var(--r-sm); margin-bottom: 8px; font-size: 12px;
+}
+
+.note { color: var(--red-md); font-style: italic; padding: 8px 0; font-size: 12px; }
+
+/* =====================================================
+   FILTER BAR
+   ===================================================== */
+.filter-bar {
+    padding: 10px 14px;
+    background: var(--green-lt); border: 1px solid var(--green-bd);
+    border-radius: var(--r-md); margin-bottom: 10px; display: inline-block;
+}
+.filter-bar label { font-weight: 700; margin-right: 6px; color: var(--green-dk); font-size: 12px; }
+.filter-bar select, .filter-bar input[type=text] {
+    padding: 4px 7px; border: 1px solid var(--gray-400);
+    border-radius: var(--r-sm); font-size: 12px; font-family: inherit; outline: none;
+}
+
+/* =====================================================
+   LOGIN PAGE (standalone — no sidebar)
+   ===================================================== */
+body.login-page {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d2b0d 0%, var(--green-dk) 55%, #558b2f 100%);
+}
+
+.login-card {
+    background: #fff; border-radius: var(--r-lg);
+    box-shadow: 0 10px 48px rgba(0,0,0,.35);
+    padding: 38px 42px 30px; width: 350px; text-align: center;
+}
+
+.login-card .login-icon {
+    width: 64px; height: 64px; background: var(--green-lt);
+    border: 2px solid var(--green-bd); border-radius: 50%;
+    margin: 0 auto 14px; display: flex;
+    align-items: center; justify-content: center; font-size: 32px;
+}
+
+.login-card h1 {
+    color: var(--green-dk); font-size: 1.25em; margin: 0 0 3px; font-weight: 700;
+}
+.login-card .subtitle { color: var(--text-muted); font-size: 12px; margin: 0 0 22px; }
+
+.login-card .field { margin-bottom: 14px; text-align: left; }
+.login-card .field label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--gray-800); margin-bottom: 4px;
+}
+.login-card .field input {
+    width: 100%; padding: 9px 11px;
+    border: 1px solid var(--gray-400); border-radius: var(--r-sm);
+    font-size: 13px; font-family: inherit; outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.login-card .field input:focus {
+    border-color: var(--green-md);
+    box-shadow: 0 0 0 2px rgba(46,125,50,0.18);
+}
+
+.login-card .btn-login {
+    width: 100%; background: var(--green-md); color: #fff; border: none;
+    padding: 10px; border-radius: var(--r-sm);
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: background 0.15s; margin-top: 4px;
+}
+.login-card .btn-login:hover { background: var(--green-dk); }
+
+.login-card .err-msg {
+    color: var(--red-md); font-size: 12px;
+    font-style: italic; margin-bottom: 10px; min-height: 18px;
+}
+
+/* =====================================================
+   DATATABLES THEME OVERRIDES
+   ===================================================== */
+div.dt-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px; flex-wrap: wrap; gap: 6px;
+}
+
+div.dataTables_length label,
+div.dataTables_filter label {
+    font-size: 12px; font-weight: 600; color: var(--gray-800);
+    display: flex; align-items: center; gap: 6px;
+}
+
+div.dataTables_length select {
+    padding: 3px 6px; border: 1px solid var(--gray-400);
+    border-radius: var(--r-sm); font-size: 12px; font-family: inherit; background: #fff;
+}
+
+div.dataTables_filter input {
+    padding: 4px 8px; border: 1px solid var(--gray-400);
+    border-radius: var(--r-sm); font-size: 12px; font-family: inherit;
+    width: 200px; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+div.dataTables_filter input:focus {
+    border-color: var(--green-md);
+    box-shadow: 0 0 0 2px rgba(46,125,50,0.15);
+}
+
+table.dataTable thead th { cursor: pointer; position: relative; padding-right: 22px !important; }
+table.dataTable thead .sorting::after      { content: '\2195'; opacity: 0.35; position: absolute; right: 6px; }
+table.dataTable thead .sorting_asc::after  { content: '\2191'; color: var(--green-dk); opacity: 1; position: absolute; right: 6px; }
+table.dataTable thead .sorting_desc::after { content: '\2193'; color: var(--green-dk); opacity: 1; position: absolute; right: 6px; }
+
+div.dt-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 8px; flex-wrap: wrap; gap: 6px;
+}
+
+div.dataTables_info { font-size: 11px; color: var(--text-muted); }
+
+div.dataTables_paginate .paginate_button {
+    display: inline-block; padding: 3px 9px; margin: 0 1px;
+    border: 1px solid var(--gray-200); border-radius: var(--r-sm);
+    cursor: pointer; color: var(--gray-800) !important;
+    background: #fff; text-decoration: none !important; font-size: 12px;
+    transition: background 0.1s;
+}
+div.dataTables_paginate .paginate_button:hover {
+    background: var(--green-lt); border-color: var(--green-bd); color: var(--green-dk) !important;
+}
+div.dataTables_paginate .paginate_button.current {
+    background: var(--green-md) !important; border-color: var(--green-md) !important;
+    color: #fff !important; font-weight: 700;
+}
+div.dataTables_paginate .paginate_button.disabled { opacity: 0.4; cursor: default; }
+
+table.dataTable tbody tr.odd  { background: #fff; }
+table.dataTable tbody tr.even { background: #f4faf4; }
+table.dataTable tbody tr:hover { background: #dcedc8 !important; }
+
+/* =====================================================
+   LEGACY SUPPORT
+   ===================================================== */
+.panel-head { border-top-right-radius: var(--r-sm); border-top-left-radius: var(--r-sm); margin-left: 2em; }
+.panel { width: 100%; overflow: auto; }

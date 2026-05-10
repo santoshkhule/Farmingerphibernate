@@ -1,1 +1,1 @@
-</div>
+<%-- Page content ends --%>
