@@ -96,6 +96,30 @@
     <servlet-name>AssignCropToSiteController</servlet-name>
     <url-pattern>/AssignCropToSiteController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>FertilizerController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.FertilizerController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>FertilizerController</servlet-name>
+    <url-pattern>/FertilizerController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>UnitController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.UnitController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UnitController</servlet-name>
+    <url-pattern>/UnitController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>VendorController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.VendorController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>VendorController</servlet-name>
+    <url-pattern>/VendorController</url-pattern>
+  </servlet-mapping>
 
   <!-- H2 Web Console Servlet
   Access it at: http://localhost:8080/FarmingERP/h2-console

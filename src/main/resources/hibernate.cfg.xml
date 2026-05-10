@@ -35,6 +35,9 @@
 		<mapping class="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity" />
 		<mapping class="com.san.farm.adminuser.entity.SalaryProcessingEntity" />
 		<mapping class="com.san.farm.adminuser.entity.BrandEntity" />
+		<mapping class="com.san.farm.adminuser.entity.FertilizerEntity" />
+		<mapping class="com.san.farm.adminuser.entity.UnitEntity" />
+		<mapping class="com.san.farm.adminuser.entity.VendorEntity" />
 
 	</session-factory>
 </hibernate-configuration>

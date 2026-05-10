@@ -16,6 +16,9 @@
 			<th>Crops</th>
 			<th>Farming Task</th>
 			<th>Brand</th>
+			<th>Fertilizer</th>
+			<th>Units</th>
+			<th>Vendor</th>
 		</tr>
 
 		<tr>
@@ -24,6 +27,9 @@
 			<td><iframe width="100%" height="550px" src="configCrop.jsp"></iframe></td>
 			<td><iframe width="100%" height="550px" src="configFarmTask.jsp"></iframe></td>
 			<td><iframe width="100%" height="550px" src="addBrand.jsp"></iframe></td>
+			<td><iframe width="100%" height="550px" src="addFertilizer.jsp"></iframe></td>
+			<td><iframe width="100%" height="550px" src="addUnits.jsp"></iframe></td>
+			<td><iframe width="100%" height="550px" src="addVendor.jsp"></iframe></td>
 		</tr>
 	</table>
 	</fieldset>
