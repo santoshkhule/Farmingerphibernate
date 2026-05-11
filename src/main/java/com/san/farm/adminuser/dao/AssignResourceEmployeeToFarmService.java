@@ -77,12 +77,20 @@ public class AssignResourceEmployeeToFarmService {
 		Transaction transaction=session.beginTransaction();
 		boolean flag=false;
 		try{
+			// Delete child salary records first to avoid FK constraint violation
+			session.createQuery(
+				"DELETE FROM SalaryProcessingEntity s WHERE s.employeeToFarm.assignResourceId = :id")
+				.setParameter("id", assignResourceId)
+				.executeUpdate();
+
 			AssignEmployeeToFarmEntity employeeToFarm=(AssignEmployeeToFarmEntity)session.get(AssignEmployeeToFarmEntity.class, assignResourceId);
-			session.delete(employeeToFarm);
+			if(employeeToFarm != null){
+				session.delete(employeeToFarm);
+			}
 			transaction.commit();
 			flag=true;
 			logger.info("AssignEmployeeToFarm deleted successfully for assignResourceId: {}", assignResourceId);
-		}catch(HibernateException exception){
+		}catch(Exception exception){
 			if(transaction!=null){
 				transaction.rollback();
 			}
