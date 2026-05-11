@@ -53,16 +53,14 @@
 	<form id="frmEmpList" action="" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="employeeInfoId" id="hdnEmployeeInfoId" value="">
 
-	<table>
-		<tr>
-			<td><input type="submit" name="sbtView"  value="View"   onclick="return doAction('view')"></td>
-			<td><input type="submit" name="sbtEdit"  value="Edit"   onclick="return doAction('edit')"></td>
-			<td><input type="submit" name="delete"   value="Delete" onclick="return doAction('delete')"></td>
-			<td><input type="submit" name="sbtAssignTask"  value="Assign Task"          onclick="return doAction('assignTask')"      style="width: 150px"></td>
-			<td><input type="submit" name="sbtViewAllTransac"  value="View All Transaction"  onclick="return doAction('viewTransaction')" style="width: 150px"></td>
-		</tr>
-	</table>
-	<table border="1" width="100%">
+	<div style="margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap;">
+		<input type="submit" class="btn-action" name="sbtView"           value="View"                 onclick="return doAction('view')">
+		<input type="submit" class="btn-action" name="sbtEdit"           value="Edit"                 onclick="return doAction('edit')">
+		<input type="submit" class="btn-delete" name="delete"            value="Delete"               onclick="return doAction('delete')">
+		<input type="submit" class="btn-action" name="sbtAssignTask"     value="Assign Task"          onclick="return doAction('assignTask')">
+		<input type="submit" class="btn-action" name="sbtViewAllTransac" value="View All Transaction" onclick="return doAction('viewTransaction')">
+	</div>
+	<table border="1" width="100%" class="tbl-data">
 		<thead>
 			<tr>
 				<th width="2%">Select</th>

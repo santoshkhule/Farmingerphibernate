@@ -30,9 +30,10 @@ if (taskIdParam != null && !taskIdParam.trim().isEmpty() && !taskIdParam.equals(
 }
 %>
 
-<table border="1" width="100%">
+<table border="1" width="100%" class="tbl-data" cellspacing="0">
+    <thead>
     <tr>
-        <th>Select</th>
+        <th width="3%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)"></th>
         <th>Sr. No.</th>
         <th>Name</th>
         <th>Date</th>
@@ -44,7 +45,10 @@ if (taskIdParam != null && !taskIdParam.trim().isEmpty() && !taskIdParam.equals(
         <th>Amount To Pay</th>
         <th>Paid</th>
         <th>Balance</th>
+        <th>Action</th>
     </tr>
+    </thead>
+    <tbody>
 
 <%
 AssignResourceEmployeeToFarmService employeeToFarmService = new AssignResourceEmployeeToFarmService();
@@ -89,8 +93,7 @@ try {
             cnt++;
 %>
     <tr id="rowId<%=cnt%>">
-        <td><input type="radio" name="radAssignWorkId"
-            value="<%=employeeToFarm.getAssignResourceId()%>"></td>
+        <td style="text-align:center;"><input type="checkbox" class="rowChk" value="<%=employeeToFarm.getAssignResourceId()%>" onchange="updateBulkBar()"></td>
         <td><%=cnt%></td>
         <td>
             <%
@@ -161,6 +164,10 @@ try {
         <td><%=employeeToFarm.getAmount()%></td>
         <td><%=totalSalaryPaid%></td>
         <td><%=balanceAmount%></td>
+        <td style="text-align:center; white-space:nowrap;">
+            <button type="button" class="btn-row-edit" onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'edit')">Edit</button>
+            <button type="button" class="btn-update" onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'view')">View</button>
+        </td>
     </tr>
 <%
         }
@@ -169,4 +176,5 @@ try {
     ex.printStackTrace();
 }
 %>
+    </tbody>
 </table>

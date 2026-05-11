@@ -13,8 +13,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>View All Assign Task</title>
+<link rel="stylesheet" href="../../css/style.css" type="text/css">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
 <script src="../../js/jquery-1.9.1.js"></script>
+<script src="../../js/datatables.min.js"></script>
 <script src="../../js/jquery-ui.js"></script>
 </head>
 <script>
@@ -36,64 +38,97 @@
 		showAllEmployeeByFilterId();
 	}
 	function showAllEmployeeByFilterId() {
-		var fromDate = document.getElementById("txtDate").value;		
-		var empName = document.getElementById("txtName").value;
+		var fromDate    = document.getElementById("txtDate").value;
+		var empName     = document.getElementById("txtName").value;
 		var work_status = document.getElementById("work_status").value;
-		var work_Id = document.getElementById("selWorkId").value;
-		//alert(fromDate+" "+empName+" "+work_status+" "+work_Id);
-		if (window.XMLHttpRequest) {
-			xmlhttp = new XMLHttpRequest();
-		} else {
-			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		}
+		var work_Id     = document.getElementById("selWorkId").value;
+		if (window.XMLHttpRequest) { xmlhttp = new XMLHttpRequest(); }
+		else { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); }
 		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+				var tbl = $('#showTable table.tbl-data');
+				if (tbl.length && $.fn.DataTable.isDataTable(tbl)) { tbl.DataTable().destroy(); }
 				document.getElementById("showTable").innerHTML = xmlhttp.responseText;
+				clearSelection();
+				initAssignTable();
 			}
 		};
-
 		var url = "01assignTaskToEmployeeViewAllAjax.jsp?fromDate=" + fromDate
-				+ "&empName=" + empName + "&workStatus=" + work_status
-				+ "&taskId=" + work_Id;
+				+ "&empName=" + empName + "&workStatus=" + work_status + "&taskId=" + work_Id;
 		xmlhttp.open("GET", url, true);
 		xmlhttp.send();
 	}
-	var tempId=-1;
-	function showEditDelete(id) {
-		if(tempId!=-1){
-			$("#td"+tempId).hide();			
-		}
-		//alert(id);
-		//alert($(id).find("td").eq(0).text());
-		$("#td"+id).show();
-		$("#th").show();
-		$("#imgDelete"+id).show();
-		$("#imgEdit"+id).show();
-		tempId=id;
-	}
-	function doDelete() {
-		var selected = document.querySelector('input[name="radAssignWorkId"]:checked');
-		if (selected == null) {
-			alert("Please select a record to delete.");
-			return;
-		}
-		if (confirm("Are you sure you want to delete this assignment?")) {
-			window.location = "../../AssignResourcesController?assignResourceId=" + selected.value + "&action=delete";
+
+	function actionRowNav(id, action) {
+		if (action == "edit") {
+			window.location = "../../AssignResourcesController?sbtEdit=Edit&radAssignWorkId=" + id;
+		} else if (action == "view") {
+			window.location = "../../AssignResourcesController?sbtView=View&radAssignWorkId=" + id;
 		}
 	}
-	function actionEditDelete(id, action) {
-		if (action == "delete") {
-			if (confirm("Are you sure you want to delete this assignment?")) {
-				window.location = "../../AssignResourcesController?assignResourceId=" + id + "&action=delete";
-			}
+
+	function toggleSelectAll(chk) {
+		document.querySelectorAll('input.rowChk').forEach(function(b) { b.checked = chk.checked; });
+		updateBulkBar();
+	}
+	function updateBulkBar() {
+		var checked = document.querySelectorAll('input.rowChk:checked');
+		var all     = document.querySelectorAll('input.rowChk');
+		document.getElementById('bulkBar').style.display = checked.length > 0 ? 'block' : 'none';
+		document.getElementById('selCount').innerText    = checked.length;
+		var chkAll = document.getElementById('chkAll');
+		if (chkAll) chkAll.checked = (checked.length === all.length && all.length > 0);
+	}
+	function clearSelection() {
+		document.querySelectorAll('input.rowChk').forEach(function(b) { b.checked = false; });
+		var chkAll = document.getElementById('chkAll');
+		if (chkAll) chkAll.checked = false;
+		document.getElementById('bulkBar').style.display = 'none';
+	}
+	function deleteSelected() {
+		var checked = document.querySelectorAll('input.rowChk:checked');
+		if (checked.length === 0) return;
+		if (!confirm('Delete ' + checked.length + ' selected record(s)?')) return;
+		var form = document.getElementById('frmBulkDelete');
+		form.innerHTML = '';
+		checked.forEach(function(b) {
+			var inp = document.createElement('input');
+			inp.type = 'hidden'; inp.name = 'deleteIds'; inp.value = b.value;
+			form.appendChild(inp);
+		});
+		var flag = document.createElement('input');
+		flag.type = 'hidden'; flag.name = 'deleteSelected'; flag.value = '1';
+		form.appendChild(flag);
+		form.submit();
+	}
+
+	function initAssignTable() {
+		var tbl = $('#showTable table.tbl-data');
+		if (tbl.length && !$.fn.DataTable.isDataTable(tbl)) {
+			tbl.DataTable({
+				pageLength: 25,
+				lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']],
+				autoWidth: false,
+				scrollX: true,
+				columnDefs: [{ orderable: false, targets: [0, 11] }],
+				language: {
+					search: '', searchPlaceholder: 'Search...',
+					lengthMenu: 'Show _MENU_ entries',
+					info: '_START_ - _END_ of _TOTAL_',
+					infoEmpty: '0 entries',
+					emptyTable: 'No records found',
+					paginate: { previous: '&#8249;', next: '&#8250;' }
+				},
+				dom: '<"dt-toolbar"lf>rt<"dt-footer"ip>'
+			});
 		}
 	}
+	$(document).ready(function() { initAssignTable(); });
 </script>
 <body>
-	<%@include file="../../header.jsp"%>
 	<!-- <h2>View All Employee Assign Task</h2> <hr>-->
 
-	<fieldset style="height: 575px">
+	<fieldset>
 		<legend>View All Employee Assign Task</legend>
 		<table>
 			<tr>
@@ -131,22 +166,19 @@
 			</tr>
 		</table>
 		<hr>
-		<form method="post">
-			<table>
-				<tr>
-					<td><input type="submit" name="sbtEdit" value="Edit"
-						onclick="this.form.action='../../AssignResourcesController'"></td>
-					<td><input type="submit" name="sbtView" value="View"
-						onclick="this.form.action='../../AssignResourcesController'"></td>
-					<td><input type="button" name="sbtDelete" value="Delete" onclick="doDelete()"></td>
-				</tr>
-			</table>
+		<div id="bulkBar" style="display:none; background:#fdecea; border:1px solid #e06060; padding:6px 12px; border-radius:3px; margin-bottom:8px;">
+			<span id="selCount">0</span> record(s) selected &nbsp;
+			<button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+			&nbsp;
+			<button type="button" class="btn-cancel" onclick="clearSelection()">Clear Selection</button>
+		</div>
+		<form method="post" id="frmBulkDelete" action="../../AssignResourcesController"></form>
 			<div id="showTable">
-				<table border="1" width=100%>
+				<table border="1" width="100%" class="tbl-data" cellspacing="0">
+					<thead>
 					<tr>
-						<th>Select</th>
+						<th width="3%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)"></th>
 						<th>Sr. No.</th>
-						<!-- <th>Work_Id</th> -->
 						<th>Name</th>
 						<th>Date</th>
 						<th>Site Name</th>
@@ -157,10 +189,10 @@
 						<th>Amount To Pay</th>
 						<th>Paid</th>
 						<th>Balance</th>
-						<th hidden id="th" width="2%">Action</th>
-						<!-- <th>Excess Amount</th> -->
+						<th>Action</th>
 					</tr>
-
+					</thead>
+					<tbody>
 					<%
 						AssignResourceEmployeeToFarmService employeeToFarmService=new AssignResourceEmployeeToFarmService();
 						SalaryProcessingDao salaryProcessingDao=new SalaryProcessingDao();
@@ -172,9 +204,8 @@
 								if(employeeToFarm!=null){
 							cnt++;
 					%>
-					<tr id="rowId<%=cnt%>" ondblclick="showEditDelete(<%=cnt%>)">
-						<td><input type="radio" name="radAssignWorkId"
-							id="radAssignWorkId" value="<%=employeeToFarm.getAssignResourceId()%>"></td>
+					<tr id="rowId<%=cnt%>">
+						<td style="text-align:center;"><input type="checkbox" class="rowChk" value="<%=employeeToFarm.getAssignResourceId()%>" onchange="updateBulkBar()"></td>
 						<td><%=cnt%></td>
 						<td>
 							<%
@@ -249,11 +280,10 @@
 						<td><%=employeeToFarm.getAmount()%></td>
 						<td><%=totalSalaryPaid%></td>
 						<td><%=balanceAmount%></td>
-						<td  id="td<%=cnt%>" hidden="true" width="6%">
-							<img src="../../img/edit.jpg" height="17" width="30" id="imgEdit<%=cnt %>" hidden onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId() %>,'edit')">
-							<img src="../../img/delete.jpg" height="17" width="30" id="imgDelete<%=cnt %>" hidden onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId() %>,'delete')">
+						<td style="text-align:center; white-space:nowrap;">
+							<button type="button" class="btn-row-edit" onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'edit')">Edit</button>
+							<button type="button" class="btn-update" onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'view')">View</button>
 						</td>
-						<%-- <td><%out.print(excessAmount); %></td> --%>
 					</tr>
 					<%
 								}//if end
@@ -262,9 +292,9 @@
 							ex.printStackTrace();
 						}
 					%>
+					</tbody>
 				</table>
 			</div>
-		</form>
 	</fieldset>
 	<%@include file="../../footer.jsp"%>
 </body>

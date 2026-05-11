@@ -244,5 +244,8 @@
 		</tbody>
 	</table>
 <% } %>
+<script src="../../js/jquery-1.9.1.js"></script>
+<script src="../../js/datatables.min.js"></script>
+<script src="../../js/tableInit.js"></script>
 </body>
 </html>

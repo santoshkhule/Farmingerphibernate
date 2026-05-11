@@ -1,43 +1,47 @@
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/style.css" type="text/css">
-<title>Farming Menu</title>
-</head>
-<body>
-	<div id="nicefooter">
-		<ul>
-			<li style="margin-left: 2em"><a href="<%=request.getContextPath()%>/view/user/configuration.jsp">Configuration</a>
-				<ul>
-					<li><a href="<%=request.getContextPath()%>/view/user/configuration.jsp">Basic Config</a></li>
-					<li><a href="<%=request.getContextPath()%>/view/user/configureCatSubCatBrand.jsp">Configure Items</a></li>
-					<li><a href="<%=request.getContextPath()%>/view/user/registerUser.jsp">Register User</a></li>
-					<li><a href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Assign Crop To Site</a></li>
-				</ul></li>
-			<li><a href="<%=request.getContextPath()%>/view/user/employeeViewAll.jsp">Employee</a>
-				<ul>
-					<li><a href="<%=request.getContextPath()%>/view/user/employeeInfo.jsp">Add</a></li>
-					<li><a href="<%=request.getContextPath()%>/view/user/employeeViewAll.jsp">View All Employee</a></li>
+<div id="sidebar-brand">
+	<span class="brand-icon">&#127807;</span>
+	<div class="brand-text">
+		<span class="brand-name">Santosh Farming</span>
+		<span class="brand-sub">Farm ERP</span>
+	</div>
+</div>
 
+<nav id="sideNav">
 
-				</ul></li>
-			<li><a href="#">Task</a>
-				<ul>
-					<li><a href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Assign Crop To Site</a></li>
-					<li><a href="<%=request.getContextPath()%>/view/user/01createFarm.jsp">Create Farm</a></li>
-					<li><a href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">View Assign Task To Employee</a></li>
-
-				</ul></li>
-			<li><a href="<%=request.getContextPath()%>/view/user/02employeeSalaryProcess.jsp">Account</a>
-				<ul>
-					<li><a href="<%=request.getContextPath()%>/view/user/02employeeSalaryProcess.jsp">Process Salary</a></li>
-				</ul></li>
-			<li><a href="<%=request.getContextPath()%>/view/user/addVendor.jsp">Vendor</a>
-				<ul>
-					<li><a href="<%=request.getContextPath()%>/view/user/addVendor.jsp">Add Vendor</a></li>
-					<li><a href="<%=request.getContextPath()%>/view/user/assignVendorToProduct.jsp">Assign Vendor To Product</a></li>
-					<li><a href="<%=request.getContextPath()%>/view/user/assignVendorToProductView.jsp">View Vendor Products</a></li>
-				</ul></li>
-				<li><a style="margin-left:37em;color: green;" href="<%=request.getContextPath()%>/logout.jsp">Logout</a></li>
-		</ul>
+	<div class="nav-group">
+		<div class="nav-group-title">&#9881; Configuration</div>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configuration.jsp">Basic Config</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configureCatSubCatBrand.jsp">Configure Items</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/registerUser.jsp">Register User</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Assign Crop To Site</a>
 	</div>
 
-</body>
-</html>
+	<div class="nav-group">
+		<div class="nav-group-title">&#128100; Employee</div>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/employeeInfo.jsp">Add Employee</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/employeeViewAll.jsp">View All Employee</a>
+	</div>
+
+	<div class="nav-group">
+		<div class="nav-group-title">&#128203; Task</div>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/01createFarm.jsp">Create Farm</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">View Assign Tasks</a>
+	</div>
+
+	<div class="nav-group">
+		<div class="nav-group-title">&#128176; Account</div>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/02employeeSalaryProcess.jsp">Process Salary</a>
+	</div>
+
+	<div class="nav-group">
+		<div class="nav-group-title">&#127978; Vendor</div>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/addVendor.jsp">Add Vendor</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/assignVendorToProduct.jsp">Assign Products</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/assignVendorToProductView.jsp">View Products</a>
+	</div>
+
+</nav>
+
+<div id="sidebar-foot">
+	<a class="nav-logout" href="<%=request.getContextPath()%>/logout.jsp">&#128682; Logout</a>
+</div>

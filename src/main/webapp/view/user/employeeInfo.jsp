@@ -54,6 +54,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" href="../../css/style.css" type="text/css">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
 <script src="../../js/jquery-1.9.1.js"></script>
 <script src="../../js/jquery-ui.js"></script>
@@ -87,120 +88,116 @@
 </script>
 <body>
 <%@include file="../../header.jsp" %>
-    <h2><%=pageTitle%></h2>
-    <hr>
-
+<fieldset><legend><%=pageTitle%></legend>
     <form name="frmAddEmp" action="../../EmployeeInfoController" enctype="multipart/form-data" method="post">
         <input type="hidden" name="employeeInfoId" id="employeeInfoId" value="<%=fEmpId%>">
-        <table border=0 style="width: 100%" cellSpacing=0>
-            <tr>
-                <td rowspan="4" colspan="2" style="text-align:center; vertical-align:top; padding:10px; width:180px;">
-                    <%-- Photo preview --%>
-                    <img id="imgPreview"
-                         src="<%=fPhotoFileName.isEmpty() ? "" : "../../uploads/" + fPhotoFileName%>"
-                         style="width:130px; height:155px; object-fit:cover; border:1px solid #aaa; display:<%=fPhotoFileName.isEmpty() ? "none" : "block"%>; margin:0 auto;">
-                    <div id="photoPlaceholder"
-                         style="width:130px; height:155px; background:#e8e8e8; border:1px solid #aaa;
-                                display:<%=fPhotoFileName.isEmpty() ? "flex" : "none"%>;
-                                align-items:center; justify-content:center;
-                                color:#999; font-size:13px; margin:0 auto;">
-                        No Photo
+
+        <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+
+            <!-- Photo column -->
+            <div style="flex-shrink:0; text-align:center; padding:8px;">
+                <img id="imgPreview"
+                     src="<%=fPhotoFileName.isEmpty() ? "" : "../../uploads/" + fPhotoFileName%>"
+                     style="width:130px; height:155px; object-fit:cover; border:2px solid var(--green-bd); border-radius:4px; display:<%=fPhotoFileName.isEmpty() ? "none" : "block"%>; margin:0 auto;">
+                <div id="photoPlaceholder"
+                     style="width:130px; height:155px; background:var(--green-lt); border:2px solid var(--green-bd); border-radius:4px;
+                            display:<%=fPhotoFileName.isEmpty() ? "flex" : "none"%>;
+                            align-items:center; justify-content:center;
+                            color:var(--green-md); font-size:13px; margin:0 auto; flex-direction:column; gap:6px;">
+                    <span style="font-size:32px;">&#128100;</span>
+                    <span>No Photo</span>
+                </div>
+                <%if (!isView) {%>
+                <div style="margin-top:8px; font-size:11px; color:var(--text-muted); font-weight:600;">Upload Photo</div>
+                <input type="file" name="fileEmpPhoto" id="fileEmpPhoto" accept="image/*"
+                       style="width:140px; font-size:11px; margin-top:4px;"
+                       onchange="previewPhoto(this)">
+                <%}%>
+            </div>
+
+            <!-- Form fields -->
+            <div id="formPanel" style="flex:1; min-width:340px; display:inline-block;">
+
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <!-- Left column -->
+                    <div style="flex:1; min-width:260px;">
+                        <div class="form-row">
+                            <label>First Name:</label>
+                            <input type="text" name="firstName" id="firstName" <%=isAdd?"required":""%> value="<%=fFirst%>" <%=ro%> placeholder="First name">
+                        </div>
+                        <div class="form-row">
+                            <label>Middle Name:</label>
+                            <input type="text" name="middleName" id="middleName" value="<%=fMiddle%>" <%=ro%> placeholder="Middle name">
+                        </div>
+                        <div class="form-row">
+                            <label>Last Name:</label>
+                            <input type="text" name="lastName" id="lastName" <%=isAdd?"required":""%> value="<%=fLast%>" <%=ro%> placeholder="Last name">
+                        </div>
+                        <div class="form-row">
+                            <label>Contact No. 1:</label>
+                            <input type="text" name="contactNo1" id="contactNo1" <%=isAdd?"required":""%> value="<%=fContact1%>" <%=ro%> placeholder="Primary contact">
+                        </div>
+                        <div class="form-row">
+                            <label>Contact No. 2:</label>
+                            <input type="text" name="contactNo2" id="contactNo2" value="<%=fContact2%>" <%=ro%> placeholder="Secondary contact">
+                        </div>
+                        <div class="form-row">
+                            <label>Email Id:</label>
+                            <input type="text" name="emailId" id="emailId" readonly value="<%=fEmail%>" placeholder="Email address">
+                        </div>
+                        <div class="form-row">
+                            <label>Birth Date:</label>
+                            <input type="text" name="birthDate" id="birthDate" placeholder="dd/mm/yyyy"
+                                pattern="(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}"
+                                oninvalid="setCustomValidity('Select Date From Calendar')"
+                                value="<%=fBirthDate%>" <%=ro%>>
+                        </div>
                     </div>
-                    <%if (!isView) {%>
-                    <div style="margin-top:6px; font-size:12px; color:#555;">Upload Photo:</div>
-                    <input type="file" name="fileEmpPhoto" id="fileEmpPhoto" accept="image/*"
-                           style="width:140px; font-size:11px; margin-top:3px;"
-                           onchange="previewPhoto(this)">
-                    <%}%>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: right; width: 20%; height: 2.0em">First Name:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="firstName" id="firstName" <%=isAdd?"required":""%> value="<%=fFirst%>" <%=ro%>>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: right; height: 2.0em">Middle Name:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="middleName" id="middleName" value="<%=fMiddle%>" <%=ro%>>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: right; height: 2.0em">Last Name:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="lastName" id="lastName" <%=isAdd?"required":""%> value="<%=fLast%>" <%=ro%>>
-                </td>
-            </tr>
-            <tr><td colspan="4"><hr></td></tr>
-            <tr>
-                <td style="text-align: right;">Contact Number1:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="contactNo1" id="contactNo1" <%=isAdd?"required":""%> value="<%=fContact1%>" <%=ro%>>
-                </td>
-                <td style="text-align: right;">Contact Number2:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="contactNo2" id="contactNo2" value="<%=fContact2%>" <%=ro%>>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: right;">Email Id:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="emailId" id="emailId" readonly value="<%=fEmail%>">
-                </td>
-                <td style="text-align: right;">Birth Date:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="birthDate" id="birthDate" placeholder="dd/mm/yyyy"
-                        pattern="(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}"
-                        oninvalid="setCustomValidity('Select Date From Calendar')"
-                        value="<%=fBirthDate%>" <%=ro%>>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: right; width: 25%">Local Address:</td>
-                <td style="text-align: left; width: 10%">
-                    <textarea name="localAddress" id="localAddress" <%=isAdd?"required":""%> rows="" cols="20" <%=ro%>><%=fLocal%></textarea>
-                </td>
-                <td style="text-align: right;">Permanent Address:</td>
-                <td style="text-align: left; width: 30%">
-                    <textarea name="permanantAddress" id="permanantAddress" <%=isAdd?"required":""%> rows="" cols="20" <%=ro%>><%=fPer%></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: right;">Bank Name:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="bankName" id="bankName" <%=isAdd?"required":""%> value="<%=fBank%>" <%=ro%>>
-                </td>
-                <td style="text-align: right;">Account Number:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="accountNumber" id="accountNumber" <%=isAdd?"required":""%> value="<%=fAccNo%>" <%=ro%>>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: right;">Pan Card No:</td>
-                <td style="text-align: left;">
-                    <input type="text" name="panCardNo" id="panCardNo" value="<%=fPan%>" <%=ro%>>
-                </td>
-                <td style="text-align: right;">Comment:</td>
-                <td style="text-align: left;">
-                    <textarea name="comment" rows="" cols="20" <%=ro%>><%=fComment%></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="5" style="text-align: center;"><br>
+                    <!-- Right column -->
+                    <div style="flex:1; min-width:260px;">
+                        <div class="form-row">
+                            <label>Local Address:</label>
+                            <textarea name="localAddress" id="localAddress" <%=isAdd?"required":""%> rows="3" style="width:210px; resize:vertical;" <%=ro%>><%=fLocal%></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label>Permanent Address:</label>
+                            <textarea name="permanantAddress" id="permanantAddress" <%=isAdd?"required":""%> rows="3" style="width:210px; resize:vertical;" <%=ro%>><%=fPer%></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label>Bank Name:</label>
+                            <input type="text" name="bankName" id="bankName" <%=isAdd?"required":""%> value="<%=fBank%>" <%=ro%> placeholder="Bank name">
+                        </div>
+                        <div class="form-row">
+                            <label>Account Number:</label>
+                            <input type="text" name="accountNumber" id="accountNumber" <%=isAdd?"required":""%> value="<%=fAccNo%>" <%=ro%> placeholder="Account number">
+                        </div>
+                        <div class="form-row">
+                            <label>Pan Card No:</label>
+                            <input type="text" name="panCardNo" id="panCardNo" value="<%=fPan%>" <%=ro%> placeholder="PAN number">
+                        </div>
+                        <div class="form-row">
+                            <label>Comment:</label>
+                            <textarea name="comment" rows="3" style="width:210px; resize:vertical;" <%=ro%>><%=fComment%></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-btns" style="margin-top:14px;">
                     <%if (isAdd) {%>
-                        <input type="submit" name="add" value="Add">
+                        <input type="submit" class="btn-add" name="add" value="Add Employee">
                     <%} else if (isEdit) {%>
-                        <input type="submit" name="edit" value="Save">
+                        <input type="submit" class="btn-update" name="edit" value="Save Changes">
                         &nbsp;
-                        <a href="employeeViewAll.jsp"><button type="button">Cancel</button></a>
+                        <a href="employeeViewAll.jsp"><button type="button" class="btn-cancel">Cancel</button></a>
                     <%} else {%>
-                        <a href="employeeViewAll.jsp"><button type="button">Back to List</button></a>
+                        <a href="employeeViewAll.jsp"><button type="button" class="btn-action">&#8592; Back to List</button></a>
                     <%}%>
-                </td>
-            </tr>
-        </table>
+                </div>
+
+            </div><!-- end formPanel -->
+        </div><!-- end flex row -->
     </form>
+</fieldset>
 <%@include file="../../footer.jsp" %>
 </body>
 </html>

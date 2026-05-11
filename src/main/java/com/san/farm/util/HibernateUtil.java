@@ -7,12 +7,12 @@ import org.hibernate.cfg.Configuration;
 public class HibernateUtil {
 	public static SessionFactory factory;
 	static{
-		try{		
+		try{
 			factory=new Configuration().configure().buildSessionFactory();
 		}catch(Throwable th){
-			System.err.println("Failed to Create Seesion Factory Object "+th);
-			throw new ExceptionInInitializerError();
-		}		
+			System.err.println("Failed to create SessionFactory: "+th);
+			throw new ExceptionInInitializerError(th);
+		}
 	}
 	
 	public static Session opensession(){
