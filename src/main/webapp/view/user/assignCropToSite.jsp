@@ -14,9 +14,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
 <script src="../../js/jquery-1.9.1.js"></script>
-<script src="../../js/jquery-ui.js"></script> 
+<script src="../../js/datatables.min.js"></script>
+<script src="../../js/jquery-ui.js"></script>
 <title>Assign Crop to site</title>
 </head>
 <script>
@@ -56,9 +58,34 @@ var tempId=-1;
 		$("#img"+$(id).find("td").eq(1).text().trim()).show();
 		tempId=$(id).find("td").eq(1).text().trim();		
   }
-  function deleteCropToSite(id) {		
+  function deleteCropToSite(id) {
 		window.location.href="../../AssignCropToSiteController?cropToSiteId="+id+"&delete=delete";
 	}
+</script>
+<script>
+$(document).ready(function() {
+	if ($.fn.DataTable && !$.fn.DataTable.isDataTable('#assignCropTable')) {
+		$('#assignCropTable').DataTable({
+			pageLength: 25,
+			lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']],
+			autoWidth: false,
+			scrollX: true,
+			columnDefs: [
+				{ visible: false, targets: [3, 4, 7] },
+				{ orderable: false, targets: [0, 7] }
+			],
+			language: {
+				search: '', searchPlaceholder: 'Search...',
+				lengthMenu: 'Show _MENU_ entries',
+				info: '_START_ - _END_ of _TOTAL_',
+				infoEmpty: '0 entries',
+				emptyTable: 'No records found',
+				paginate: { previous: '&#8249;', next: '&#8250;' }
+			},
+			dom: '<"dt-toolbar"lf>rt<"dt-footer"ip>'
+		});
+	}
+});
 </script>
 <body>
 <%@include file="../../header.jsp" %>	
@@ -124,15 +151,20 @@ var tempId=-1;
 			<td><input type="submit" name="sbtDelete" value="Delete" onclick="this.form.action='action/assignCropToSiteAction.jsp'"></td>
 		</tr>
 	</table>
-		<table border=1 style="width: 100%" cellSpacing=0>
+		<table id="assignCropTable" border="1" width="100%" class="tbl-data" cellspacing="0">
+			<thead>
 			<tr>
 				<th>Select</th>
 				<th>Sr. No.</th>
 				<th>Date</th>
+				<th></th><!-- siteInfoId: hidden data column, read by showEdit() via eq(3) -->
+				<th></th><!-- cropId: hidden data column, read by showEdit() via eq(4) -->
 				<th>Site</th>
 				<th>Crop</th>
-				<th width="2%" id="th" hidden="true">Action</th>				
+				<th>Action</th>
 			</tr>
+			</thead>
+			<tbody>
 			<%
 				AssignCropToSiteService cropToSiteService=new AssignCropToSiteService();
 				List<AssignCropToSiteEntity> cropToSiteEntities=cropToSiteService.getListOFAssignCropToSite();
@@ -167,6 +199,7 @@ var tempId=-1;
 				<td id="td<%=cropToSiteEntity.getAssignCroptoSiteId() %>" hidden="true"><img src="../../img/delete.jpg" height="18" width="40" id="img<%=cropToSiteEntity.getAssignCroptoSiteId() %>" hidden onclick="deleteCropToSite(<%=cropToSiteEntity.getAssignCroptoSiteId()%>)"></td>
 			</tr>
 			<%} %>
+			</tbody>
 		</table>
 		
 	</form>
