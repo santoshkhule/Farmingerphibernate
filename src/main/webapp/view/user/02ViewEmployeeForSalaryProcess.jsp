@@ -12,9 +12,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
-<script src="../../js/jquery-1.9.1.js"></script>
-<script src="../../js/jquery-ui.js"></script>
 <link rel="stylesheet" href="../../css/style.css">
+<script src="../../js/jquery-1.9.1.js"></script>
+<script src="../../js/datatables.min.js"></script>
+<script src="../../js/jquery-ui.js"></script>
 <title>View Employee To Salary Process</title>
 </head>
 <script>
@@ -39,26 +40,44 @@
 <script type="text/javascript">
 function showAllEmployeeByFilterId() {
 	var fromDate=document.getElementById("txtDate").value;
-	//alert(fromDate);
 	var empName=document.getElementById("txtName").value;
 	var work_status=document.getElementById("work_status").value;
 	var work_Id=document.getElementById("selWorkId").value;
-	
-	if (window.XMLHttpRequest) {
-		xmlhttp = new XMLHttpRequest();
-	} else {
-		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	}
+	if (window.XMLHttpRequest) { xmlhttp = new XMLHttpRequest(); }
+	else { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); }
 	xmlhttp.onreadystatechange = function() {
 		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			document.getElementById("showTable").innerHTML = xmlhttp.responseText;			
+			var tbl = $('#showTable table.tbl-data');
+			if (tbl.length && $.fn.DataTable.isDataTable(tbl)) { tbl.DataTable().destroy(); }
+			document.getElementById("showTable").innerHTML = xmlhttp.responseText;
+			initSalaryTable();
 		}
 	};
-	
 	var url = "001ViewEmployeeForSalaryProcessAjax.jsp?fromDate="+fromDate+"&empName="+empName+"&work_status="+work_status+"&work_Id="+work_Id;
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
 }
+function initSalaryTable() {
+	var tbl = $('#showTable table.tbl-data');
+	if (tbl.length && !$.fn.DataTable.isDataTable(tbl)) {
+		tbl.DataTable({
+			pageLength: 25,
+			lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']],
+			autoWidth: false,
+			columnDefs: [{ orderable: false, targets: [0] }],
+			language: {
+				search: '', searchPlaceholder: 'Search...',
+				lengthMenu: 'Show _MENU_ entries',
+				info: '_START_ - _END_ of _TOTAL_',
+				infoEmpty: '0 entries',
+				emptyTable: 'No records found',
+				paginate: { previous: '&#8249;', next: '&#8250;' }
+			},
+			dom: '<"dt-toolbar"lf>rt<"dt-footer"ip>'
+		});
+	}
+}
+$(document).ready(function() { initSalaryTable(); });
 </script>
 <body>
 	<%
@@ -110,13 +129,11 @@ function showAllEmployeeByFilterId() {
 	</table>
 	<hr>
 	<div id="showTable">
-		<table border="1" cellspacing="0" style="width: 100%">
-
-			<tr>
+		<table border="1" cellspacing="0" width="100%" class="tbl-data">
+			<thead>
 			<tr>
 				<th>Select</th>
 				<th>Sr. No.</th>
-			
 				<th>Name</th>
 				<th>Date</th>
 				<th>Site Name</th>
@@ -127,10 +144,10 @@ function showAllEmployeeByFilterId() {
 				<th>Amount To Pay</th>
 				<th>Advanced Paid</th>
 				<th>Amount Paid</th>
-				<th>Balance</th>						
+				<th>Balance</th>
 				<th>Excess Amount</th>
 			</tr>
-				
+			</thead>
 			<tbody>
 				<%
 					try {
@@ -235,22 +252,22 @@ function showAllEmployeeByFilterId() {
 						<td><%=excessAmount%></td>
 				</tr>
 					<%} %>
-
+			<%
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			%>
+			</tbody>
+			<tfoot>
 				<tr>
-					<td style="font-weight: bold; text-align: right;" colspan="9">Total</td>
+					<td style="font-weight:bold; text-align:right;" colspan="9">Total</td>
 					<td><b><%=ttlAmountToPay%></b></td>
 					<td><b><%=ttlAdvancedPaid%></b></td>
 					<td><b><%=ttlAmountPaid%></b></td>
 					<td><b><%=ttlBalance%></b></td>
 					<td><b><%=ttlExcessAmount%></b></td>
 				</tr>
-				<%
-				
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				%>
-			</tbody>
+			</tfoot>
 		</table>
 	</div>
 
