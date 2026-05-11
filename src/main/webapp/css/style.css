@@ -300,6 +300,13 @@ table[border="1"] tbody tr:hover           { background: #dcedc8; }
     transition: background 0.15s;
 }
 .btn-delete:hover { background: var(--red-dk); }
+.btn-edit {
+    background: var(--green-dk); color: #fff; border: none;
+    padding: 5px 14px; cursor: pointer; border-radius: var(--r-sm);
+    font-size: 12px; font-weight: 600; font-family: inherit;
+    transition: background 0.15s; margin-right: 4px;
+}
+.btn-edit:hover { background: #2e7d32; }
 
 .btn-cancel {
     background: var(--gray-600); color: #fff; border: none;

@@ -102,11 +102,18 @@ public class AssignCropToSiteController extends HttpServlet {
 				logger.info("Crop assignment updated successfully");
 			}
 					
-			// Delete Operation
-			if (null != request.getParameter("delete")) {
-				logger.info("Deleting crop assignment with id: {}", cropToSiteId);
-				cropToSiteService.deleteAssignCropToSite(cropToSiteId);
-				logger.info("Crop assignment deleted successfully");
+			// Bulk delete operation
+			if (null != request.getParameter("deleteSelected")) {
+				String[] deleteIds = request.getParameterValues("deleteIds");
+				if (deleteIds != null) {
+					for (String idStr : deleteIds) {
+						int delId = Integer.parseInt(idStr.trim());
+						logger.info("Deleting crop assignment with id: {}", delId);
+						cropToSiteRefService.deleteAssignCropToSiteRef(delId);
+						cropToSiteService.deleteAssignCropToSite(delId);
+					}
+					logger.info("Bulk delete completed for {} records", deleteIds.length);
+				}
 			}
 		} catch (Exception exception) {
 			logger.error("Error processing AssignCropToSite request", exception);

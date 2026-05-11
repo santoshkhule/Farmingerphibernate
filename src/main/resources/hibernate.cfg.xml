@@ -40,6 +40,7 @@
 		<mapping class="com.san.farm.adminuser.entity.VendorEntity" />
 		<mapping class="com.san.farm.adminuser.entity.AssignVendorToProductEntity" />
 		<mapping class="com.san.farm.adminuser.entity.CategoryEntity" />
+		<mapping class="com.san.farm.adminuser.entity.SiteProductAllocationEntity" />
 
 	</session-factory>
 </hibernate-configuration>

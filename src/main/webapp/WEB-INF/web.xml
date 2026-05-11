@@ -167,4 +167,12 @@
     <servlet-name>H2Console</servlet-name>
     <url-pattern>/h2-console/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>SiteProductAllocationController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.SiteProductAllocationController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SiteProductAllocationController</servlet-name>
+    <url-pattern>/SiteProductAllocationController</url-pattern>
+  </servlet-mapping>
 </web-app>
