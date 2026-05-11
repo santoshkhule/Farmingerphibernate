@@ -76,7 +76,7 @@
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#128176; Account</div>
-				<a class="nav-link" href="view/user/02employeeSalaryProcess.jsp" target="contentFrame">Process Salary</a>
+				<a class="nav-link" href="view/user/02employeeSalaryProcess.jsp" target="contentFrame">Process Payment</a>
 			</div>
 
 			<div class="nav-group">

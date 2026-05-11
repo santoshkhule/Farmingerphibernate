@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-<title>Emplyee Salary Process</title>
+<title>Process Payment</title>
 </head>
 <body>
 	<%@include file="../../header.jsp"%>
@@ -22,7 +22,7 @@
 		</tr>
 		<thead>
 			<tr>
-				<th>Salary Processing</th>
+				<th>Process Payment</th>
 			</tr>
 		</thead>
 		<tr>

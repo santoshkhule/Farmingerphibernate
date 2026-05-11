@@ -30,7 +30,7 @@
 
 	<div class="nav-group">
 		<div class="nav-group-title">&#128176; Account</div>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/02employeeSalaryProcess.jsp">Process Salary</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/02employeeSalaryProcess.jsp">Process Payment</a>
 	</div>
 
 	<div class="nav-group">

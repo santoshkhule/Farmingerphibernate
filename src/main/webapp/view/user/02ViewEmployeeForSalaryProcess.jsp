@@ -17,7 +17,7 @@
 <script src="../../js/jquery-1.9.1.js"></script>
 <script src="../../js/datatables.min.js"></script>
 <script src="../../js/jquery-ui.js"></script>
-<title>View Employee To Salary Process</title>
+<title>View Employee For Process Payment</title>
 </head>
 <script>
 	$(function() {		
