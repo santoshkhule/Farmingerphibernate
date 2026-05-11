@@ -167,6 +167,7 @@ try {
         <td><%=balanceAmount%></td>
         <td style="text-align:center; white-space:nowrap;">
             <button type="button" class="btn-row-edit" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'edit')">Edit</button>
+            <button type="button" class="btn-update" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'view')">View</button>
             <button type="button" class="btn-delete" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'delete')">Delete</button>
         </td>
     </tr>

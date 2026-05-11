@@ -95,6 +95,8 @@
 			}
 		} else if (action == "edit") {
 			window.location = "../../AssignResourcesController?sbtEdit=Edit&radAssignWorkId=" + id;
+		} else if (action == "view") {
+			window.location = "../../AssignResourcesController?sbtView=View&radAssignWorkId=" + id;
 		}
 	}
 	function initAssignTable() {
@@ -162,16 +164,6 @@
 			</tr>
 		</table>
 		<hr>
-		<form method="post">
-			<table>
-				<tr>
-					<td><input type="submit" name="sbtEdit" value="Edit"
-						onclick="this.form.action='../../AssignResourcesController'"></td>
-					<td><input type="submit" name="sbtView" value="View"
-						onclick="this.form.action='../../AssignResourcesController'"></td>
-					<td><input type="button" name="sbtDelete" value="Delete" onclick="doDelete()"></td>
-				</tr>
-			</table>
 			<div id="showTable">
 				<table border="1" width="100%" class="tbl-data" cellspacing="0">
 					<thead>
@@ -282,6 +274,7 @@
 						<td><%=balanceAmount%></td>
 						<td style="text-align:center; white-space:nowrap;">
 							<button type="button" class="btn-row-edit" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'edit')">Edit</button>
+							<button type="button" class="btn-update" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'view')">View</button>
 							<button type="button" class="btn-delete" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'delete')">Delete</button>
 						</td>
 					</tr>
@@ -295,7 +288,6 @@
 					</tbody>
 				</table>
 			</div>
-		</form>
 	</fieldset>
 	<%@include file="../../footer.jsp"%>
 </body>
