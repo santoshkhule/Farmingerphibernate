@@ -102,6 +102,9 @@
 				pageLength: 25,
 				lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']],
 				autoWidth: false,
+				columnDefs: [
+					{ orderable: false, targets: [0, 12] }
+				],
 				language: {
 					search: '', searchPlaceholder: 'Search...',
 					lengthMenu: 'Show _MENU_ entries',
@@ -169,10 +172,10 @@
 			</table>
 			<div id="showTable">
 				<table border="1" width="100%" class="tbl-data" cellspacing="0">
+					<thead>
 					<tr>
 						<th>Select</th>
 						<th>Sr. No.</th>
-						<!-- <th>Work_Id</th> -->
 						<th>Name</th>
 						<th>Date</th>
 						<th>Site Name</th>
@@ -183,10 +186,10 @@
 						<th>Amount To Pay</th>
 						<th>Paid</th>
 						<th>Balance</th>
-						<th hidden id="th" width="2%">Action</th>
-						<!-- <th>Excess Amount</th> -->
+						<th>Action</th>
 					</tr>
-
+					</thead>
+					<tbody>
 					<%
 						AssignResourceEmployeeToFarmService employeeToFarmService=new AssignResourceEmployeeToFarmService();
 						SalaryProcessingDao salaryProcessingDao=new SalaryProcessingDao();
@@ -275,11 +278,10 @@
 						<td><%=employeeToFarm.getAmount()%></td>
 						<td><%=totalSalaryPaid%></td>
 						<td><%=balanceAmount%></td>
-						<td  id="td<%=cnt%>" hidden="true" width="6%">
-							<img src="../../img/edit.jpg" height="17" width="30" id="imgEdit<%=cnt %>" hidden onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId() %>,'edit')">
-							<img src="../../img/delete.jpg" height="17" width="30" id="imgDelete<%=cnt %>" hidden onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId() %>,'delete')">
+						<td style="text-align:center; white-space:nowrap;">
+							<button type="button" class="btn-row-edit" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'edit')">Edit</button>
+							<button type="button" class="btn-delete" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'delete')">Delete</button>
 						</td>
-						<%-- <td><%out.print(excessAmount); %></td> --%>
 					</tr>
 					<%
 								}//if end
@@ -288,6 +290,7 @@
 							ex.printStackTrace();
 						}
 					%>
+					</tbody>
 				</table>
 			</div>
 		</form>

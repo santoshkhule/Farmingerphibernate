@@ -31,6 +31,7 @@ if (taskIdParam != null && !taskIdParam.trim().isEmpty() && !taskIdParam.equals(
 %>
 
 <table border="1" width="100%" class="tbl-data" cellspacing="0">
+    <thead>
     <tr>
         <th>Select</th>
         <th>Sr. No.</th>
@@ -44,7 +45,10 @@ if (taskIdParam != null && !taskIdParam.trim().isEmpty() && !taskIdParam.equals(
         <th>Amount To Pay</th>
         <th>Paid</th>
         <th>Balance</th>
+        <th>Action</th>
     </tr>
+    </thead>
+    <tbody>
 
 <%
 AssignResourceEmployeeToFarmService employeeToFarmService = new AssignResourceEmployeeToFarmService();
@@ -161,6 +165,10 @@ try {
         <td><%=employeeToFarm.getAmount()%></td>
         <td><%=totalSalaryPaid%></td>
         <td><%=balanceAmount%></td>
+        <td style="text-align:center; white-space:nowrap;">
+            <button type="button" class="btn-row-edit" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'edit')">Edit</button>
+            <button type="button" class="btn-delete" onclick="actionEditDelete(<%=employeeToFarm.getAssignResourceId()%>,'delete')">Delete</button>
+        </td>
     </tr>
 <%
         }
@@ -169,4 +177,5 @@ try {
     ex.printStackTrace();
 }
 %>
+    </tbody>
 </table>
