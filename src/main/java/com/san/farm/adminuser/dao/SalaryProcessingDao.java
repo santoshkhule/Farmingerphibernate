@@ -137,6 +137,24 @@ public class SalaryProcessingDao {
 			return total;
 		}
 
+		public double getTotalSalaryPaidBySiteInfoId(final int siteInfoId){
+			logger.debug("Fetching total salary paid for siteInfoId: {}", siteInfoId);
+			double total = 0;
+			Session session = HibernateUtil.opensession();
+			try{
+				Object result = session.createQuery(
+					"SELECT SUM(sp.amount) FROM SalaryProcessingEntity sp " +
+					"WHERE sp.employeeToFarm.cropToSiteEntity.siteInformationEntity.siteInfoId = " + siteInfoId)
+					.uniqueResult();
+				if(result != null) total = ((Number) result).doubleValue();
+			}catch(HibernateException exception){
+				logger.error("Error fetching total salary paid for siteInfoId: {}", siteInfoId, exception);
+			}finally{
+				session.close();
+			}
+			return total;
+		}
+
 		public double getTotalSalaryPaidByEmployeeInfoId(final int employeeInfoId){
 			logger.debug("Fetching total salary paid for employeeInfoId: {}", employeeInfoId);
 			double total = 0;

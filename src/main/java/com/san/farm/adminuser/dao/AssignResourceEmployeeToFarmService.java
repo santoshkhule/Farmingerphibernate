@@ -214,6 +214,18 @@ public class AssignResourceEmployeeToFarmService {
 		return result;
 	}
 
+	public List<AssignEmployeeToFarmEntity> getListBySiteInfoId(final int siteInfoId){
+		return getListOFEmployeeToFarmByQry(
+			"FROM AssignEmployeeToFarmEntity aef WHERE aef.cropToSiteEntity.siteInformationEntity.siteInfoId = " + siteInfoId
+		);
+	}
+
+	public List<AssignEmployeeToFarmEntity> getListByEmployeeInfoId(final int employeeInfoId){
+		return getListOFEmployeeToFarmByQry(
+			"FROM AssignEmployeeToFarmEntity aef WHERE aef.employeeInfoEntity.employeeInfoId = " + employeeInfoId
+		);
+	}
+
 	public List<AssignEmployeeToFarmEntity> getListOFEmployeeToFarmByQry(final String query){
 		logger.debug("Fetching AssignEmployeeToFarm list by query");
 		List<AssignEmployeeToFarmEntity> listOFEmployeeToFarm=new ArrayList<AssignEmployeeToFarmEntity>();

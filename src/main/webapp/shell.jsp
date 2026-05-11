@@ -86,6 +86,12 @@
 				<a class="nav-link" href="view/user/assignVendorToProductView.jsp" target="contentFrame">View Products</a>
 			</div>
 
+			<div class="nav-group">
+				<div class="nav-group-title">&#128202; Reports</div>
+				<a class="nav-link" href="view/user/reportSite.jsp" target="contentFrame">Site Expenditure</a>
+				<a class="nav-link" href="view/user/reportEmployee.jsp" target="contentFrame">Employee Payments</a>
+			</div>
+
 		</nav>
 
 		<div id="sidebar-foot">
