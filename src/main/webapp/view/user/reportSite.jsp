@@ -33,7 +33,7 @@ $(document).ready(function() {
         dom: '<"dt-toolbar"lf>rt<"dt-footer"ip>'
     };
     $('#siteSummaryTable').DataTable($.extend({}, dtOpts, {
-        columnDefs: [{ orderable: false, targets: [7] }]
+        columnDefs: [{ orderable: false, targets: [8] }]
     }));
     $('#siteDetailTable').DataTable($.extend({}, dtOpts, {
         columnDefs: [{ orderable: false, targets: [0] }]
@@ -56,22 +56,23 @@ $(document).ready(function() {
             salaryDao.getTotalSalaryPaidByAssignResourceId(aef.getAssignResourceId()));
     }
 
-    // Group by (siteInfoId, date) — key = "siteId|dd/mm/yyyy"
+    // Group by (siteInfoId, date, crop) — key = "siteId|dd/mm/yyyy|cropName"
     // stats[]: [0]=assigned [1]=paid [2]=done [3]=pending
     Map<String, double[]>  sdStats  = new LinkedHashMap<String, double[]>();
-    Map<String, String[]>  sdLabels = new LinkedHashMap<String, String[]>(); // [siteName, dateDisplay]
+    Map<String, String[]>  sdLabels = new LinkedHashMap<String, String[]>(); // [siteName, dateDisplay, cropName]
 
     for (AssignEmployeeToFarmEntity aef : allAssignments) {
         if (aef.getCropToSiteEntity() == null || aef.getCropToSiteEntity().getSiteInformationEntity() == null) continue;
         int    siteId   = aef.getCropToSiteEntity().getSiteInformationEntity().getSiteInfoId();
         String siteName = aef.getCropToSiteEntity().getSiteInformationEntity().getSiteName();
+        String cropName = aef.getCropEntity() != null ? aef.getCropEntity().getCropName() : "";
         String dateDisp = aef.getAssignWorkDate() != null
             ? FarmUtility.convertfrom_yymmddToddmmyy(aef.getAssignWorkDate().toString()) : "";
-        String key = siteId + "|" + dateDisp;
+        String key = siteId + "|" + dateDisp + "|" + cropName;
 
         if (!sdStats.containsKey(key)) {
             sdStats.put(key, new double[]{0, 0, 0, 0});
-            sdLabels.put(key, new String[]{siteName != null ? siteName : "", dateDisp});
+            sdLabels.put(key, new String[]{siteName != null ? siteName : "", dateDisp, cropName});
         }
         double sp = salaryByAssignId.containsKey(aef.getAssignResourceId())
             ? salaryByAssignId.get(aef.getAssignResourceId()) : 0;
@@ -86,14 +87,15 @@ $(document).ready(function() {
 <fieldset>
 <legend>Site Expenditure &amp; Dispatch Status Report</legend>
 
-<!-- ===== SITE SUMMARY TABLE (grouped by site + date) ===== -->
-<h3 style="margin:8px 0 8px; color:var(--green-dk); font-size:1em;">Site Summary — by Site &amp; Date</h3>
+<!-- ===== SITE SUMMARY TABLE (grouped by site + date + crop) ===== -->
+<h3 style="margin:8px 0 8px; color:var(--green-dk); font-size:1em;">Site Summary — by Site, Date &amp; Crop</h3>
 <table id="siteSummaryTable" border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
         <th>Sr.</th>
         <th>Site</th>
         <th>Date</th>
+        <th>Crop</th>
         <th>Total Assigned (Rs)</th>
         <th>Total Paid (Rs)</th>
         <th>Balance (Rs)</th>
@@ -120,6 +122,7 @@ $(document).ready(function() {
         <td><%=siteCnt%></td>
         <td><%=lbl[0]%></td>
         <td><%=lbl[1]%></td>
+        <td><%=lbl[2]%></td>
         <td><%=String.format("%.2f", s[0])%></td>
         <td><%=String.format("%.2f", s[1])%></td>
         <td><%=String.format("%.2f", rowBalance)%></td>
@@ -138,7 +141,7 @@ $(document).ready(function() {
     </tbody>
     <tfoot>
     <tr style="font-weight:bold;">
-        <td colspan="3" style="text-align:right;">Grand Total</td>
+        <td colspan="4" style="text-align:right;">Grand Total</td>
         <td><%=String.format("%.2f", grandAssigned)%></td>
         <td><%=String.format("%.2f", grandPaid)%></td>
         <td><%=String.format("%.2f", Math.max(0, grandAssigned - grandPaid))%></td>
