@@ -1,0 +1,8 @@
+cd /Users/santoshkhule/Downloads/apache-tomcat-9.0.117/bin
+sh catalina.sh start
+
+issue 1:
+santoshkhule@Santoshs-MacBook-Pro bin % ./catalina.sh start
+zsh: permission denied: ./catalina.sh
+solution :
+santoshkhule@Santoshs-MacBook-Pro bin % chmod u+x catalina.sh
