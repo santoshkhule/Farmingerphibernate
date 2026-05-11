@@ -1,4 +1,4 @@
-<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigFarmTaskService"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigCropEntity"%>
@@ -195,7 +195,7 @@
 					<tbody>
 					<%
 						AssignResourceEmployeeToFarmService employeeToFarmService=new AssignResourceEmployeeToFarmService();
-						SalaryProcessingDao salaryProcessingDao=new SalaryProcessingDao();
+						PaymentProcessingDao salaryProcessingDao=new PaymentProcessingDao();
 						List<AssignEmployeeToFarmEntity> employeeToFarmEntities=null;
 						int cnt = 0;
 						try {

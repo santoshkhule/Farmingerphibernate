@@ -1,6 +1,6 @@
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
-<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
 <%@page import="java.util.LinkedHashMap"%>
@@ -45,7 +45,7 @@ $(document).ready(function() {
 
 <%
     AssignResourceEmployeeToFarmService farmService = new AssignResourceEmployeeToFarmService();
-    SalaryProcessingDao salaryDao = new SalaryProcessingDao();
+    PaymentProcessingDao salaryDao = new PaymentProcessingDao();
 
     List<AssignEmployeeToFarmEntity> allAssignments = farmService.getListOFEmployeeToFarm();
 

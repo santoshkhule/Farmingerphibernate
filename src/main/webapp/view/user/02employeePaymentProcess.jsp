@@ -17,7 +17,7 @@
 			</tr>
 		</thead>
 		<tr>
-			<td><iframe src="02ViewEmployeeForSalaryProcess.jsp"
+			<td><iframe src="02ViewEmployeeForPaymentProcess.jsp"
 					name="ifrmViewEmployee" width="100%" height="400px"></iframe></td>
 		</tr>
 		<thead>
@@ -26,7 +26,7 @@
 			</tr>
 		</thead>
 		<tr>
-			<td><iframe src="02SalaryProcessing.jsp" name="iframSalProcess"
+			<td><iframe src="02PaymentProcessing.jsp" name="iframSalProcess"
 					width="100%" height="400px"></iframe></td>
 		</tr>
 	</table>

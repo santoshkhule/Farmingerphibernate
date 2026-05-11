@@ -3,9 +3,9 @@
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="com.san.farm.adminuser.entity.EmployeeInfoEntity"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
-<%@page import="com.san.farm.adminuser.entity.SalaryProcessingEntity"%>
+<%@page import="com.san.farm.adminuser.entity.PaymentProcessingEntity"%>
 <%@page import="java.util.List"%>
-<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -86,12 +86,12 @@
 				double amountToPay  = (employeeToFarm != null) ? employeeToFarm.getAmount()     : 0;
 				double advPayment   = (employeeToFarm != null) ? employeeToFarm.getAdvPayment()  : 0;
 
-				SalaryProcessingDao salaryProcessingDao = new SalaryProcessingDao();
-				List<SalaryProcessingEntity> processingEntities =
+				PaymentProcessingDao salaryProcessingDao = new PaymentProcessingDao();
+				List<PaymentProcessingEntity> processingEntities =
 						salaryProcessingDao.getAllSalaryTransactionByAssignResourceId(assignResourceId);
 
 				double ttlPaid = 0;
-				for(SalaryProcessingEntity pe : processingEntities){
+				for(PaymentProcessingEntity pe : processingEntities){
 					ttlPaid += pe.getAmount();
 				}
 
@@ -212,8 +212,8 @@
 				<td colspan="6" style="text-align: center;">
 					<input type="hidden" name="assignResourceId" id="assignResourceId" value="<%=assignResourceId%>">
 					<input type="hidden" name="salaryProcessId" id="salaryProcessId">
-					<input type="submit" name="sbtUpdateAmount" hidden="true" id="sbtUpdateAmount" value="Update Paid Amount" style="width: 12em" onclick="this.form.action='../../SalaryProcessingServlet'">
-					<input type="submit" name="sbtPayAmount" id="sbtPayAmount" value="Pay Amount" style="width: 10em" onclick="this.form.action='../../SalaryProcessingServlet'">
+					<input type="submit" name="sbtUpdateAmount" hidden="true" id="sbtUpdateAmount" value="Update Paid Amount" style="width: 12em" onclick="this.form.action='../../PaymentProcessingServlet'">
+					<input type="submit" name="sbtPayAmount" id="sbtPayAmount" value="Pay Amount" style="width: 10em" onclick="this.form.action='../../PaymentProcessingServlet'">
 					<input type="button" value="Reset" style="width: 6em" onclick="resetPayForm()">
 				</td>
 			</tr>
@@ -241,7 +241,7 @@
 			</tr>
 			<%
 				int cnt = 0;
-				for(SalaryProcessingEntity processingEntity : processingEntities){
+				for(PaymentProcessingEntity processingEntity : processingEntities){
 					cnt++;
 			%>
 			<tr>
@@ -262,7 +262,7 @@
 
 	<script>
 	<%
-		for(SalaryProcessingEntity pe : processingEntities){
+		for(PaymentProcessingEntity pe : processingEntities){
 	%>
 	salaryTransactions[<%=pe.getSalaryProcessId()%>] = {
 		amount:      <%=pe.getAmount()%>,

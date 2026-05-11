@@ -4,7 +4,7 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
-<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
 
 <%
@@ -52,7 +52,7 @@ if (taskIdParam != null && !taskIdParam.trim().isEmpty() && !taskIdParam.equals(
 
 <%
 AssignResourceEmployeeToFarmService employeeToFarmService = new AssignResourceEmployeeToFarmService();
-SalaryProcessingDao salaryProcessingDao = new SalaryProcessingDao();
+PaymentProcessingDao salaryProcessingDao = new PaymentProcessingDao();
 List<AssignEmployeeToFarmEntity> employeeToFarmEntities = null;
 int cnt = 0;
 

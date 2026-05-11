@@ -1,7 +1,7 @@
 <%@page import="com.san.farm.adminuser.entity.EmployeeInfoEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.EmployeeInfoService"%>
-<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
@@ -41,7 +41,7 @@
 			window.location = '01assignTaskToEmployeeViewAll.jsp?employeeInfoId=' + selectedId;
 			return false;
 		} else if (action === 'viewTransaction') {
-			window.location = '02ViewEmployeeForSalaryProcess.jsp?employeeInfoId=' + selectedId;
+			window.location = '02ViewEmployeeForPaymentProcess.jsp?employeeInfoId=' + selectedId;
 			return false;
 		}
 		return false;
@@ -78,7 +78,7 @@
 		<tbody>
 			<%
 				EmployeeInfoService employeeInfoService=new EmployeeInfoService();
-				SalaryProcessingDao salaryProcessingDao=new SalaryProcessingDao();
+				PaymentProcessingDao salaryProcessingDao=new PaymentProcessingDao();
 				AssignResourceEmployeeToFarmService assignService=new AssignResourceEmployeeToFarmService();
 				List<EmployeeInfoEntity> listOfEmployee=employeeInfoService.getListOfEmployee();
 				for(EmployeeInfoEntity entity:listOfEmployee){

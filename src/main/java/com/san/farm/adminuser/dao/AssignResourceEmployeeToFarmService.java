@@ -79,7 +79,7 @@ public class AssignResourceEmployeeToFarmService {
 		try{
 			// Delete child salary records first to avoid FK constraint violation
 			session.createQuery(
-				"DELETE FROM SalaryProcessingEntity s WHERE s.employeeToFarm.assignResourceId = :id")
+				"DELETE FROM PaymentProcessingEntity s WHERE s.employeeToFarm.assignResourceId = :id")
 				.setParameter("id", assignResourceId)
 				.executeUpdate();
 

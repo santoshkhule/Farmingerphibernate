@@ -4,7 +4,7 @@
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
-<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%
@@ -32,7 +32,7 @@
     }
 
     AssignResourceEmployeeToFarmService farmService = new AssignResourceEmployeeToFarmService();
-    SalaryProcessingDao salaryDao = new SalaryProcessingDao();
+    PaymentProcessingDao salaryDao = new PaymentProcessingDao();
 
     StringBuilder query = new StringBuilder("from AssignEmployeeToFarmEntity a");
     List<String> conditions = new ArrayList<String>();

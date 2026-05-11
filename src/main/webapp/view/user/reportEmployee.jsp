@@ -2,7 +2,7 @@
 <%@page import="com.san.farm.adminuser.entity.EmployeeInfoEntity"%>
 <%@page import="com.san.farm.adminuser.dao.EmployeeInfoService"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
-<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
 <%@page import="java.util.LinkedHashMap"%>
@@ -51,7 +51,7 @@ $(document).ready(function() {
 
     EmployeeInfoService empService = new EmployeeInfoService();
     AssignResourceEmployeeToFarmService farmService = new AssignResourceEmployeeToFarmService();
-    SalaryProcessingDao salaryDao = new SalaryProcessingDao();
+    PaymentProcessingDao salaryDao = new PaymentProcessingDao();
     List<EmployeeInfoEntity> employees = empService.getListOfEmployee();
 %>
 

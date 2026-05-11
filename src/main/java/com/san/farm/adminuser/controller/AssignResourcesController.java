@@ -27,7 +27,7 @@ import com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity;
 import com.san.farm.adminuser.entity.ConfigCropEntity;
 import com.san.farm.adminuser.entity.ConfigFarmTaskEntity;
 import com.san.farm.adminuser.entity.EmployeeInfoEntity;
-import com.san.farm.adminuser.entity.SalaryProcessingEntity;
+import com.san.farm.adminuser.entity.PaymentProcessingEntity;
 import com.san.farm.util.FarmUtility;
 import com.san.farm.util.HibernateUtil;
 import com.san.farm.util.Symbols;
@@ -118,14 +118,14 @@ public class AssignResourcesController extends HttpServlet {
 			AssignEmployeeToFarmEntity assignment = results.isEmpty() ? null : results.get(0);
 
 			if (assignment != null) {
-				List<SalaryProcessingEntity> salaryList = hibSession.createQuery(
-					"FROM SalaryProcessingEntity s WHERE s.employeeToFarm.assignResourceId = :id",
-					SalaryProcessingEntity.class)
+				List<PaymentProcessingEntity> salaryList = hibSession.createQuery(
+					"FROM PaymentProcessingEntity s WHERE s.employeeToFarm.assignResourceId = :id",
+					PaymentProcessingEntity.class)
 					.setParameter("id", assignWorkId)
 					.list();
 
 				double ttlTransactionPaid = 0;
-				for (SalaryProcessingEntity sal : salaryList) {
+				for (PaymentProcessingEntity sal : salaryList) {
 					ttlTransactionPaid += sal.getAmount();
 				}
 
