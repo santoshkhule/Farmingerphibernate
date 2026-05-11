@@ -1,11 +1,8 @@
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
-<%@page import="com.san.farm.adminuser.entity.ConfigSiteInformationEntity"%>
-<%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
 <%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
-<%@page import="java.util.ArrayList"%>
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
@@ -36,7 +33,7 @@ $(document).ready(function() {
         dom: '<"dt-toolbar"lf>rt<"dt-footer"ip>'
     };
     $('#siteSummaryTable').DataTable($.extend({}, dtOpts, {
-        columnDefs: [{ orderable: false, targets: [8] }]
+        columnDefs: [{ orderable: false, targets: [7] }]
     }));
     $('#siteDetailTable').DataTable($.extend({}, dtOpts, {
         columnDefs: [{ orderable: false, targets: [0] }]
@@ -49,90 +46,91 @@ $(document).ready(function() {
 <%
     AssignResourceEmployeeToFarmService farmService = new AssignResourceEmployeeToFarmService();
     SalaryProcessingDao salaryDao = new SalaryProcessingDao();
-    ConfigSiteInformationService siteService = new ConfigSiteInformationService();
 
-    List<ConfigSiteInformationEntity> sites = siteService.fetch();
     List<AssignEmployeeToFarmEntity> allAssignments = farmService.getListOFEmployeeToFarm();
 
-    // Pre-compute salary paid per assignment (avoid repeated queries in render loops)
+    // Pre-compute salary paid per assignment
     Map<Integer, Double> salaryByAssignId = new LinkedHashMap<Integer, Double>();
     for (AssignEmployeeToFarmEntity aef : allAssignments) {
         salaryByAssignId.put(aef.getAssignResourceId(),
             salaryDao.getTotalSalaryPaidByAssignResourceId(aef.getAssignResourceId()));
     }
 
-    // Group assignments by siteInfoId
-    Map<Integer, List<AssignEmployeeToFarmEntity>> bySite =
-        new LinkedHashMap<Integer, List<AssignEmployeeToFarmEntity>>();
-    for (ConfigSiteInformationEntity site : sites) {
-        bySite.put(site.getSiteInfoId(), new ArrayList<AssignEmployeeToFarmEntity>());
-    }
+    // Group by (siteInfoId, date) — key = "siteId|dd/mm/yyyy"
+    // stats[]: [0]=assigned [1]=paid [2]=done [3]=pending
+    Map<String, double[]>  sdStats  = new LinkedHashMap<String, double[]>();
+    Map<String, String[]>  sdLabels = new LinkedHashMap<String, String[]>(); // [siteName, dateDisplay]
+
     for (AssignEmployeeToFarmEntity aef : allAssignments) {
-        if (aef.getCropToSiteEntity() != null && aef.getCropToSiteEntity().getSiteInformationEntity() != null) {
-            int sid = aef.getCropToSiteEntity().getSiteInformationEntity().getSiteInfoId();
-            if (bySite.containsKey(sid)) bySite.get(sid).add(aef);
+        if (aef.getCropToSiteEntity() == null || aef.getCropToSiteEntity().getSiteInformationEntity() == null) continue;
+        int    siteId   = aef.getCropToSiteEntity().getSiteInformationEntity().getSiteInfoId();
+        String siteName = aef.getCropToSiteEntity().getSiteInformationEntity().getSiteName();
+        String dateDisp = aef.getAssignWorkDate() != null
+            ? FarmUtility.convertfrom_yymmddToddmmyy(aef.getAssignWorkDate().toString()) : "";
+        String key = siteId + "|" + dateDisp;
+
+        if (!sdStats.containsKey(key)) {
+            sdStats.put(key, new double[]{0, 0, 0, 0});
+            sdLabels.put(key, new String[]{siteName != null ? siteName : "", dateDisp});
         }
+        double sp = salaryByAssignId.containsKey(aef.getAssignResourceId())
+            ? salaryByAssignId.get(aef.getAssignResourceId()) : 0;
+        double[] s = sdStats.get(key);
+        s[0] += aef.getAmount();
+        s[1] += aef.getAdvPayment() + sp;
+        if ("Completed".equals(aef.getWorkStatus())) s[2]++;
+        else s[3]++;
     }
 %>
 
 <fieldset>
 <legend>Site Expenditure &amp; Dispatch Status Report</legend>
 
-<!-- ===== SITE SUMMARY TABLE ===== -->
-<h3 style="margin:8px 0 8px; color:var(--green-dk); font-size:1em;">Site Summary</h3>
+<!-- ===== SITE SUMMARY TABLE (grouped by site + date) ===== -->
+<h3 style="margin:8px 0 8px; color:var(--green-dk); font-size:1em;">Site Summary — by Site &amp; Date</h3>
 <table id="siteSummaryTable" border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
         <th>Sr.</th>
         <th>Site</th>
-        <th>Location</th>
-        <th>Area</th>
+        <th>Date</th>
         <th>Total Assigned (Rs)</th>
         <th>Total Paid (Rs)</th>
         <th>Balance (Rs)</th>
         <th>Done / Pending</th>
-        <th>Dispatch Status</th>
+        <th>Status</th>
     </tr>
     </thead>
     <tbody>
     <%
         int siteCnt = 0;
         double grandAssigned = 0, grandPaid = 0;
-        for (ConfigSiteInformationEntity site : sites) {
+        for (Map.Entry<String, double[]> entry : sdStats.entrySet()) {
             siteCnt++;
-            List<AssignEmployeeToFarmEntity> siteList = bySite.get(site.getSiteInfoId());
-            double siteAssigned = 0, sitePaid = 0;
-            int siteDone = 0, sitePending = 0;
-            for (AssignEmployeeToFarmEntity aef : siteList) {
-                siteAssigned += aef.getAmount();
-                double sp = salaryByAssignId.containsKey(aef.getAssignResourceId())
-                    ? salaryByAssignId.get(aef.getAssignResourceId()) : 0;
-                sitePaid += aef.getAdvPayment() + sp;
-                if ("Completed".equals(aef.getWorkStatus())) siteDone++;
-                else sitePending++;
-            }
-            double siteBalance = siteAssigned - sitePaid;
-            if (siteBalance < 0) siteBalance = 0;
-            grandAssigned += siteAssigned;
-            grandPaid += sitePaid;
-            boolean ready = (!siteList.isEmpty() && sitePending == 0);
+            String[]  lbl     = sdLabels.get(entry.getKey());
+            double[]  s       = entry.getValue();
+            double rowBalance = Math.max(0, s[0] - s[1]);
+            int rowDone    = (int) s[2];
+            int rowPending = (int) s[3];
+            boolean ready  = (rowDone > 0 || rowPending > 0) && rowPending == 0;
+            grandAssigned += s[0];
+            grandPaid     += s[1];
     %>
     <tr>
         <td><%=siteCnt%></td>
-        <td><%=site.getSiteName() != null ? site.getSiteName() : ""%></td>
-        <td><%=site.getSiteLocation() != null ? site.getSiteLocation() : ""%></td>
-        <td><%=site.getSiteArea()%></td>
-        <td><%=String.format("%.2f", siteAssigned)%></td>
-        <td><%=String.format("%.2f", sitePaid)%></td>
-        <td><%=String.format("%.2f", siteBalance)%></td>
-        <td style="text-align:center;"><%=siteDone%>&nbsp;/&nbsp;<%=sitePending%></td>
+        <td><%=lbl[0]%></td>
+        <td><%=lbl[1]%></td>
+        <td><%=String.format("%.2f", s[0])%></td>
+        <td><%=String.format("%.2f", s[1])%></td>
+        <td><%=String.format("%.2f", rowBalance)%></td>
+        <td style="text-align:center;"><%=rowDone%>&nbsp;/&nbsp;<%=rowPending%></td>
         <td style="text-align:center;">
-            <% if (siteList.isEmpty()) { %>
+            <% if (rowDone == 0 && rowPending == 0) { %>
                 <span class="dispatch-badge pending">No Tasks</span>
             <% } else if (ready) { %>
-                <span class="dispatch-badge ready">&#10003; Dispatch Ready</span>
+                <span class="dispatch-badge ready">&#10003; All Done</span>
             <% } else { %>
-                <span class="dispatch-badge pending">&#9888; <%=sitePending%> Pending</span>
+                <span class="dispatch-badge pending">&#9888; <%=rowPending%> Pending</span>
             <% } %>
         </td>
     </tr>
@@ -140,7 +138,7 @@ $(document).ready(function() {
     </tbody>
     <tfoot>
     <tr style="font-weight:bold;">
-        <td colspan="4" style="text-align:right;">Grand Total</td>
+        <td colspan="3" style="text-align:right;">Grand Total</td>
         <td><%=String.format("%.2f", grandAssigned)%></td>
         <td><%=String.format("%.2f", grandPaid)%></td>
         <td><%=String.format("%.2f", Math.max(0, grandAssigned - grandPaid))%></td>
