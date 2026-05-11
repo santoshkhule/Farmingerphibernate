@@ -33,33 +33,26 @@
 	});
 </script>
 <script type="text/javascript">
-var tempId=-1;
-  var showEdit=function (id) {
-	  if(tempId!=-1){
-		  $("#img"+tempId).hide();  
-	  }		
-		$("#cropToSiteId").val($(id).find("td").eq(1).text());
-		$("#siteInfoId").val($(id).find("td").eq(3).text());
-		
-		//var cropIdArr=$(id).find("td").eq(4).text();
-		var cropIdArr=$(id).find("td").eq(4).text().split(",");	
-		
-		
-		for(var i=0;i<cropIdArr.length;i++){			
-			$("#cropId").val(cropIdArr[i]);
+	function showEdit(row) {
+		var $row = $(row);
+		$("#cropToSiteId").val($row.data("id"));
+		$("#siteInfoId").val($row.data("siteInfoId"));
+		var cropIds = String($row.data("cropId")).split(",");
+		var $sel = $("#cropId");
+		$sel.find("option").prop("selected", false);
+		for (var i = 0; i < cropIds.length; i++) {
+			$sel.find("option[value='" + cropIds[i].trim() + "']").prop("selected", true);
 		}
-		
-		//$("#cropId").val($(id).find("td").eq(4).text().trim());
-		$("#cropAssignDate").val($(id).find("td").eq(2).text().trim());
+		$("#cropAssignDate").val($row.data("date"));
 		$("#edit").show();
 		$("#add").hide();
-		$("#th").show();
-		$("#td"+$(id).find("td").eq(1).text().trim()).show();		
-		$("#img"+$(id).find("td").eq(1).text().trim()).show();
-		tempId=$(id).find("td").eq(1).text().trim();		
-  }
-  function deleteCropToSite(id) {
-		window.location.href="../../AssignCropToSiteController?cropToSiteId="+id+"&delete=delete";
+		$("tr.selected-row").removeClass("selected-row");
+		$row.addClass("selected-row");
+	}
+	function deleteCropToSite(id) {
+		if (confirm("Delete this assignment?")) {
+			window.location.href = "../../AssignCropToSiteController?cropToSiteId=" + id + "&delete=delete";
+		}
 	}
 </script>
 <script>
@@ -71,8 +64,7 @@ $(document).ready(function() {
 			autoWidth: false,
 			scrollX: true,
 			columnDefs: [
-				{ visible: false, targets: [3, 4, 7] },
-				{ orderable: false, targets: [0, 7] }
+				{ orderable: false, targets: [0, 4] }
 			],
 			language: {
 				search: '', searchPlaceholder: 'Search...',
@@ -144,21 +136,11 @@ $(document).ready(function() {
 		</table>
 	</form>
 	<hr>
-	<form method="post">
-	<table>
-		<tr>			
-			<td><input type="submit" name="sbtView" value="View" onclick="this.form.action='assignCropToSite.jsp',target='_blank'"></td>
-			<td><input type="submit" name="sbtDelete" value="Delete" onclick="this.form.action='action/assignCropToSiteAction.jsp'"></td>
-		</tr>
-	</table>
 		<table id="assignCropTable" border="1" width="100%" class="tbl-data" cellspacing="0">
 			<thead>
 			<tr>
-				<th>Select</th>
 				<th>Sr. No.</th>
 				<th>Date</th>
-				<th></th><!-- siteInfoId: hidden data column, read by showEdit() via eq(3) -->
-				<th></th><!-- cropId: hidden data column, read by showEdit() via eq(4) -->
 				<th>Site</th>
 				<th>Crop</th>
 				<th>Action</th>
@@ -166,43 +148,44 @@ $(document).ready(function() {
 			</thead>
 			<tbody>
 			<%
+				int cnt = 0;
 				AssignCropToSiteService cropToSiteService=new AssignCropToSiteService();
 				List<AssignCropToSiteEntity> cropToSiteEntities=cropToSiteService.getListOFAssignCropToSite();
 				for(AssignCropToSiteEntity cropToSiteEntity:cropToSiteEntities){
+					if(cropToSiteEntity==null) continue;
+					cnt++;
+					List<AssignCropToSiteRefEntity> cropToSiteRefEntities=cropToSiteEntity.getCropToSiteRefEntity();
+					String cropId=null,cropName=null;
+					for(AssignCropToSiteRefEntity siteRefEntity:cropToSiteRefEntities){
+						if(null!=cropId){
+							cropId=cropId+","+siteRefEntity.getConfigCropEntity().getCropId();
+						}else{
+							cropId=String.valueOf(siteRefEntity.getConfigCropEntity().getCropId());
+						}
+						if(null!=cropName){
+							cropName=cropName+","+siteRefEntity.getConfigCropEntity().getCropName();
+						}else{
+							cropName=siteRefEntity.getConfigCropEntity().getCropName();
+						}
+					}
+					String assignDate = FarmUtility.convertfrom_yymmddToddmmyy(cropToSiteEntity.getCropAssignDate().toString());
 			%>
-			<tr align="center" onclick="showEdit(this)">
-				<td>
-					<input type="radio" name="radAssignCropSiteId" id="radAssignCropSiteId" value="" required="required">
+			<tr align="center" onclick="showEdit(this)"
+				data-id="<%=cropToSiteEntity.getAssignCroptoSiteId()%>"
+				data-site-info-id="<%=cropToSiteEntity.getSiteInformationEntity().getSiteInfoId()%>"
+				data-crop-id="<%=cropId%>"
+				data-date="<%=assignDate%>">
+				<td><%=cnt%></td>
+				<td><%=assignDate%></td>
+				<td><%=cropToSiteEntity.getSiteInformationEntity()!=null ? cropToSiteEntity.getSiteInformationEntity().getSiteName() : ""%></td>
+				<td><%=cropName!=null ? cropName : ""%></td>
+				<td style="text-align:center; white-space:nowrap;">
+					<button type="button" class="btn-delete" onclick="event.stopPropagation(); deleteCropToSite(<%=cropToSiteEntity.getAssignCroptoSiteId()%>)">Delete</button>
 				</td>
-				<td><%if(cropToSiteEntity!=null){out.println(cropToSiteEntity.getAssignCroptoSiteId());} %></td>
-				<td><%if(cropToSiteEntity!=null){out.println(FarmUtility.convertfrom_yymmddToddmmyy(cropToSiteEntity.getCropAssignDate().toString()));} %></td>
-				<td hidden="true"><%=cropToSiteEntity.getSiteInformationEntity().getSiteInfoId() %></td>
-				<%
-				List<AssignCropToSiteRefEntity> cropToSiteRefEntities=cropToSiteEntity.getCropToSiteRefEntity();
-				String cropId=null,cropName=null;
-				for(AssignCropToSiteRefEntity siteRefEntity:cropToSiteRefEntities){
-					if(null!=cropId){
-						cropId=cropId+","+siteRefEntity.getConfigCropEntity().getCropId();
-					}else{
-						cropId=String.valueOf(siteRefEntity.getConfigCropEntity().getCropId());
-					}
-					if(null!=cropName){
-						cropName=cropName+","+siteRefEntity.getConfigCropEntity().getCropName();
-					}else{
-						cropName=siteRefEntity.getConfigCropEntity().getCropName();
-					}
-				}
-				%>
-				<td hidden="true"><%=cropId%></td>
-				<td><%if(cropToSiteEntity.getSiteInformationEntity()!=null){out.println(cropToSiteEntity.getSiteInformationEntity().getSiteName());} %></td>
-				<td><%if(null!=cropName){out.println(cropName);} %></td>
-				<td id="td<%=cropToSiteEntity.getAssignCroptoSiteId() %>" hidden="true"><img src="../../img/delete.jpg" height="18" width="40" id="img<%=cropToSiteEntity.getAssignCroptoSiteId() %>" hidden onclick="deleteCropToSite(<%=cropToSiteEntity.getAssignCroptoSiteId()%>)"></td>
 			</tr>
 			<%} %>
 			</tbody>
 		</table>
-		
-	</form>
 	</fieldset>
 	<%@include file="../../footer.jsp" %>
 	
