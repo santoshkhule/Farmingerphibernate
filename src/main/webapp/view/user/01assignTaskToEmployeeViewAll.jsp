@@ -93,6 +93,8 @@
 			if (confirm("Are you sure you want to delete this assignment?")) {
 				window.location = "../../AssignResourcesController?assignResourceId=" + id + "&action=delete";
 			}
+		} else if (action == "edit") {
+			window.location = "../../AssignResourcesController?sbtEdit=Edit&radAssignWorkId=" + id;
 		}
 	}
 	function initAssignTable() {
