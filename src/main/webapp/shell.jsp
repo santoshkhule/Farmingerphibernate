@@ -29,8 +29,9 @@
 
 	#contentFrame {
 		flex: 1;
+		min-width: 0;
 		border: none;
-		height: 100vh;
+		height: 100%;
 		background: #eaf2ea;
 		display: block;
 	}

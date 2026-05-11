@@ -67,6 +67,8 @@ body {
     font-size: 13px;
     color: var(--text);
     background: #eaf2ea;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 table  { border-spacing: 0; border-collapse: collapse; }

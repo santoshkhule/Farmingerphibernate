@@ -109,6 +109,7 @@
 				pageLength: 25,
 				lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']],
 				autoWidth: false,
+				scrollX: true,
 				columnDefs: [{ orderable: false, targets: [0, 11] }],
 				language: {
 					search: '', searchPlaceholder: 'Search...',
@@ -127,7 +128,7 @@
 <body>
 	<!-- <h2>View All Employee Assign Task</h2> <hr>-->
 
-	<fieldset style="height: 575px">
+	<fieldset>
 		<legend>View All Employee Assign Task</legend>
 		<table>
 			<tr>
