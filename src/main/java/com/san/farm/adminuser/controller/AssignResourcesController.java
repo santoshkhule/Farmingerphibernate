@@ -267,6 +267,21 @@ public class AssignResourcesController extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	private void doBulkDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String[] ids = request.getParameterValues("deleteIds");
+		if (ids != null) {
+			AssignResourceEmployeeToFarmService service = new AssignResourceEmployeeToFarmService();
+			for (String id : ids) {
+				try {
+					service.deleteAssignResources(Integer.parseInt(id.trim()));
+				} catch (Exception ex) {
+					logger.error("Bulk delete failed for id {}", id, ex);
+				}
+			}
+		}
+		response.sendRedirect("view/user/01assignTaskToEmployeeViewAll.jsp");
+	}
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (request.getParameter("sbtView") != null) {
 			doView(request, response);
@@ -279,11 +294,10 @@ public class AssignResourcesController extends HttpServlet {
 		}
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getParameter("sbtView") != null) {
+		if (request.getParameter("deleteSelected") != null) {
+			doBulkDelete(request, response);
+		} else if (request.getParameter("sbtView") != null) {
 			doView(request, response);
 		} else if (request.getParameter("sbtEdit") != null) {
 			doEditLoad(request, response);
