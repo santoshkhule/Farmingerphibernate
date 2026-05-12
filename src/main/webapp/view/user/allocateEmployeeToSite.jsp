@@ -2,7 +2,7 @@
 <%@page import="com.san.farm.adminuser.dao.*"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
 <%@page import="java.util.List"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     /* ── cropToSiteId ── */
     int cropToSiteId = 0;
@@ -21,7 +21,7 @@
     List<EmployeeInfoEntity> employees = empSvc.getListOfEmployee();
     List<ConfigFarmTaskEntity> tasks = taskSvc.fetch();
 
-    /* ── existing allocations for current assignment (stats + display table) ── */
+    /* ── existing allocations ── */
     AssignResourceEmployeeToFarmService allocSvc = new AssignResourceEmployeeToFarmService();
     List<AssignEmployeeToFarmEntity> allocations = allocSvc.getByCropToSiteId(cropToSiteId);
 
@@ -58,10 +58,11 @@
     /* ── today's date ── */
     String todayStr = new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date());
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
 <title>Allocate Employees — <%=siteName%></title>
@@ -93,7 +94,6 @@
     .inp-sm  { font-size:12px; padding:3px 4px; }
     .sel-emp { width:140px; }
     .sel-typework { width:120px; }
-    .sel-task { width:150px; }
     .sel-status { width:100px; }
     .inp-num  { width:70px; text-align:right; }
     .inp-date { width:90px; }
@@ -108,13 +108,32 @@
                       cursor:pointer; border-radius:3px; font-size:12px; margin-left:2px; }
     .btn-row-cancel { background:#6c757d; color:#fff; border:none; padding:3px 10px;
                       cursor:pointer; border-radius:3px; font-size:12px; margin-left:2px; }
+
+    /* ── Checkbox dropdown ── */
+    .chk-drop        { position:relative; display:inline-block; }
+    .chk-drop-btn    { background:#fff; border:1px solid var(--gray-400); border-radius:var(--r-sm);
+                       padding:3px 22px 3px 6px; font-size:11px; cursor:pointer; text-align:left;
+                       min-width:130px; max-width:160px; position:relative; white-space:nowrap;
+                       overflow:hidden; text-overflow:ellipsis; font-family:inherit; color:#333; }
+    .chk-drop-btn::after { content:'\25BE'; position:absolute; right:6px; top:50%;
+                            transform:translateY(-50%); color:#888; pointer-events:none; }
+    .chk-drop-btn.has-val { border-color:var(--green-bd); background:var(--green-lt);
+                             color:var(--green-dk); font-weight:600; }
+    .chk-drop-panel  { position:absolute; top:calc(100% + 2px); left:0; z-index:1000; background:#fff;
+                       border:1px solid var(--gray-400); border-radius:var(--r-sm);
+                       box-shadow:0 4px 12px rgba(0,0,0,.15); min-width:170px; max-height:190px;
+                       overflow-y:auto; padding:4px 0; }
+    .chk-drop-item   { display:flex; align-items:center; gap:7px; padding:4px 10px;
+                       font-size:11px; cursor:pointer; user-select:none; }
+    .chk-drop-item:hover { background:var(--green-lt); }
+    .chk-drop-item input { margin:0; cursor:pointer; accent-color:var(--green-md); }
 </style>
 </head>
 <body>
 <%@include file="../../header.jsp" %>
 <script src="../../js/jquery-ui.js"></script>
 <script>
-/* ─── Employee options HTML (built from server data) ─── */
+/* ─── Employee options HTML ─── */
 var empOptions = '<option value="">-- Select Employee --</option>';
 <%
     for (EmployeeInfoEntity e : employees) {
@@ -127,18 +146,24 @@ var empOptions = '<option value="">-- Select Employee --</option>';
 empOptions += '<option value="<%=e.getEmployeeInfoId()%>"><%=fullName%></option>';
 <% } %>
 
-/* ─── Task options HTML ─── */
-var taskOptions = '<option value="">-- Select Task --</option>';
+/* ─── Task checkbox items HTML (for new rows) ─── */
+var taskChkItems = '';
 <%
     for (ConfigFarmTaskEntity t : tasks) {
         String tName = t.getTaskName() != null ? t.getTaskName().replace("'", "\\'").replace("\"", "&quot;") : "";
 %>
-taskOptions += '<option value="<%=t.getTaskId()%>"><%=tName%></option>';
+taskChkItems += '<label class="chk-drop-item"><input type="checkbox" class="task-chk" value="<%=t.getTaskId()%>" onchange="updateNewRowDropBtn(this)"><%=tName%></label>';
 <% } %>
 
-var todayDate = '<%=todayStr%>';
+/* ─── Task name lookup map ─── */
+var taskNameMap = {};
+<% for (ConfigFarmTaskEntity t : tasks) {
+    String tName = t.getTaskName() != null ? t.getTaskName().replace("'", "\\'") : "";
+%>
+taskNameMap['<%=t.getTaskId()%>'] = '<%=tName%>';
+<% } %>
 
-/* ─── Site-wide allocations for duplicate checking (same employee+date+task+site) ─── */
+/* ─── Site-wide allocations for duplicate checking ─── */
 var existingAllocs = [
 <%
     for (AssignEmployeeToFarmEntity xa : siteAllocations) {
@@ -161,22 +186,85 @@ var existingAllocs = [
 %>
 ];
 
+var todayDate   = '<%=todayStr%>';
+var dropCounter = 0;
+
 $(function() {
     $(".date-inp").datepicker({ changeMonth:true, changeYear:true, dateFormat:"dd/mm/yy" });
+
+    /* close all dropdowns when clicking outside */
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.chk-drop').length) {
+            $('.chk-drop-panel').hide();
+        }
+    });
 });
 
+/* ── Checkbox dropdown helpers ── */
+function toggleDrop(panelId, btnId, event) {
+    if (event) event.stopPropagation();
+    var $panel = $('#' + panelId);
+    $('.chk-drop-panel').not($panel).hide();
+    $panel.toggle();
+}
+
+/* updates button label for new-row task dropdowns */
+function updateNewRowDropBtn(chkEl) {
+    var $drop    = $(chkEl).closest('.task-drop');
+    var $btn     = $drop.find('.chk-drop-btn');
+    var $checked = $drop.find('.task-chk:checked');
+    if ($checked.length === 0) {
+        $btn.text('Select tasks...').removeClass('has-val');
+    } else if ($checked.length === 1) {
+        $btn.text($checked.first().closest('.chk-drop-item').text().trim()).addClass('has-val');
+    } else {
+        $btn.text($checked.length + ' tasks selected').addClass('has-val');
+    }
+}
+
+/* updates button label for edit-row task dropdowns */
+function updateEditRowDropBtn(rid) {
+    var $panel   = $('#editTaskPanel_' + rid);
+    var $btn     = $('#editTaskBtn_' + rid);
+    var $checked = $panel.find('.edit-task-chk:checked');
+    if ($checked.length === 0) {
+        $btn.text('Select tasks...').removeClass('has-val');
+    } else if ($checked.length === 1) {
+        $btn.text($checked.first().closest('.chk-drop-item').text().trim()).addClass('has-val');
+    } else {
+        $btn.text($checked.length + ' tasks selected').addClass('has-val');
+    }
+}
+
+/* builds task checkbox dropdown HTML for a new dynamically-added row */
+function buildTaskDropHtml() {
+    dropCounter++;
+    var btnId   = 'tDropBtn_' + dropCounter;
+    var panelId = 'tDropPanel_' + dropCounter;
+    return '<div class="chk-drop task-drop">' +
+               '<button type="button" class="chk-drop-btn" id="' + btnId + '" ' +
+                   'onclick="toggleDrop(\'' + panelId + '\',\'' + btnId + '\',event)">' +
+                   'Select tasks...</button>' +
+               '<div class="chk-drop-panel" id="' + panelId + '" style="display:none;">' +
+                   taskChkItems +
+               '</div>' +
+           '</div>' +
+           '<input type="hidden" name="taskIdsCsv" class="task-csv">';
+}
+
+/* ── Validate & collect CSV before new-row form submit ── */
 function validateBeforeSubmit() {
-    /* Step 1: populate hidden taskIdsCsv from each row's multi-select */
+    /* populate hidden taskIdsCsv from each row's checkbox dropdown */
     $('#empTableBody tr').each(function() {
         var selected = [];
-        $(this).find('.task-multi option:selected').each(function() {
-            if ($(this).val()) selected.push($(this).val());
+        $(this).find('.task-drop .task-chk:checked').each(function() {
+            if (this.value) selected.push(this.value);
         });
         $(this).find('.task-csv').val(selected.join(','));
     });
 
     var rows  = $('#empTableBody tr');
-    var seen  = {};   /* "empId|date|taskId" -> rowNum, per-task granularity */
+    var seen  = {};
     var valid = true, msg = '';
 
     rows.each(function(idx) {
@@ -184,41 +272,33 @@ function validateBeforeSubmit() {
 
         var empSel  = $(this).find('select[name="empId"]');
         var dateInp = $(this).find('input[name="workDate"]');
-        var taskSel = $(this).find('.task-multi');
 
-        var empId   = empSel.val() || '';
-        var date    = $.trim(dateInp.val());
+        var empId = empSel.val() || '';
+        var date  = $.trim(dateInp.val());
         if (!empId) return;
 
-        var empName = empSel.find('option:selected').text();
-
-        /* collect selected task IDs */
+        var empName  = empSel.find('option:selected').text();
         var selTasks = [];
-        taskSel.find('option:selected').each(function() {
-            if ($(this).val()) selTasks.push($(this).val());
+        $(this).find('.task-drop .task-chk:checked').each(function() {
+            if (this.value) selTasks.push(this.value);
         });
 
-        /* check each selected task individually */
         for (var t = 0; t < selTasks.length; t++) {
             var tid = selTasks[t];
             var key = empId + '|' + date + '|' + tid;
 
-            /* within-form duplicate */
             if (seen.hasOwnProperty(key)) {
-                var tName = taskSel.find('option[value="' + tid + '"]').text();
                 msg = 'Row ' + (idx + 1) + ' duplicates row ' + seen[key] + ':\n'
-                    + '"' + empName + '" — ' + (date || 'no date') + ' — task "' + tName + '".\n'
+                    + '"' + empName + '" — ' + (date || 'no date') + ' — task "' + (taskNameMap[tid] || tid) + '".\n'
                     + 'Remove or change the duplicate row.';
                 valid = false; return false;
             }
 
-            /* against already-saved records (entire physical site) */
             for (var i = 0; i < existingAllocs.length; i++) {
                 var ex = existingAllocs[i];
                 if (ex.empId === empId && ex.date === date && ex.taskId === tid) {
-                    var tName2 = taskSel.find('option[value="' + tid + '"]').text();
                     msg = '"' + empName + '" on ' + (date || 'no date') + ' is already assigned task "'
-                        + tName2 + '" at site "<%=siteName%>".\nChange the employee, date or task.';
+                        + (taskNameMap[tid] || tid) + '" at site "<%=siteName%>".\nChange the employee, date or task.';
                     valid = false; return false;
                 }
             }
@@ -231,13 +311,13 @@ function validateBeforeSubmit() {
     return true;
 }
 
+/* ── Add new row ── */
 function addRow() {
     var tr = $('<tr>');
     tr.html(
-        '<td><select name="empId" class="inp-sm sel-emp">'      + empOptions  + '</select></td>' +
+        '<td><select name="empId" class="inp-sm sel-emp">'      + empOptions + '</select></td>' +
         '<td><input type="text" name="workDate" class="inp-sm inp-date date-inp-dyn" value="' + todayDate + '" placeholder="dd/mm/yyyy" readonly></td>' +
-        '<td><select multiple size="3" class="inp-sm sel-task task-multi">' + taskOptions + '</select>' +
-            '<input type="hidden" name="taskIdsCsv" class="task-csv"></td>' +
+        '<td>' + buildTaskDropHtml() + '</td>' +
         '<td><select name="typeOfWork" class="inp-sm sel-typework">' +
             '<option value="Contract">Contract</option>' +
             '<option value="Per Day Payment">Per Day Payment</option>' +
@@ -257,8 +337,9 @@ function addRow() {
 }
 
 function removeRow(btn) {
-    var rows = document.getElementById('empTableBody').rows;
-    if (rows.length <= 1) { alert('At least one row is required.'); return; }
+    if (document.getElementById('empTableBody').rows.length <= 1) {
+        alert('At least one row is required.'); return;
+    }
     $(btn).closest('tr').remove();
 }
 
@@ -272,8 +353,6 @@ function editAllocRow(id) {
         if (sp)  sp.style.display = 'none';
         if (inp) inp.style.display = '';
     });
-    var hint = document.getElementById('editTasksHint_' + id);
-    if (hint) hint.style.display = '';
     $('#editDate_' + id).datepicker({ changeMonth:true, changeYear:true, dateFormat:'dd/mm/yy' });
     document.getElementById('btnEdit_'   + id).style.display = 'none';
     document.getElementById('btnRemove_' + id).style.display = 'none';
@@ -288,8 +367,8 @@ function cancelAllocRow(id) {
         if (sp)  sp.style.display = '';
         if (inp) inp.style.display = 'none';
     });
-    var hint = document.getElementById('editTasksHint_' + id);
-    if (hint) hint.style.display = 'none';
+    /* close task dropdown panel if open */
+    $('#editTaskPanel_' + id).hide();
     document.getElementById('btnEdit_'   + id).style.display = '';
     document.getElementById('btnRemove_' + id).style.display = '';
     document.getElementById('btnSave_'   + id).style.display = 'none';
@@ -297,29 +376,27 @@ function cancelAllocRow(id) {
 }
 
 function saveAllocRow(id) {
-    /* collect selected task IDs */
-    var taskSel = document.getElementById('editTasks_' + id);
+    /* collect checked task IDs from the edit-row dropdown panel */
     var tids = [];
-    for (var i = 0; i < taskSel.options.length; i++) {
-        if (taskSel.options[i].selected && taskSel.options[i].value)
-            tids.push(taskSel.options[i].value);
-    }
-    document.getElementById('hidTasksCsv_' + id).value  = tids.join(',');
-    document.getElementById('hidEmp_'        + id).value  = document.getElementById('editEmp_'       + id).value;
-    document.getElementById('hidDate_'       + id).value  = document.getElementById('editDate_'      + id).value;
-    document.getElementById('hidTypeOfWork_' + id).value  = document.getElementById('editTypeOfWork_' + id).value;
-    document.getElementById('hidAmount_'     + id).value  = document.getElementById('editAmount_'    + id).value;
-    document.getElementById('hidAdvPay_'   + id).value  = document.getElementById('editAdvPay_' + id).value;
-    document.getElementById('hidStatus_'   + id).value  = document.getElementById('editStatus_' + id).value;
-    document.getElementById('hidRemark_'   + id).value  = document.getElementById('editRemark_' + id).value;
-    document.getElementById('frmUpdate_'   + id).submit();
+    $('#editTaskPanel_' + id + ' .edit-task-chk:checked').each(function() {
+        if (this.value) tids.push(this.value);
+    });
+    document.getElementById('hidTasksCsv_'    + id).value = tids.join(',');
+    document.getElementById('hidEmp_'         + id).value = document.getElementById('editEmp_'        + id).value;
+    document.getElementById('hidDate_'        + id).value = document.getElementById('editDate_'       + id).value;
+    document.getElementById('hidTypeOfWork_'  + id).value = document.getElementById('editTypeOfWork_' + id).value;
+    document.getElementById('hidAmount_'      + id).value = document.getElementById('editAmount_'     + id).value;
+    document.getElementById('hidAdvPay_'      + id).value = document.getElementById('editAdvPay_'     + id).value;
+    document.getElementById('hidStatus_'      + id).value = document.getElementById('editStatus_'     + id).value;
+    document.getElementById('hidRemark_'      + id).value = document.getElementById('editRemark_'     + id).value;
+    document.getElementById('frmUpdate_'      + id).submit();
 }
 </script>
 
 <fieldset>
 <legend>Allocate Employees to Site</legend>
 
-<a class="back-link" href="assignCropToSite.jsp">&#8592; Back to Assign Crop To Site</a>
+<a class="back-link" href="assignCropToSite.jsp">&#8592; Back to Site Resource Allocation</a>
 
 <!-- Site banner -->
 <div class="site-banner" style="margin-top:8px;">
@@ -351,7 +428,7 @@ function saveAllocRow(id) {
 <!-- ── New assignment form ── -->
 <form method="post" action="<%=request.getContextPath()%>/AllocateEmployeeController"
       onsubmit="return validateBeforeSubmit()">
-    <input type="hidden" name="action"      value="save">
+    <input type="hidden" name="action"       value="save">
     <input type="hidden" name="cropToSiteId" value="<%=cropToSiteId%>">
 
     <div class="section-title">
@@ -360,7 +437,7 @@ function saveAllocRow(id) {
     </div>
 
     <div style="overflow-x:auto;">
-    <table border="1" class="tbl-data" width="100%" cellspacing="0">
+    <table class="tbl-data" cellspacing="0">
         <thead>
         <tr>
             <th>Employee</th>
@@ -394,13 +471,21 @@ function saveAllocRow(id) {
                        value="<%=todayStr%>" placeholder="dd/mm/yyyy" readonly>
             </td>
             <td>
-                <select multiple size="3" class="inp-sm sel-task task-multi">
-                    <% for (ConfigFarmTaskEntity t : tasks) { %>
-                    <option value="<%=t.getTaskId()%>"><%=t.getTaskName()%></option>
-                    <% } %>
-                </select>
+                <!-- static first row uses counter 0 -->
+                <div class="chk-drop task-drop">
+                    <button type="button" class="chk-drop-btn" id="tDropBtn_0"
+                        onclick="toggleDrop('tDropPanel_0','tDropBtn_0',event)">Select tasks...</button>
+                    <div class="chk-drop-panel" id="tDropPanel_0" style="display:none;">
+                        <% for (ConfigFarmTaskEntity t : tasks) { %>
+                        <label class="chk-drop-item">
+                            <input type="checkbox" class="task-chk" value="<%=t.getTaskId()%>"
+                                onchange="updateNewRowDropBtn(this)">
+                            <%=t.getTaskName()%>
+                        </label>
+                        <% } %>
+                    </div>
+                </div>
                 <input type="hidden" name="taskIdsCsv" class="task-csv">
-                <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Ctrl+click to multi-select</div>
             </td>
             <td>
                 <select name="typeOfWork" class="inp-sm sel-typework">
@@ -408,12 +493,8 @@ function saveAllocRow(id) {
                     <option value="Per Day Payment">Per Day Payment</option>
                 </select>
             </td>
-            <td>
-                <input type="number" name="amount" class="inp-sm inp-num" value="0" step="0.01" min="0">
-            </td>
-            <td>
-                <input type="number" name="advPayment" class="inp-sm inp-num" value="0" step="0.01" min="0">
-            </td>
+            <td><input type="number" name="amount"     class="inp-sm inp-num" value="0" step="0.01" min="0"></td>
+            <td><input type="number" name="advPayment" class="inp-sm inp-num" value="0" step="0.01" min="0"></td>
             <td>
                 <select name="workStatus" class="inp-sm sel-status">
                     <option value="Pending">Pending</option>
@@ -421,9 +502,7 @@ function saveAllocRow(id) {
                     <option value="Rejected">Rejected</option>
                 </select>
             </td>
-            <td>
-                <input type="text" name="remark" class="inp-sm inp-rem">
-            </td>
+            <td><input type="text" name="remark" class="inp-sm inp-rem"></td>
             <td style="text-align:center;">
                 <button type="button" class="btn-remove-row" onclick="removeRow(this)">&#10005;</button>
             </td>
@@ -447,7 +526,7 @@ function saveAllocRow(id) {
 <p style="color:var(--text-muted); font-size:13px;">No employees assigned yet.</p>
 <% } else { %>
 <div style="overflow-x:auto;">
-<table border="1" class="tbl-data" width="100%" cellspacing="0">
+<table class="tbl-data" cellspacing="0">
     <thead>
     <tr>
         <th>Date</th>
@@ -474,20 +553,22 @@ function saveAllocRow(id) {
             String empName = empFn + empMn + empLn;
 
             StringBuilder taskNames = new StringBuilder();
-            StringBuilder curTaskIdsCsv = new StringBuilder();
-            for (ConfigFarmTaskEntity t : a.getListFarmTaskEntities()) {
-                if (taskNames.length()    > 0) taskNames.append(", ");
-                if (curTaskIdsCsv.length() > 0) curTaskIdsCsv.append(",");
+            List<ConfigFarmTaskEntity> curTasks = a.getListFarmTaskEntities();
+            for (ConfigFarmTaskEntity t : curTasks) {
+                if (taskNames.length() > 0) taskNames.append(", ");
                 taskNames.append(t.getTaskName());
-                curTaskIdsCsv.append(t.getTaskId());
             }
 
-            String aDate          = a.getAssignWorkDate() != null
-                                  ? FarmUtility.convertfrom_yymmddToddmmyy(a.getAssignWorkDate().toString()) : "";
-            String statusCls      = "status-" + (a.getWorkStatus() != null ? a.getWorkStatus() : "");
-            String comment        = a.getComment()     != null ? a.getComment()     : "";
-            String curStatus      = a.getWorkStatus()  != null ? a.getWorkStatus()  : "Pending";
-            String curTypeOfWork  = a.getTypeOfWork()  != null ? a.getTypeOfWork()  : "Contract";
+            String editDropBtnLabel = curTasks.isEmpty() ? "Select tasks..."
+                                    : curTasks.size() == 1 ? curTasks.get(0).getTaskName()
+                                    : curTasks.size() + " tasks selected";
+
+            String aDate         = a.getAssignWorkDate() != null
+                                 ? FarmUtility.convertfrom_yymmddToddmmyy(a.getAssignWorkDate().toString()) : "";
+            String statusCls     = "status-" + (a.getWorkStatus() != null ? a.getWorkStatus() : "");
+            String comment       = a.getComment()    != null ? a.getComment()    : "";
+            String curStatus     = a.getWorkStatus() != null ? a.getWorkStatus() : "Pending";
+            String curTypeOfWork = a.getTypeOfWork() != null ? a.getTypeOfWork() : "Contract";
     %>
     <tr id="allocRow_<%=rid%>">
         <!-- Date -->
@@ -511,20 +592,29 @@ function saveAllocRow(id) {
                 <% } %>
             </select>
         </td>
-        <!-- Task(s) -->
+        <!-- Task(s) — checkbox dropdown; id="editTasks_RID" on wrapper so ALLOC_FIELDS show/hide works -->
         <td>
-            <span id="viewTasks_<%=rid%>"><%=taskNames.length() > 0 ? taskNames.toString() : "<span style='color:var(--text-muted)'>—</span>"%></span>
-            <select id="editTasks_<%=rid%>" multiple size="3" class="inp-sm sel-task" style="display:none;">
-                <% for (ConfigFarmTaskEntity tv : tasks) {
-                    boolean isSel = false;
-                    for (ConfigFarmTaskEntity ct : a.getListFarmTaskEntities()) {
-                        if (ct.getTaskId() == tv.getTaskId()) { isSel = true; break; }
-                    }
-                %>
-                <option value="<%=tv.getTaskId()%>" <%=isSel ? "selected" : ""%>><%=tv.getTaskName()%></option>
-                <% } %>
-            </select>
-            <div id="editTasksHint_<%=rid%>" style="font-size:10px;color:var(--text-muted);display:none;">Ctrl+click for multi</div>
+            <span id="viewTasks_<%=rid%>"><%=taskNames.length() > 0 ? taskNames.toString() : "<span style='color:var(--text-muted)'>&#8212;</span>"%></span>
+            <div class="chk-drop" id="editTasks_<%=rid%>" style="display:none;">
+                <button type="button" class="chk-drop-btn <%=curTasks.size() > 0 ? "has-val" : ""%>"
+                    id="editTaskBtn_<%=rid%>"
+                    onclick="toggleDrop('editTaskPanel_<%=rid%>','editTaskBtn_<%=rid%>',event)"><%=editDropBtnLabel%></button>
+                <div class="chk-drop-panel" id="editTaskPanel_<%=rid%>" style="display:none;">
+                    <% for (ConfigFarmTaskEntity tv : tasks) {
+                        boolean isSel = false;
+                        for (ConfigFarmTaskEntity ct : curTasks) {
+                            if (ct.getTaskId() == tv.getTaskId()) { isSel = true; break; }
+                        }
+                    %>
+                    <label class="chk-drop-item">
+                        <input type="checkbox" class="edit-task-chk" value="<%=tv.getTaskId()%>"
+                            <%=isSel ? "checked" : ""%>
+                            onchange="updateEditRowDropBtn(<%=rid%>)">
+                        <%=tv.getTaskName()%>
+                    </label>
+                    <% } %>
+                </div>
+            </div>
         </td>
         <!-- Type of Work -->
         <td style="text-align:center;">
@@ -582,14 +672,14 @@ function saveAllocRow(id) {
                 <input type="hidden" name="action"           value="update">
                 <input type="hidden" name="assignResourceId" value="<%=rid%>">
                 <input type="hidden" name="cropToSiteId"     value="<%=cropToSiteId%>">
-                <input type="hidden" id="hidEmp_<%=rid%>"          name="empId">
-                <input type="hidden" id="hidDate_<%=rid%>"         name="workDate">
-                <input type="hidden" id="hidTasksCsv_<%=rid%>"     name="taskIdsCsv">
-                <input type="hidden" id="hidTypeOfWork_<%=rid%>"   name="typeOfWork">
-                <input type="hidden" id="hidAmount_<%=rid%>"       name="amount">
-                <input type="hidden" id="hidAdvPay_<%=rid%>"       name="advPayment">
-                <input type="hidden" id="hidStatus_<%=rid%>"       name="workStatus">
-                <input type="hidden" id="hidRemark_<%=rid%>"       name="remark">
+                <input type="hidden" id="hidEmp_<%=rid%>"         name="empId">
+                <input type="hidden" id="hidDate_<%=rid%>"        name="workDate">
+                <input type="hidden" id="hidTasksCsv_<%=rid%>"    name="taskIdsCsv">
+                <input type="hidden" id="hidTypeOfWork_<%=rid%>"  name="typeOfWork">
+                <input type="hidden" id="hidAmount_<%=rid%>"      name="amount">
+                <input type="hidden" id="hidAdvPay_<%=rid%>"      name="advPayment">
+                <input type="hidden" id="hidStatus_<%=rid%>"      name="workStatus">
+                <input type="hidden" id="hidRemark_<%=rid%>"      name="remark">
             </form>
 
             <button type="button" class="btn-row-save" id="btnSave_<%=rid%>"

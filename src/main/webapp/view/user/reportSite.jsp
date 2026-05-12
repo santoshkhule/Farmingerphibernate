@@ -302,28 +302,33 @@ function chip(lbl, val, removeFn) {
     return c;
 }
 
-/* ── Excel export (filtered rows) ── */
-function exportExcel(dt, filename) {
+/* ── CSV export (filtered rows) ── */
+function exportCSV(dt, filename) {
     var cols = [];
     $(dt.table().header()).find('th').each(function() { cols.push($(this).text().trim()); });
     var rows = dt.rows({search:'applied'}).data();
-    var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Report</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1"><thead><tr>';
-    cols.forEach(function(c) { html += '<th>'+c+'</th>'; });
-    html += '</tr></thead><tbody>';
-    for (var i=0; i<rows.length; i++) {
-        html += '<tr>';
-        for (var j=0; j<rows[i].length; j++) {
-            var v = $('<div/>').html(String(rows[i][j])).text();
-            html += '<td>'+v+'</td>';
-        }
-        html += '</tr>';
+
+    function escCsv(val) {
+        /* strip any HTML tags, then quote the value if it contains special chars */
+        var s = $('<div/>').html(String(val)).text().replace(/\r?\n/g,' ').trim();
+        return (s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1)
+            ? '"' + s.replace(/"/g,'""') + '"'
+            : s;
     }
-    html += '</tbody></table></body></html>';
-    var blob = new Blob([html], {type:'application/vnd.ms-excel;charset=utf-8'});
+
+    var csv = cols.map(escCsv).join(',') + '\r\n';
+    for (var i = 0; i < rows.length; i++) {
+        var line = [];
+        for (var j = 0; j < rows[i].length; j++) line.push(escCsv(rows[i][j]));
+        csv += line.join(',') + '\r\n';
+    }
+
+    /* UTF-8 BOM so Excel / mobile apps render characters (₹, Indian names) correctly */
+    var blob = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8'});
     var url  = URL.createObjectURL(blob);
     var a    = document.createElement('a');
     a.href   = url;
-    a.download = filename+'_'+new Date().toISOString().slice(0,10)+'.xls';
+    a.download = filename + '_' + new Date().toISOString().slice(0,10) + '.csv';
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
 }
@@ -393,8 +398,8 @@ function printReport() {
     </div>
     <div class="filter-actions">
         <button id="btnReset" class="btn-reset">&#10005; Reset</button>
-        <button class="btn-export" onclick="exportExcel(summaryDt,'SiteSummary')">&#8595; Summary XLS</button>
-        <button class="btn-export" onclick="exportExcel(detailDt,'SiteDetail')">&#8595; Detail XLS</button>
+        <button class="btn-export" onclick="exportCSV(summaryDt,'SiteSummary')">&#8595; Summary CSV</button>
+        <button class="btn-export" onclick="exportCSV(detailDt,'SiteDetail')">&#8595; Detail CSV</button>
         <button class="btn-pdf"   onclick="printReport()">&#128438; Print / PDF</button>
     </div>
 </div>
@@ -426,7 +431,7 @@ function printReport() {
 <div class="section-title">
     <span>Site Summary <small>&mdash; grouped by Site, Date &amp; Crop</small></span>
     <div class="tbl-export-btns no-print">
-        <button class="btn-tbl-xls" onclick="exportExcel(summaryDt,'SiteSummary')">&#8595; XLS</button>
+        <button class="btn-tbl-xls" onclick="exportCSV(summaryDt,'SiteSummary')">&#8595; CSV</button>
     </div>
 </div>
 <div style="overflow-x:auto;">
@@ -492,7 +497,7 @@ function printReport() {
 <div class="section-title">
     <span>Assignment Details <small>&mdash; all individual records</small></span>
     <div class="tbl-export-btns no-print">
-        <button class="btn-tbl-xls" onclick="exportExcel(detailDt,'SiteDetail')">&#8595; XLS</button>
+        <button class="btn-tbl-xls" onclick="exportCSV(detailDt,'SiteDetail')">&#8595; CSV</button>
     </div>
 </div>
 <div style="overflow-x:auto;">
