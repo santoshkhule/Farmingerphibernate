@@ -75,6 +75,23 @@
     .field-error input,
     .field-error select { border-color:#c62828 !important; }
     .err-msg { font-size:11px; color:#c62828; display:none; margin-top:2px; }
+
+    /* ── checkbox dropdown (task picker) ── */
+    .chk-drop        { position:relative; }
+    .chk-drop-btn    { background:#fff; border:1px solid var(--gray-400,#bdbdbd);
+                       border-radius:var(--r-sm,3px); padding:8px 28px 8px 10px; font-size:13px;
+                       text-align:left; cursor:pointer; width:100%; position:relative;
+                       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .chk-drop-btn::after { content:'\25BE'; position:absolute; right:8px; top:50%; transform:translateY(-50%); }
+    .chk-drop-btn.has-val { border-color:var(--green-bd,#a5d6a7); background:var(--green-lt,#e8f5e9);
+                            color:var(--green-dk,#1b5e20); font-weight:600; }
+    .chk-drop-panel  { position:absolute; top:calc(100% + 2px); left:0; z-index:1000; background:#fff;
+                       border:1px solid var(--gray-400,#bdbdbd); border-radius:var(--r-sm,3px);
+                       min-width:220px; max-height:190px; overflow-y:auto;
+                       box-shadow:0 3px 10px rgba(0,0,0,.18); }
+    .chk-drop-item   { display:flex; align-items:center; gap:7px; padding:5px 10px; cursor:pointer; font-size:13px; }
+    .chk-drop-item:hover { background:var(--green-lt,#e8f5e9); }
+    .chk-drop-item input { margin:0; cursor:pointer; accent-color:var(--green-md,#2e7d32); }
 </style>
 </head>
 <body>
@@ -112,8 +129,49 @@ function validate() {
     if (!status || status === '-1'){ mark('selWorkStatus', 'Please select a work status.'); }
 
     if (!ok) { document.querySelector('.btn-save').classList.add('shake'); }
+
+    /* sync hidden <select name="selWork"> from checkboxes before submit */
+    var sel = document.getElementById('selWork');
+    if (sel) {
+        Array.from(sel.options).forEach(function(o) { o.selected = false; });
+        document.querySelectorAll('#taskDropPanel .task-chk:checked').forEach(function(chk) {
+            var opt = sel.querySelector('option[value="' + chk.value + '"]');
+            if (opt) opt.selected = true;
+        });
+    }
+
     return ok;
 }
+
+function toggleDrop(panelId, btnId, evt) {
+    evt.stopPropagation();
+    var $panel = $('#' + panelId);
+    $('.chk-drop-panel').not($panel).hide();
+    $panel.toggle();
+}
+
+function updateTaskDropBtn() {
+    var $checked = $('#taskDropPanel .task-chk:checked');
+    var $btn     = $('#taskDropBtn');
+    if ($checked.length === 0) {
+        $btn.text('Select tasks…').removeClass('has-val');
+    } else if ($checked.length === 1) {
+        $btn.text($checked.first().closest('.chk-drop-item').text().trim()).addClass('has-val');
+    } else {
+        $btn.text($checked.length + ' tasks selected').addClass('has-val');
+    }
+}
+
+$(document).on('click', function(e) {
+    if (!$(e.target).closest('.chk-drop').length) {
+        $('.chk-drop-panel').hide();
+    }
+});
+
+$(function() {
+    /* set initial button label from any pre-checked tasks */
+    updateTaskDropBtn();
+});
 </script>
 
 <fieldset>
@@ -272,22 +330,35 @@ if (assignment == null) {
                     <span class="err-msg" id="err_selWorkStatus"></span>
                 </div>
                 <div class="field">
-                    <label for="selWork">Task(s)</label>
-                    <select name="selWork" id="selWork" multiple size="4">
-                        <% if (tasks != null) {
-                            List<ConfigFarmTaskEntity> currentTasks = assignment.getListFarmTaskEntities();
-                            for (ConfigFarmTaskEntity task : tasks) {
-                                boolean sel = false;
-                                if (currentTasks != null) {
-                                    for (ConfigFarmTaskEntity ct : currentTasks) {
-                                        if (ct.getTaskId() == task.getTaskId()) { sel = true; break; }
+                    <label>Task(s)</label>
+                    <div class="chk-drop" id="taskDrop">
+                        <button type="button" class="chk-drop-btn" id="taskDropBtn"
+                            onclick="toggleDrop('taskDropPanel','taskDropBtn',event)">Select tasks…</button>
+                        <div class="chk-drop-panel" id="taskDropPanel" style="display:none;">
+                            <%
+                                List<ConfigFarmTaskEntity> currentTasks = assignment.getListFarmTaskEntities();
+                                if (tasks != null) { for (ConfigFarmTaskEntity task : tasks) {
+                                    boolean isChecked = false;
+                                    if (currentTasks != null) {
+                                        for (ConfigFarmTaskEntity ct : currentTasks) {
+                                            if (ct.getTaskId() == task.getTaskId()) { isChecked = true; break; }
+                                        }
                                     }
-                                }
-                        %>
-                        <option value="<%=task.getTaskId()%>" <%=sel ? "selected" : ""%>><%=task.getTaskName()%></option>
+                            %>
+                            <label class="chk-drop-item">
+                                <input type="checkbox" class="task-chk" value="<%=task.getTaskId()%>"
+                                    <%=isChecked ? "checked" : ""%>
+                                    onchange="updateTaskDropBtn()"><%=task.getTaskName()%>
+                            </label>
+                            <% } } %>
+                        </div>
+                    </div>
+                    <%-- hidden select submitted as selWork[] — synced in validate() before submit --%>
+                    <select name="selWork" id="selWork" multiple style="display:none;">
+                        <% if (tasks != null) { for (ConfigFarmTaskEntity t2 : tasks) { %>
+                        <option value="<%=t2.getTaskId()%>"><%=t2.getTaskName()%></option>
                         <% } } %>
                     </select>
-                    <span class="hint">Ctrl+click to select multiple tasks</span>
                 </div>
             </div>
         </div>
