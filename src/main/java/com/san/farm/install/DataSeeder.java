@@ -8,62 +8,81 @@ import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.san.farm.adminuser.entity.UserTypeEntity;
 import com.san.farm.login.entity.LoginUser;
 import com.san.farm.util.HibernateUtil;
 
 /**
  * Runs once at application startup.
- * Seeds the default admin user into the LOGINUSER table if it does not exist.
+ * Seeds reference / default data into the database if not already present.
  *
- * Default credentials:  username = admin  /  password = admin
- * Change the password immediately after first login.
+ * Seeded data
+ *   USERTYPE  : Admin
+ *   LOGINUSER : admin / admin  (linked to the Admin user type)
+ *
+ * Change the admin password immediately after first login.
  */
 public class DataSeeder implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSeeder.class);
 
-    private static final String DEFAULT_ADMIN_USER = "admin";
-    private static final String DEFAULT_ADMIN_PASS = "admin";
-
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         logger.info("DataSeeder: running startup seed checks...");
-        try {
-            seedAdminUser();
-        } catch (Exception e) {
-            logger.error("DataSeeder: seed failed — application will continue but default admin may be missing", e);
-        }
-    }
-
-    private void seedAdminUser() {
         Session session = HibernateUtil.opensession();
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
 
-            Long count = (Long) session.createQuery(
-                "SELECT COUNT(u) FROM LoginUser u WHERE u.uname = :uname")
-                .setParameter("uname", DEFAULT_ADMIN_USER)
-                .uniqueResult();
+            UserTypeEntity adminType = seedUserType(session, "Admin");
+            seedLoginUser(session, "admin", "admin", adminType);
 
-            if (count == null || count == 0) {
-                LoginUser admin = new LoginUser();
-                admin.setUname(DEFAULT_ADMIN_USER);
-                admin.setPassword(DEFAULT_ADMIN_PASS);
-                session.save(admin);
-                tx.commit();
-                logger.info("DataSeeder: default admin user created " +
-                    "(username='{}') — CHANGE THE PASSWORD AFTER FIRST LOGIN.", DEFAULT_ADMIN_USER);
-            } else {
-                tx.rollback();
-                logger.info("DataSeeder: admin user already exists, skipping seed.");
-            }
-
+            tx.commit();
+            logger.info("DataSeeder: seed checks complete.");
         } catch (Exception e) {
             if (tx != null && tx.isActive()) tx.rollback();
-            logger.error("DataSeeder: error seeding admin user", e);
+            logger.error("DataSeeder: seed failed — app continues but default data may be missing", e);
         } finally {
             session.close();
+        }
+    }
+
+    /** Inserts the given user type if it does not already exist, then returns it. */
+    @SuppressWarnings("unchecked")
+    private UserTypeEntity seedUserType(Session session, String typeName) {
+        UserTypeEntity existing = (UserTypeEntity) session.createQuery(
+            "FROM UserTypeEntity WHERE userType = :type")
+            .setParameter("type", typeName)
+            .uniqueResult();
+
+        if (existing == null) {
+            UserTypeEntity ut = new UserTypeEntity();
+            ut.setUserType(typeName);
+            session.save(ut);
+            logger.info("DataSeeder: inserted user type '{}'", typeName);
+            return ut;
+        }
+
+        logger.info("DataSeeder: user type '{}' already exists (id={}), skipping.", typeName, existing.getUserTypeId());
+        return existing;
+    }
+
+    /** Inserts the given login user if it does not already exist. */
+    private void seedLoginUser(Session session, String uname, String password, UserTypeEntity userType) {
+        Long count = (Long) session.createQuery(
+            "SELECT COUNT(u) FROM LoginUser u WHERE u.uname = :uname")
+            .setParameter("uname", uname)
+            .uniqueResult();
+
+        if (count == null || count == 0) {
+            LoginUser user = new LoginUser();
+            user.setUname(uname);
+            user.setPassword(password);
+            user.setUserTypeEntity(userType);
+            session.save(user);
+            logger.info("DataSeeder: inserted login user '{}' — CHANGE PASSWORD AFTER FIRST LOGIN.", uname);
+        } else {
+            logger.info("DataSeeder: login user '{}' already exists, skipping.", uname);
         }
     }
 
