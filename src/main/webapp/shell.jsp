@@ -56,8 +56,7 @@
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#9881; Configuration</div>
-				<a class="nav-link" href="view/user/configuration.jsp" target="contentFrame">Basic Config</a>
-				<a class="nav-link" href="view/user/configureCatSubCatBrand.jsp" target="contentFrame">Configure Items</a>
+				<a class="nav-link" href="view/user/configuration.jsp" target="contentFrame">Configuration</a>
 				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame">Register User</a>
 				<a class="nav-link" href="view/user/assignCropToSite.jsp" target="contentFrame">Assign Crop To Site</a>
 			</div>
