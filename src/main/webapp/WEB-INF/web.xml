@@ -5,6 +5,9 @@
   <listener>
     <listener-class>com.san.farm.util.Log4jInitListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>com.san.farm.install.DataSeeder</listener-class>
+  </listener>
 
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
