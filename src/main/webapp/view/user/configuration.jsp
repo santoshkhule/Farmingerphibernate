@@ -20,6 +20,12 @@
     String activeTab = request.getParameter("tab");
     if (activeTab == null || activeTab.trim().isEmpty()) activeTab = "userType";
 
+    /* duplicate-validation feedback from UserTypeController */
+    String utError   = request.getParameter("error");
+    String utErrVal  = request.getParameter("errVal");
+    boolean utDupErr = "duplicate".equals(utError) && utErrVal != null && !utErrVal.trim().isEmpty();
+    String  utErrSafe = utDupErr ? utErrVal.trim().replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot;") : "";
+
     UserTypeService              utSvc = new UserTypeService();
     ConfigSiteInformationService siSvc = new ConfigSiteInformationService();
     ConfigCropService            crSvc = new ConfigCropService();
@@ -113,6 +119,12 @@
     .cfg-table td      { padding:6px 10px; border-bottom:1px solid #e8e8e8; vertical-align:middle; }
     .cfg-table td.center { text-align:center; }
 
+    /* ── inline error/success banners ── */
+    .cfg-err-msg   { display:flex; align-items:center; gap:8px; background:#fdecea;
+                     border:1px solid #ef9a9a; color:#c62828; border-radius:4px;
+                     padding:8px 12px; margin-bottom:10px; font-size:12px; }
+    .cfg-err-msg strong { font-weight:700; }
+
     /* ── summary chips ── */
     .cfg-count-chip    { display:inline-flex; align-items:center; gap:6px;
                          background:#e8f5e9; border:1px solid var(--green-bd,#a5d6a7);
@@ -145,10 +157,17 @@
     <form method="post" id="ut_frm" action="../../UserTypeController">
         <div class="cfg-form-card">
             <div class="cfg-form-card-title">Add New User Type</div>
+            <% if (utDupErr) { %>
+            <div class="cfg-err-msg">
+                &#9888;&nbsp;User type <strong>"<%=utErrSafe%>"</strong> already exists. Please enter a different name.
+            </div>
+            <% } %>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
                     <label for="ut_name">User Type Name</label>
-                    <input type="text" name="userType" id="ut_name" required placeholder="e.g. Admin, Supervisor">
+                    <input type="text" name="userType" id="ut_name" required placeholder="e.g. Admin, Supervisor"
+                        value="<%=utErrSafe%>"
+                        <%=utDupErr ? "style=\"border-color:#c62828;\"" : ""%>>
                 </div>
                 <div style="align-self:flex-end;">
                     <input type="submit" class="btn-add" name="add" value="Add">

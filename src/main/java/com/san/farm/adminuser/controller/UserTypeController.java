@@ -1,6 +1,7 @@
 package com.san.farm.adminuser.controller;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,58 +24,59 @@ public class UserTypeController extends HttpServlet {
 
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.debug("Processing UserType request");
+		String redirectUrl = "view/user/configuration.jsp?tab=userType";
 		try {
-			String userType=null;
-			int userTypeId;
-			userType=request.getParameter("userType");
+			String userType = request.getParameter("userType");
 			logger.debug("userType: {}", userType);
-			UserTypeService userTypeService=new UserTypeService();
-
-			UserTypeEntity userTypeEntity=new UserTypeEntity();
-
+			UserTypeService userTypeService = new UserTypeService();
+			UserTypeEntity userTypeEntity = new UserTypeEntity();
 			userTypeEntity.setUserType(userType);
 
-			//insert Operation
-			if(request.getParameter("add")!=null){
-				logger.info("Adding new user type: {}", userType);
-				userTypeService.saveUserType(userTypeEntity);
-				logger.info("User type added successfully");
+			// insert Operation
+			if (request.getParameter("add") != null) {
+				if (userTypeService.existsByName(userType)) {
+					logger.warn("Duplicate user type rejected: {}", userType);
+					redirectUrl = "view/user/configuration.jsp?tab=userType&error=duplicate"
+						+ "&errVal=" + URLEncoder.encode(userType.trim(), "UTF-8");
+				} else {
+					logger.info("Adding new user type: {}", userType);
+					userTypeService.saveUserType(userTypeEntity);
+					logger.info("User type added successfully");
+				}
 			}
 
-			//update Operation
-			if(request.getParameter("edit")!=null){
-				userTypeId=Integer.parseInt(request.getParameter("userTypeId"));
+			// update Operation
+			if (request.getParameter("edit") != null) {
+				int userTypeId = Integer.parseInt(request.getParameter("userTypeId"));
 				userTypeEntity.setUserTypeId(userTypeId);
 				logger.info("Updating user type with id: {}", userTypeId);
 				userTypeService.updateUserType(userTypeEntity);
 				logger.info("User type updated successfully");
 			}
 
-			//delete single Operation
-			if(request.getParameter("delete")!=null){
-				userTypeId=Integer.parseInt(request.getParameter("userTypeId"));
+			// delete single Operation
+			if (request.getParameter("delete") != null) {
+				int userTypeId = Integer.parseInt(request.getParameter("userTypeId"));
 				logger.info("Deleting user type with id: {}", userTypeId);
 				userTypeService.deleteUserType(userTypeId);
 				logger.info("User type deleted successfully");
 			}
 
-			//delete selected (bulk) Operation
-			if(request.getParameter("deleteSelected")!=null){
-				String[] ids=request.getParameterValues("deleteIds");
-				if(ids!=null){
+			// delete selected (bulk) Operation
+			if (request.getParameter("deleteSelected") != null) {
+				String[] ids = request.getParameterValues("deleteIds");
+				if (ids != null) {
 					logger.info("Bulk deleting {} user type(s)", ids.length);
-					for(String id : ids){
-						int delId=Integer.parseInt(id);
-						userTypeService.deleteUserType(delId);
-						logger.info("Deleted user type id: {}", delId);
+					for (String id : ids) {
+						userTypeService.deleteUserType(Integer.parseInt(id));
 					}
 				}
 			}
 		} catch (Exception exception) {
 			logger.error("Error processing UserType request", exception);
 		} finally {
-			logger.debug("Redirecting to userType.jsp");
-			response.sendRedirect("view/user/configuration.jsp?tab=userType");
+			logger.debug("Redirecting to: {}", redirectUrl);
+			response.sendRedirect(redirectUrl);
 		}
 	}
 
