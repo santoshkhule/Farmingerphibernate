@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- dark green rounded background -->
+  <rect width="32" height="32" rx="7" fill="#1b5e20"/>
+  <!-- stem -->
+  <line x1="16" y1="27" x2="16" y2="15" stroke="#a5d6a7" stroke-width="2" stroke-linecap="round"/>
+  <!-- left leaf -->
+  <path d="M16 22 C13 20 10 16 11 11 C14 12 17 16 16 22Z" fill="#69f0ae"/>
+  <!-- right leaf -->
+  <path d="M16 18 C19 16 22 12 21 7 C18 8 15 12 16 18Z" fill="#b9f6ca"/>
+</svg>
