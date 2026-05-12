@@ -1,5 +1,6 @@
 package com.san.farm.adminuser.dao;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,12 @@ import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.san.farm.adminuser.entity.AssignCropToSiteEntity;
 import com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity;
+import com.san.farm.adminuser.entity.ConfigCropEntity;
+import com.san.farm.adminuser.entity.ConfigFarmTaskEntity;
+import com.san.farm.adminuser.entity.EmployeeInfoEntity;
+import com.san.farm.util.FarmUtility;
 import com.san.farm.util.HibernateUtil;
 
 /**
@@ -224,6 +230,149 @@ public class AssignResourceEmployeeToFarmService {
 		return getListOFEmployeeToFarmByQry(
 			"FROM AssignEmployeeToFarmEntity aef WHERE aef.employeeInfoEntity.employeeInfoId = " + employeeInfoId
 		);
+	}
+
+	/**
+	 * Returns true if any task in taskIdsCsv is already assigned to the given
+	 * employee on the given date at the given physical site (siteInfoId),
+	 * regardless of which crop-to-site assignment the record belongs to.
+	 */
+	public boolean updateRecord(int assignResourceId, int empId, String workDate,
+	                            String taskIdsCsv, double amount, double advPayment,
+	                            String workStatus, String remark, String typeOfWork) {
+		logger.debug("Updating AssignEmployeeToFarm id={}, empId={}", assignResourceId, empId);
+		Session session = HibernateUtil.opensession();
+		Transaction tx = session.beginTransaction();
+		try {
+			AssignEmployeeToFarmEntity entity =
+				(AssignEmployeeToFarmEntity) session.get(AssignEmployeeToFarmEntity.class, assignResourceId);
+			if (entity == null) { logger.warn("updateRecord: id={} not found", assignResourceId); return false; }
+
+			EmployeeInfoEntity emp = (EmployeeInfoEntity) session.get(EmployeeInfoEntity.class, empId);
+			entity.setEmployeeInfoEntity(emp);
+
+			if (workDate != null && !workDate.trim().isEmpty())
+				entity.setAssignWorkDate(Date.valueOf(FarmUtility.convertfrom_ddmmyyToyymmdd(workDate.trim())));
+
+			entity.setAmount(amount);
+			entity.setAdvPayment(advPayment);
+			entity.setWorkStatus(workStatus != null ? workStatus : "");
+			entity.setComment(remark != null ? remark : "");
+			entity.setTypeOfWork(typeOfWork != null ? typeOfWork : "Contract");
+
+			/* replace task list — force-init LAZY collection, clear, re-add */
+			Hibernate.initialize(entity.getListFarmTaskEntities());
+			entity.getListFarmTaskEntities().clear();
+			if (taskIdsCsv != null && !taskIdsCsv.trim().isEmpty()) {
+				for (String tidStr : taskIdsCsv.split(",")) {
+					tidStr = tidStr.trim();
+					if (tidStr.isEmpty()) continue;
+					ConfigFarmTaskEntity task =
+						(ConfigFarmTaskEntity) session.get(ConfigFarmTaskEntity.class, Integer.parseInt(tidStr));
+					if (task != null) entity.getListFarmTaskEntities().add(task);
+				}
+			}
+
+			session.update(entity);
+			tx.commit();
+			logger.info("Updated AssignEmployeeToFarm id={}", assignResourceId);
+			return true;
+		} catch (Exception e) {
+			if (tx != null) tx.rollback();
+			logger.error("Error updating AssignEmployeeToFarm id={}", assignResourceId, e);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+
+	public boolean existsByEmpDateTaskSite(int siteInfoId, int empId, String workDateDdMmYyyy, String taskIdsCsv) {
+		if (taskIdsCsv == null || taskIdsCsv.trim().isEmpty()) return false;
+		Session session = HibernateUtil.opensession();
+		try {
+			String dateStr = (workDateDdMmYyyy != null && !workDateDdMmYyyy.trim().isEmpty())
+			               ? FarmUtility.convertfrom_ddmmyyToyymmdd(workDateDdMmYyyy.trim()) : null;
+			String dateCond = dateStr != null ? " AND e.assignWorkDate = '" + dateStr + "'" : "";
+			for (String tidStr : taskIdsCsv.split(",")) {
+				tidStr = tidStr.trim();
+				if (tidStr.isEmpty()) continue;
+				int taskId = Integer.parseInt(tidStr);
+				Long count = (Long) session.createQuery(
+					"SELECT COUNT(e) FROM AssignEmployeeToFarmEntity e JOIN e.listFarmTaskEntities t" +
+					" WHERE e.cropToSiteEntity.siteInformationEntity.siteInfoId = " + siteInfoId +
+					" AND e.employeeInfoEntity.employeeInfoId = " + empId +
+					dateCond +
+					" AND t.taskId = " + taskId)
+					.uniqueResult();
+				if (count != null && count > 0) {
+					logger.debug("Duplicate found for siteInfoId={}, empId={}, taskId={}", siteInfoId, empId, taskId);
+					return true;
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			logger.error("Error checking duplicate emp/date/task/site", e);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+
+	public List<AssignEmployeeToFarmEntity> getByCropToSiteId(final int cropToSiteId) {
+		return getListOFEmployeeToFarmByQry(
+			"FROM AssignEmployeeToFarmEntity WHERE cropToSiteEntity.assignCroptoSiteId = " + cropToSiteId +
+			" ORDER BY assignWorkDate DESC"
+		);
+	}
+
+	public boolean saveFromParams(int cropToSiteId, int empId, String workDate,
+	                              String taskIdsCsv, double amount, double advPayment,
+	                              String workStatus, String remark, String typeOfWork) {
+		logger.debug("Saving AssignEmployeeToFarm from params: cropToSiteId={}, empId={}, tasks={}", cropToSiteId, empId, taskIdsCsv);
+		Session session = HibernateUtil.opensession();
+		Transaction tx = session.beginTransaction();
+		try {
+			AssignCropToSiteEntity cropToSite = (AssignCropToSiteEntity) session.get(AssignCropToSiteEntity.class, cropToSiteId);
+			EmployeeInfoEntity emp = (EmployeeInfoEntity) session.get(EmployeeInfoEntity.class, empId);
+
+			AssignEmployeeToFarmEntity entity = new AssignEmployeeToFarmEntity();
+			entity.setCropToSiteEntity(cropToSite);
+			entity.setEmployeeInfoEntity(emp);
+			if (workDate != null && !workDate.trim().isEmpty()) {
+				entity.setAssignWorkDate(Date.valueOf(FarmUtility.convertfrom_ddmmyyToyymmdd(workDate.trim())));
+			}
+			entity.setAmount(amount);
+			entity.setAdvPayment(advPayment);
+			entity.setWorkStatus(workStatus != null ? workStatus : "");
+			entity.setComment(remark != null ? remark : "");
+			entity.setTypeOfWork(typeOfWork != null ? typeOfWork : "Contract");
+			/* auto-pick crop from the crop-to-site assignment (EAGER loaded) */
+			if (cropToSite != null && cropToSite.getCropToSiteRefEntity() != null
+			        && !cropToSite.getCropToSiteRefEntity().isEmpty()) {
+				entity.setCropEntity(cropToSite.getCropToSiteRefEntity().get(0).getConfigCropEntity());
+			}
+
+			if (taskIdsCsv != null && !taskIdsCsv.trim().isEmpty()) {
+				for (String tidStr : taskIdsCsv.split(",")) {
+					tidStr = tidStr.trim();
+					if (tidStr.isEmpty()) continue;
+					int tid = Integer.parseInt(tidStr);
+					ConfigFarmTaskEntity task = (ConfigFarmTaskEntity) session.get(ConfigFarmTaskEntity.class, tid);
+					if (task != null) entity.getListFarmTaskEntities().add(task);
+				}
+			}
+
+			session.save(entity);
+			tx.commit();
+			logger.info("AssignEmployeeToFarm saved for cropToSiteId={}, empId={}, tasks={}", cropToSiteId, empId, taskIdsCsv);
+			return true;
+		} catch (Exception e) {
+			if (tx != null) tx.rollback();
+			logger.error("Error saving AssignEmployeeToFarm from params", e);
+			return false;
+		} finally {
+			session.close();
+		}
 	}
 
 	public List<AssignEmployeeToFarmEntity> getListOFEmployeeToFarmByQry(final String query){

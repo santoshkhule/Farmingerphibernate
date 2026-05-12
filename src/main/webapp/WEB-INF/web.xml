@@ -175,4 +175,12 @@
     <servlet-name>SiteProductAllocationController</servlet-name>
     <url-pattern>/SiteProductAllocationController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>AllocateEmployeeController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.AllocateEmployeeController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AllocateEmployeeController</servlet-name>
+    <url-pattern>/AllocateEmployeeController</url-pattern>
+  </servlet-mapping>
 </web-app>

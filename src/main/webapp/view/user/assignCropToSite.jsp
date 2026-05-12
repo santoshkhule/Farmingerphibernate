@@ -38,6 +38,9 @@
     .btn-alloc-site { background:#1565c0; color:#fff; border:none; padding:3px 10px;
                       cursor:pointer; border-radius:3px; font-size:12px; font-weight:600; margin-left:4px; }
     .btn-alloc-site:hover { background:#0d47a1; }
+    .btn-emp-site   { background:#00695c; color:#fff; border:none; padding:3px 10px;
+                      cursor:pointer; border-radius:3px; font-size:12px; font-weight:600; margin-left:4px; }
+    .btn-emp-site:hover { background:#004d40; }
     #bulkBar { display:none; background:#fdecea; border:1px solid #e06060;
                padding:6px 14px; border-radius:3px; margin-bottom:8px; }
 </style>
@@ -284,6 +287,10 @@ function clearSelection() {
                 <button type="button" class="btn-alloc-site" id="btnAlloc<%=rowId%>"
                     onclick="window.location.href='allocateFertilizersToSite.jsp?cropToSiteId=<%=rowId%>'">
                     Allocate Fertilizers
+                </button>
+                <button type="button" class="btn-emp-site" id="btnEmpAlloc<%=rowId%>"
+                    onclick="window.location.href='allocateEmployeeToSite.jsp?cropToSiteId=<%=rowId%>'">
+                    Allocate Employee
                 </button>
             </td>
         </tr>

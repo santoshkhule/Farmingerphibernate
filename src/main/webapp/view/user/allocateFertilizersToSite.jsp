@@ -42,6 +42,15 @@
                      ? cropToSite.getSiteInformationEntity().getSiteName() : "Unknown Site";
     String siteDate  = (cropToSite != null && cropToSite.getCropAssignDate() != null)
                      ? FarmUtility.convertfrom_yymmddToddmmyy(cropToSite.getCropAssignDate().toString()) : "";
+
+    /* ── pre-compute summary totals ── */
+    double summaryTotal = 0;
+    for (SiteProductAllocationEntity spa : allocations) {
+        double p = spa.getVendorProduct() != null ? spa.getVendorProduct().getPrice() : 0;
+        summaryTotal += p * spa.getQuantity();
+    }
+    java.text.SimpleDateFormat todayFmt = new java.text.SimpleDateFormat("dd/MM/yyyy");
+    String todayStr = todayFmt.format(new java.util.Date());
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -68,6 +77,12 @@
                      border-bottom:2px solid var(--green-bd); padding-bottom:4px; margin:14px 0 8px; }
     .back-link { font-size:12px; color:var(--green-dk); text-decoration:none; }
     .back-link:hover { text-decoration:underline; }
+    .stats-bar  { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+    .stat-card  { background:#fff; border:1px solid var(--gray-200); border-radius:var(--r-md);
+                  padding:8px 18px; min-width:130px; text-align:center; }
+    .stat-card .sc-val   { font-size:1.25em; font-weight:700; color:var(--green-dk); }
+    .stat-card .sc-label { font-size:0.72em; color:var(--text-muted); text-transform:uppercase; margin-top:2px; }
+    .stat-card.highlight { background:#e8f5e9; border-color:var(--green-bd); }
 </style>
 </head>
 <body>
@@ -101,6 +116,22 @@ $(function() {
         if (crops.length() > 0) { %>
     <div><div class="sb-label">Crops</div><div class="sb-val"><%=crops.toString()%></div></div>
     <% } } %>
+</div>
+
+<!-- Summary stats -->
+<div class="stats-bar">
+    <div class="stat-card highlight">
+        <div class="sc-val"><%=allocations.size()%></div>
+        <div class="sc-label">Allocations</div>
+    </div>
+    <div class="stat-card highlight">
+        <div class="sc-val">&#8377; <%=String.format("%.2f", summaryTotal)%></div>
+        <div class="sc-label">Total Spent</div>
+    </div>
+    <div class="stat-card">
+        <div class="sc-val"><%=products.size()%></div>
+        <div class="sc-label">Products Available</div>
+    </div>
 </div>
 
 <!-- Filter bar -->
@@ -175,7 +206,7 @@ $(function() {
                 <label style="font-size:11px;">Qty:</label>
                 <input type="number" name="quantity" class="qty-inp" value="1" min="0.01" step="0.01" required>
                 <label style="font-size:11px; margin-left:6px;">Date:</label>
-                <input type="text" name="allocationDate" class="date-inp" placeholder="dd/mm/yyyy">
+                <input type="text" name="allocationDate" class="date-inp" value="<%=todayStr%>" placeholder="dd/mm/yyyy">
                 <label style="font-size:11px; margin-left:6px;">Note:</label>
                 <input type="text" name="comment" style="width:90px;font-size:12px;padding:3px;" placeholder="optional">
                 <button type="submit" class="btn-alloc" style="margin-left:6px;">Allocate</button>
