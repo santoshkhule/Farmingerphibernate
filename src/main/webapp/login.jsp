@@ -10,7 +10,7 @@
 
     /* Already authenticated — skip login */
     if (session.getAttribute("loggedInUser") != null) {
-        response.sendRedirect("shell.jsp");
+        response.sendRedirect(".");
         return;
     }
 
@@ -31,7 +31,7 @@
                 session.invalidate();
                 HttpSession newSession = request.getSession(true);
                 newSession.setAttribute("loggedInUser", user);
-                response.sendRedirect("shell.jsp");
+                response.sendRedirect(".");
                 return;
             } else {
                 errorMsg = "Invalid username or password. Please try again.";
