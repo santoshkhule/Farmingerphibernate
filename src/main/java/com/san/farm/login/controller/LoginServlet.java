@@ -11,25 +11,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoginServlet extends HttpServlet {
+
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(LoginServlet.class);
 
-	public void doProcess(HttpServletRequest request,HttpServletResponse response) throws ServletException,IOException{
-		logger.debug("Processing login request");
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		logger.debug("LoginServlet GET — redirecting to login.jsp");
+		response.sendRedirect(request.getContextPath() + "/login.jsp");
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doProcess(request,response);
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		logger.debug("LoginServlet POST — redirecting to login.jsp");
+		response.sendRedirect(request.getContextPath() + "/login.jsp");
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doProcess(request,response);
-	}
-
 }

@@ -155,4 +155,27 @@ public class LoginUserService {
 		}
 		return loginUser;
 	}
+
+	public LoginUser authenticate(String uname, String password) {
+		logger.debug("Authenticating user: {}", uname);
+		Session session = HibernateUtil.opensession();
+		try {
+			LoginUser user = (LoginUser) session.createCriteria(LoginUser.class)
+					.add(Restrictions.eq("uname", uname))
+					.add(Restrictions.eq("password", password))
+					.uniqueResult();
+			if (user != null) {
+				logger.info("Authentication successful for user: {}", uname);
+			} else {
+				logger.warn("Authentication failed for user: {}", uname);
+			}
+			return user;
+		} catch (HibernateException exception) {
+			logger.error("Error during authentication for user: {}", uname, exception);
+			return null;
+		} finally {
+			session.clear();
+			session.close();
+		}
+	}
 }
