@@ -91,7 +91,7 @@ public class ConfigSiteInformationController extends HttpServlet {
 			logger.error("Error processing ConfigSiteInformation request", exception);
 		} finally {
 			logger.debug("Redirecting to configSiteInformation.jsp");
-			response.sendRedirect("view/user/configSiteInformation.jsp");
+			response.sendRedirect("view/user/configuration.jsp?tab=site");
 		}
 	}
 

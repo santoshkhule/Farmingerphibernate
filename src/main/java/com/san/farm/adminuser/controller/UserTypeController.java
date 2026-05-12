@@ -74,7 +74,7 @@ public class UserTypeController extends HttpServlet {
 			logger.error("Error processing UserType request", exception);
 		} finally {
 			logger.debug("Redirecting to userType.jsp");
-			response.sendRedirect("view/user/userType.jsp");
+			response.sendRedirect("view/user/configuration.jsp?tab=userType");
 		}
 	}
 
