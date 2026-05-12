@@ -8,20 +8,33 @@
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css"/>
 <script src="../../js/jquery-1.9.1.js"></script>
 <script src="../../js/datatables.min.js"></script>
 <title>Employee Payment Report</title>
 </head>
+<style>
+    .tbl-export-btns { display:flex; gap:6px; }
+    .btn-tbl-csv     { background:#217346; color:#fff; border:none; padding:3px 10px;
+                       border-radius:var(--r-sm,3px); font-size:11px; font-weight:600; cursor:pointer; }
+    .btn-tbl-csv:hover { background:#1a5c38; }
+    .section-hdr     { display:flex; align-items:center; justify-content:space-between;
+                       margin:6px 0 10px; }
+    .section-hdr h3  { margin:0; color:var(--green-dk); font-size:1em; }
+    .section-hdr small { font-size:0.78em; font-weight:normal; color:var(--text-muted); }
+</style>
 <script>
+var summaryDt = null, detailDt = null;
+
 $(document).ready(function() {
     var dtOpts = {
+        destroy: true,
         pageLength: 25,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']],
         autoWidth: false, scrollX: true,
@@ -29,15 +42,45 @@ $(document).ready(function() {
         language: {
             search: '', searchPlaceholder: 'Search...',
             lengthMenu: 'Show _MENU_ entries',
-            info: '_START_ - _END_ of _TOTAL_',
+            info: '_START_ – _END_ of _TOTAL_',
             infoEmpty: '0 entries', emptyTable: 'No records found',
             paginate: { previous: '&#8249;', next: '&#8250;' }
         },
         dom: '<"dt-toolbar"lf>rt<"dt-footer"ip>'
     };
-    if ($('#empSummaryTable').length)  $('#empSummaryTable').DataTable(dtOpts);
-    if ($('#empDetailTable').length)   $('#empDetailTable').DataTable(dtOpts);
+    if ($('#empSummaryTable').length) summaryDt = $('#empSummaryTable').DataTable(dtOpts);
+    if ($('#empDetailTable').length)  detailDt  = $('#empDetailTable').DataTable(dtOpts);
 });
+
+/* ── CSV export ── */
+function exportCSV(dt, filename) {
+    if (!dt) return;
+    var cols = [];
+    $(dt.table().header()).find('th').each(function() { cols.push($(this).text().trim()); });
+    var rows = dt.rows({search:'applied'}).data();
+
+    function escCsv(val) {
+        var s = $('<div/>').html(String(val)).text().replace(/\r?\n/g,' ').trim();
+        return (s.indexOf(',') !== -1 || s.indexOf('"') !== -1)
+            ? '"' + s.replace(/"/g,'""') + '"' : s;
+    }
+
+    var csv = cols.map(escCsv).join(',') + '\r\n';
+    for (var i = 0; i < rows.length; i++) {
+        var line = [];
+        for (var j = 0; j < rows[i].length; j++) line.push(escCsv(rows[i][j]));
+        csv += line.join(',') + '\r\n';
+    }
+
+    /* UTF-8 BOM so Excel / mobile apps render ₹ and Indian names correctly */
+    var blob = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8'});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url;
+    a.download = filename + '_' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+}
 </script>
 <body>
 <%@include file="../../header.jsp" %>
@@ -114,7 +157,12 @@ if (selectedEmpId > 0) {
         : "";
 %>
 
-<h3 style="margin:6px 0 10px; color:var(--green-dk); font-size:1em;"><%=empFullName%></h3>
+<div class="section-hdr">
+    <h3><%=empFullName%></h3>
+    <div class="tbl-export-btns">
+        <button class="btn-tbl-csv" onclick="exportCSV(detailDt,'EmployeeDetail_<%=empFullName.trim().replace(" ","_")%>')">&#8595; Download CSV</button>
+    </div>
+</div>
 
 <!-- Summary cards -->
 <div class="report-summary-bar">
@@ -233,10 +281,12 @@ if (selectedEmpId > 0) {
 <% } else { %>
 
 <!-- ===== ALL EMPLOYEES SUMMARY TABLE ===== -->
-<h3 style="margin:6px 0 10px; color:var(--green-dk); font-size:1em;">
-    All Employees Summary
-    <span style="font-size:0.78em; font-weight:normal; color:var(--text-muted);">(click employee name for details)</span>
-</h3>
+<div class="section-hdr">
+    <h3>All Employees Summary <small>(click employee name for details)</small></h3>
+    <div class="tbl-export-btns">
+        <button class="btn-tbl-csv" onclick="exportCSV(summaryDt,'EmployeePayments_Summary')">&#8595; Download CSV</button>
+    </div>
+</div>
 <table id="empSummaryTable" border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
