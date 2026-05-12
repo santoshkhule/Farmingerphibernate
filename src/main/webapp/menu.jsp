@@ -10,8 +10,7 @@
 
 	<div class="nav-group">
 		<div class="nav-group-title">&#9881; Configuration</div>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configuration.jsp">Basic Config</a>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configureCatSubCatBrand.jsp">Configure Items</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configuration.jsp">Configuration</a>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/registerUser.jsp">Register User</a>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Assign Crop To Site</a>
 	</div>
