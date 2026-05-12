@@ -201,4 +201,12 @@
     <servlet-name>AllocateEmployeeController</servlet-name>
     <url-pattern>/AllocateEmployeeController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>DashboardServlet</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.DashboardServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DashboardServlet</servlet-name>
+    <url-pattern>/DashboardServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

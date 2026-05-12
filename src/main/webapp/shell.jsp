@@ -67,6 +67,10 @@
 		<nav id="sideNav">
 
 			<div class="nav-group">
+				<a class="nav-link nav-link-dash" href="view/user/dashboard.jsp" target="contentFrame">&#128202; Dashboard</a>
+			</div>
+
+			<div class="nav-group">
 				<div class="nav-group-title">&#9881; Configuration</div>
 				<a class="nav-link" href="view/user/configuration.jsp" target="contentFrame">Configuration</a>
 				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame">Register User</a>
@@ -113,7 +117,7 @@
 
 	<!-- ── Content iframe ── -->
 	<iframe id="contentFrame" name="contentFrame"
-		src="view/user/configuration.jsp"
+		src="view/user/dashboard.jsp"
 		frameborder="0">
 	</iframe>
 

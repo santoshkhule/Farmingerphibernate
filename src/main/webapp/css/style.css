@@ -138,6 +138,23 @@ a      { color: var(--blue-md); }
     text-decoration: none;
 }
 
+/* Dashboard top-level link */
+.nav-link-dash {
+    padding: 9px 14px 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #c8e6c9;
+    border-left: 3px solid var(--sidebar-accent);
+    background: rgba(255,255,255,0.06);
+    margin: 4px 6px;
+    border-radius: var(--r-sm);
+}
+.nav-link-dash:hover {
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    border-left-color: #fff;
+}
+
 /* Sidebar footer */
 #sidebar-foot {
     padding: 10px 12px;
