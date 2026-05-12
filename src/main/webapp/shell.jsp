@@ -58,7 +58,6 @@
 				<div class="nav-group-title">&#9881; Configuration</div>
 				<a class="nav-link" href="view/user/configuration.jsp" target="contentFrame">Configuration</a>
 				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame">Register User</a>
-				<a class="nav-link" href="view/user/assignCropToSite.jsp" target="contentFrame">Site Resource Allocation</a>
 			</div>
 
 			<div class="nav-group">
@@ -68,7 +67,8 @@
 			</div>
 
 			<div class="nav-group">
-				<div class="nav-group-title">&#128203; Task</div>
+				<div class="nav-group-title">&#128203; Farm Setup</div>
+				<a class="nav-link" href="view/user/assignCropToSite.jsp" target="contentFrame">Site Resource Allocation</a>
 				<a class="nav-link" href="view/user/01createFarm.jsp" target="contentFrame">Create Farm</a>
 				<a class="nav-link" href="view/user/01assignTaskToEmployeeViewAll.jsp" target="contentFrame">View Assign Tasks</a>
 			</div>

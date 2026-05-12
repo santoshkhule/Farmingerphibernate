@@ -12,7 +12,6 @@
 		<div class="nav-group-title">&#9881; Configuration</div>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configuration.jsp">Configuration</a>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/registerUser.jsp">Register User</a>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Site Resource Allocation</a>
 	</div>
 
 	<div class="nav-group">
@@ -22,7 +21,8 @@
 	</div>
 
 	<div class="nav-group">
-		<div class="nav-group-title">&#128203; Task</div>
+		<div class="nav-group-title">&#128203; Farm Setup</div>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Site Resource Allocation</a>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/01createFarm.jsp">Create Farm</a>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">View Assign Tasks</a>
 	</div>
