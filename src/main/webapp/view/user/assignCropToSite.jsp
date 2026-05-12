@@ -23,7 +23,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
-<title>Assign Crop to site</title>
+<title>Site Resource Allocation</title>
 <style>
     .edit-sel       { width:120px; font-size:11px; }
     .edit-sel-multi { width:130px; font-size:11px; }
@@ -143,7 +143,7 @@ function clearSelection() {
 </script>
 
 <fieldset>
-<legend>Assign Crop To Site</legend>
+<legend>Site Resource Allocation</legend>
 
     <!-- Add form -->
     <form action="../../AssignCropToSiteController" method="post">
