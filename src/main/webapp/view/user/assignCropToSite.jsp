@@ -8,7 +8,7 @@
 <%@page import="com.san.farm.adminuser.entity.ConfigSiteInformationEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     ConfigSiteInformationService informationService = new ConfigSiteInformationService();
     List<ConfigSiteInformationEntity> listOfSite = informationService.fetch();
@@ -16,197 +16,270 @@
     List<ConfigCropEntity> listOfCrop = cropService.fetch();
     AssignCropToSiteService cropToSiteService = new AssignCropToSiteService();
     List<AssignCropToSiteEntity> cropToSiteEntities = cropToSiteService.getListOFAssignCropToSite();
+    int totalRecords = cropToSiteEntities.size();
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
 <title>Site Resource Allocation</title>
 <style>
-    .edit-sel       { width:120px; font-size:11px; }
-    .edit-sel-multi { width:130px; font-size:11px; }
-    .edit-date-inp  { width:88px;  font-size:11px; padding:2px; }
-    .btn-row-edit   { background:#e8f5e9; border:1px solid var(--green-dk); color:var(--green-dk);
-                      padding:2px 8px; cursor:pointer; border-radius:2px; font-size:11px; font-weight:600; }
-    .btn-row-edit:hover { background:#c8e6c9; }
-    .btn-row-save   { background:#28a745; color:#fff; border:none; padding:3px 10px;
-                      cursor:pointer; border-radius:3px; font-size:12px; }
-    .btn-row-cancel { background:#6c757d; color:#fff; border:none; padding:3px 10px;
-                      cursor:pointer; border-radius:3px; font-size:12px; }
-    .btn-alloc-site { background:#1565c0; color:#fff; border:none; padding:3px 10px;
-                      cursor:pointer; border-radius:3px; font-size:12px; font-weight:600; margin-left:4px; }
-    .btn-alloc-site:hover { background:#0d47a1; }
-    .btn-emp-site   { background:#00695c; color:#fff; border:none; padding:3px 10px;
-                      cursor:pointer; border-radius:3px; font-size:12px; font-weight:600; margin-left:4px; }
-    .btn-emp-site:hover { background:#004d40; }
-    #bulkBar { display:none; background:#fdecea; border:1px solid #e06060;
-               padding:6px 14px; border-radius:3px; margin-bottom:8px; }
+    .page-header  { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .page-title   { font-size:1.1em; font-weight:700; color:var(--green-dk); margin:0; }
+    .count-chip   { background:var(--green-md); color:#fff; font-size:11px; font-weight:700;
+                    padding:2px 9px; border-radius:12px; }
+
+    .form-grid    { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; }
+    .fg-field     { display:flex; flex-direction:column; gap:3px; }
+    .fg-field label { font-size:12px; font-weight:600; color:var(--green-dk); }
+    .fg-field select,
+    .fg-field input[type=text] {
+        font-size:13px; padding:4px 7px; border:1px solid var(--gray-400);
+        border-radius:var(--r-sm); background:#fff; }
+    .fg-field select:focus,
+    .fg-field input[type=text]:focus { border-color:var(--blue-md); outline:none; }
+
+    /* ── Checkbox dropdown ── */
+    .chk-drop        { position:relative; display:inline-block; }
+    .chk-drop-btn    { background:#fff; border:1px solid var(--gray-400); border-radius:var(--r-sm);
+                       padding:4px 26px 4px 8px; font-size:13px; cursor:pointer; text-align:left;
+                       min-width:170px; max-width:200px; position:relative; white-space:nowrap;
+                       overflow:hidden; text-overflow:ellipsis; font-family:inherit; color:#333; }
+    .chk-drop-btn::after { content:'\25BE'; position:absolute; right:8px; top:50%;
+                            transform:translateY(-50%); color:#888; pointer-events:none; }
+    .chk-drop-btn.has-val { border-color:var(--green-bd); background:var(--green-lt);
+                             color:var(--green-dk); font-weight:600; }
+    .chk-drop-panel  { position:absolute; top:calc(100% + 2px); left:0; z-index:1000; background:#fff;
+                       border:1px solid var(--gray-400); border-radius:var(--r-sm);
+                       box-shadow:0 4px 12px rgba(0,0,0,.15); min-width:190px; max-height:210px;
+                       overflow-y:auto; padding:4px 0; }
+    .chk-drop-item   { display:flex; align-items:center; gap:7px; padding:5px 12px;
+                       font-size:12px; cursor:pointer; user-select:none; }
+    .chk-drop-item:hover { background:var(--green-lt); }
+    .chk-drop-item input { margin:0; cursor:pointer; accent-color:var(--green-md); }
+
+    /* smaller dropdown variant used inside table rows during edit */
+    .chk-drop-btn.sm { min-width:130px; max-width:150px; font-size:11px; padding:2px 22px 2px 6px; }
+    .chk-drop-panel.sm .chk-drop-item { padding:4px 10px; font-size:11px; }
+
+    .bulk-bar     { display:none; background:#fdecea; border:1px solid #e06060;
+                    padding:6px 14px; border-radius:var(--r-sm); margin-bottom:8px;
+                    align-items:center; gap:10px; }
+
+    .edit-sel     { width:120px; font-size:11px; }
+    .edit-date-inp{ width:88px;  font-size:11px; padding:2px; }
+
+    .btn-row-save  { background:#28a745; color:#fff; border:none; padding:3px 9px;
+                     cursor:pointer; border-radius:var(--r-sm); font-size:11px; }
+    .btn-row-cancel{ background:#6c757d; color:#fff; border:none; padding:3px 9px;
+                     cursor:pointer; border-radius:var(--r-sm); font-size:11px; }
+
+    /* icon nav buttons — always visible */
+    .btn-icon-nav  { width:26px; height:26px; border-radius:var(--r-sm); cursor:pointer;
+                     font-size:13px; display:inline-flex; align-items:center;
+                     justify-content:center; vertical-align:middle; line-height:1; }
+    .btn-fert      { background:#e3f2fd; border:1px solid #90caf9; }
+    .btn-fert:hover{ background:#bbdefb; }
+    .btn-emp       { background:#e8f5e9; border:1px solid var(--green-bd); }
+    .btn-emp:hover { background:var(--green-row); }
+    .actions-cell  { text-align:center; white-space:nowrap; }
+    .actions-cell > * { vertical-align:middle; }
 </style>
 </head>
 <body>
 
 <%@include file="../../header.jsp" %>
-
-<!-- jquery-ui loaded AFTER header.jsp so it attaches to header's jQuery instance -->
 <script src="../../js/jquery-ui.js"></script>
 
 <script>
 $(function() {
     $("#cropAssignDate").datepicker({ changeMonth:true, changeYear:true, dateFormat:"dd/mm/yy" });
+
+    /* close all dropdowns when clicking outside */
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.chk-drop').length) {
+            $('.chk-drop-panel').hide();
+        }
+    });
+
+    /* add-form submit validation */
+    $('#addCropForm').on('submit', function(e) {
+        if ($('#addCropPanel input:checked').length === 0) {
+            e.preventDefault();
+            alert('Please select at least one crop.');
+            $('#addCropPanel').show();
+        }
+    });
 });
 
-/* ── inline edit ── */
+/* ── Checkbox dropdown helpers ── */
+function toggleDrop(panelId, btnId, event) {
+    if (event) event.stopPropagation();
+    var $panel = $('#' + panelId);
+    /* close others */
+    $('.chk-drop-panel').not($panel).hide();
+    $panel.toggle();
+}
+
+function updateDropBtn(panelId, btnId) {
+    var $panel  = $('#' + panelId);
+    var $btn    = $('#' + btnId);
+    var $checked = $panel.find('input[type=checkbox]:checked');
+    if ($checked.length === 0) {
+        $btn.text('Select crops...').removeClass('has-val');
+    } else if ($checked.length === 1) {
+        $btn.text($checked.first().closest('.chk-drop-item').text().trim()).addClass('has-val');
+    } else {
+        $btn.text($checked.length + ' crops selected').addClass('has-val');
+    }
+    /* restore the ::after arrow removed by .text() — keep via class, not textContent change */
+}
+
+/* ── Inline edit ── */
 function editRow(id) {
-    ['Site','Crop','Date'].forEach(function(f) {
-        var sp  = document.getElementById('span' + f + id);
-        var inp = document.getElementById('inp'  + f + id);
-        if (sp)  sp.style.display  = 'none';
-        if (inp) inp.style.display = '';
-    });
-    $("#inpDate" + id).datepicker({ changeMonth:true, changeYear:true, dateFormat:"dd/mm/yy" });
-    document.getElementById('btnEdit'   + id).style.display = 'none';
-    document.getElementById('btnSave'   + id).style.display = '';
-    document.getElementById('btnCancel' + id).style.display = '';
+    $('#spanSite' + id).hide(); $('#inpSite'  + id).show();
+    $('#spanCrop' + id).hide(); $('#cropDrop' + id).show();
+    $('#spanDate' + id).hide(); $('#inpDate'  + id).show();
+    $('#inpDate' + id).datepicker({ changeMonth:true, changeYear:true, dateFormat:"dd/mm/yy" });
+    $('#btnEdit' + id).hide();
+    $('#btnSave' + id).show();
+    $('#btnCancel' + id).show();
 }
 
 function cancelEdit(id) {
-    ['Site','Crop','Date'].forEach(function(f) {
-        var sp  = document.getElementById('span' + f + id);
-        var inp = document.getElementById('inp'  + f + id);
-        if (sp)  sp.style.display  = '';
-        if (inp) inp.style.display = 'none';
-    });
-    document.getElementById('btnEdit'   + id).style.display = '';
-    document.getElementById('btnSave'   + id).style.display = 'none';
-    document.getElementById('btnCancel' + id).style.display = 'none';
+    $('#spanSite' + id).show(); $('#inpSite'  + id).hide();
+    $('#spanCrop' + id).show();
+    $('#cropDrop' + id).hide(); $('#cropDropPanel' + id).hide();
+    $('#spanDate' + id).show(); $('#inpDate'  + id).hide();
+    $('#btnEdit' + id).show();
+    $('#btnSave' + id).hide();
+    $('#btnCancel' + id).hide();
 }
 
 function saveRow(id) {
-    var dateVal = document.getElementById('inpDate' + id).value;
+    var dateVal = $('#inpDate' + id).val();
     if (!dateVal) { alert('Please enter a date.'); return; }
-    var sel = document.getElementById('inpCrop' + id);
-    var selected = [];
-    for (var i = 0; i < sel.options.length; i++) {
-        if (sel.options[i].selected) selected.push(sel.options[i].value);
-    }
-    if (selected.length === 0) { alert('Please select at least one crop.'); return; }
-    var frm = document.getElementById('frmEdit' + id);
-    document.getElementById('hidSite' + id).value = document.getElementById('inpSite' + id).value;
-    document.getElementById('hidDate' + id).value = dateVal;
-    frm.querySelectorAll('input.dyn-crop').forEach(function(el) { el.parentNode.removeChild(el); });
-    selected.forEach(function(v) {
-        var inp = document.createElement('input');
-        inp.type = 'hidden'; inp.name = 'cropId'; inp.className = 'dyn-crop'; inp.value = v;
-        frm.appendChild(inp);
+    var $checked = $('#cropDropPanel' + id + ' input[type=checkbox]:checked');
+    if ($checked.length === 0) { alert('Please select at least one crop.'); return; }
+    var $frm = $('#frmEdit' + id);
+    $('#hidSite' + id).val($('#inpSite' + id).val());
+    $('#hidDate' + id).val(dateVal);
+    $frm.find('input.dyn-crop').remove();
+    $checked.each(function() {
+        $frm.append($('<input>').attr({ type:'hidden', name:'cropId', 'class':'dyn-crop', value:this.value }));
     });
-    frm.submit();
+    $frm[0].submit();
 }
 
-/* ── bulk delete ── */
+/* ── Bulk delete ── */
 function toggleSelectAll(chk) {
-    document.querySelectorAll('input.rowChk').forEach(function(b) { b.checked = chk.checked; });
+    $('input.rowChk').prop('checked', chk.checked);
     updateBulkBar();
 }
 
 function updateBulkBar() {
-    var checked = document.querySelectorAll('input.rowChk:checked');
-    var all     = document.querySelectorAll('input.rowChk');
-    document.getElementById('bulkBar').style.display  = checked.length > 0 ? 'block' : 'none';
-    document.getElementById('selCount').innerText     = checked.length;
-    document.getElementById('chkAll').checked         = (checked.length === all.length && all.length > 0);
+    var checked = $('input.rowChk:checked').length;
+    var all     = $('input.rowChk').length;
+    $('#bulkBar').css('display', checked > 0 ? 'flex' : 'none');
+    $('#selCount').text(checked);
+    $('#chkAll').prop('checked', checked === all && all > 0);
 }
 
 function deleteSelected() {
-    var checked = document.querySelectorAll('input.rowChk:checked');
-    if (checked.length === 0) return;
-    if (!(window.top || window).confirm('Delete ' + checked.length + ' selected record(s)?')) return;
-    var form = document.getElementById('frmBulkDelete');
-    form.innerHTML = '';
-    checked.forEach(function(b) {
-        var inp = document.createElement('input');
-        inp.type = 'hidden'; inp.name = 'deleteIds'; inp.value = b.value;
-        form.appendChild(inp);
+    var $checked = $('input.rowChk:checked');
+    if (!$checked.length) return;
+    if (!(window.top || window).confirm('Delete ' + $checked.length + ' selected record(s)?')) return;
+    var $form = $('#frmBulkDelete').empty();
+    $checked.each(function() {
+        $form.append($('<input>').attr({ type:'hidden', name:'deleteIds', value:this.value }));
     });
-    var flag = document.createElement('input');
-    flag.type = 'hidden'; flag.name = 'deleteSelected'; flag.value = '1';
-    form.appendChild(flag);
-    form.submit();
+    $form.append($('<input>').attr({ type:'hidden', name:'deleteSelected', value:'1' }));
+    $form[0].submit();
 }
 
 function clearSelection() {
-    document.querySelectorAll('input.rowChk').forEach(function(b) { b.checked = false; });
-    document.getElementById('chkAll').checked = false;
-    document.getElementById('bulkBar').style.display = 'none';
+    $('input.rowChk, #chkAll').prop('checked', false);
+    $('#bulkBar').hide();
 }
 </script>
 
 <fieldset>
 <legend>Site Resource Allocation</legend>
 
+    <div class="page-header">
+        <span class="page-title">Allocations</span>
+        <span class="count-chip"><%=totalRecords%></span>
+    </div>
+
     <!-- Add form -->
-    <form action="../../AssignCropToSiteController" method="post">
-        <table border="0">
-            <tr>
-                <td>Site:</td>
-                <td>
+    <div class="form-panel">
+        <form id="addCropForm" action="../../AssignCropToSiteController" method="post">
+            <div class="form-grid">
+                <div class="fg-field">
+                    <label for="siteInfoId">Site</label>
                     <select name="siteInfoId" id="siteInfoId" required>
-                    <% for(ConfigSiteInformationEntity s : listOfSite) { %>
+                        <option value="">-- Select Site --</option>
+                        <% for(ConfigSiteInformationEntity s : listOfSite) { %>
                         <option value="<%=s.getSiteInfoId()%>"><%=s.getSiteName()%></option>
-                    <% } %>
+                        <% } %>
                     </select>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align:right;">Crop:</td>
-                <td>
-                    <select name="cropId" id="cropId" multiple="multiple" required>
-                    <% for(ConfigCropEntity c : listOfCrop) { %>
-                        <option value="<%=c.getCropId()%>"><%=c.getCropName()%></option>
-                    <% } %>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align:right;">Date:</td>
-                <td>
+                </div>
+
+                <div class="fg-field">
+                    <label>Crop</label>
+                    <div class="chk-drop">
+                        <button type="button" class="chk-drop-btn" id="addCropBtn"
+                            onclick="toggleDrop('addCropPanel','addCropBtn',event)">Select crops...</button>
+                        <div class="chk-drop-panel" id="addCropPanel" style="display:none;">
+                            <% for(ConfigCropEntity c : listOfCrop) { %>
+                            <label class="chk-drop-item">
+                                <input type="checkbox" name="cropId" value="<%=c.getCropId()%>"
+                                    onchange="updateDropBtn('addCropPanel','addCropBtn')">
+                                <%=c.getCropName()%>
+                            </label>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fg-field">
+                    <label for="cropAssignDate">Date</label>
                     <input type="text" name="cropAssignDate" id="cropAssignDate"
                         pattern="(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}"
-                        oninvalid="setCustomValidity('Enter Date: Select From Calender')"
-                        onchange="setCustomValidity('')" title="Enter Date"
-                        placeholder="dd/mm/yyyy" required="required">
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="text-align:center;">
-                    <input type="submit" name="add" value="Add">
-                </td>
-            </tr>
-        </table>
-    </form>
+                        oninvalid="setCustomValidity('Enter Date: Select From Calendar')"
+                        onchange="setCustomValidity('')"
+                        placeholder="dd/mm/yyyy" required>
+                </div>
 
-    <!-- Bulk delete form — outside the table -->
+                <div class="fg-field">
+                    <label>&nbsp;</label>
+                    <input type="submit" name="add" value="Add" class="btn-add">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bulk delete form -->
     <form id="frmBulkDelete" method="post" action="../../AssignCropToSiteController"></form>
 
     <!-- Bulk action bar -->
-    <div id="bulkBar">
-        <span id="selCount">0</span> record(s) selected &nbsp;
+    <div id="bulkBar" class="bulk-bar">
+        <span><strong id="selCount">0</strong> record(s) selected</span>
         <button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
-        &nbsp;
-        <button type="button" class="btn-row-cancel" onclick="clearSelection()">Clear Selection</button>
+        <button type="button" class="btn-row-cancel" onclick="clearSelection()">Clear</button>
     </div>
 
-    <hr>
-
-    <table id="assignCropTable" border="1" width="100%" class="tbl-data" cellspacing="0">
+    <table id="assignCropTable" class="tbl-data" cellspacing="0">
         <thead>
         <tr>
             <th width="3%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)"></th>
-            <th>Date</th>
             <th>Site</th>
             <th>Crop</th>
-            <th>Actions</th>
+            <th>Date</th>
+            <th width="14%">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -219,27 +292,25 @@ function clearSelection() {
                 for(AssignCropToSiteRefEntity ref : refs) {
                     int cid = ref.getConfigCropEntity().getCropId();
                     String cname = ref.getConfigCropEntity().getCropName();
-                    cropIdStr   = (cropIdStr   == null) ? String.valueOf(cid) : cropIdStr   + "," + cid;
-                    cropNameStr = (cropNameStr == null) ? cname               : cropNameStr + ", " + cname;
+                    cropIdStr   = (cropIdStr   == null) ? String.valueOf(cid)   : cropIdStr   + "," + cid;
+                    cropNameStr = (cropNameStr == null) ? cname                 : cropNameStr + ", " + cname;
                 }
                 String assignDate      = FarmUtility.convertfrom_yymmddToddmmyy(cropToSiteEntity.getCropAssignDate().toString());
                 String currentSiteId   = String.valueOf(cropToSiteEntity.getSiteInformationEntity().getSiteInfoId());
                 String currentSiteName = cropToSiteEntity.getSiteInformationEntity() != null
                                        ? cropToSiteEntity.getSiteInformationEntity().getSiteName() : "";
                 final String finalCropIdStr = cropIdStr != null ? cropIdStr : "";
+                String displayCropName = cropNameStr != null ? cropNameStr : "";
+                /* button label: N crops or the single name */
+                int cropCount = refs.size();
+                String dropBtnLabel = cropCount == 0 ? "Select crops..."
+                                    : cropCount == 1 ? displayCropName
+                                    : cropCount + " crops selected";
         %>
         <tr id="row-<%=rowId%>">
 
-            <!-- Checkbox -->
             <td style="text-align:center;">
                 <input type="checkbox" class="rowChk" value="<%=rowId%>" onchange="updateBulkBar()">
-            </td>
-
-            <!-- Date -->
-            <td>
-                <span id="spanDate<%=rowId%>"><%=assignDate%></span>
-                <input type="text" class="edit-date-inp" id="inpDate<%=rowId%>"
-                    value="<%=assignDate%>" style="display:none;" placeholder="dd/mm/yyyy">
             </td>
 
             <!-- Site -->
@@ -256,18 +327,34 @@ function clearSelection() {
 
             <!-- Crop -->
             <td>
-                <span id="spanCrop<%=rowId%>"><%=cropNameStr != null ? cropNameStr : ""%></span>
-                <select class="edit-sel-multi" id="inpCrop<%=rowId%>" multiple="multiple" style="display:none;">
-                    <% for(ConfigCropEntity c : listOfCrop) {
-                        String sel = ("," + finalCropIdStr + ",").contains("," + c.getCropId() + ",") ? "selected" : "";
-                    %>
-                    <option value="<%=c.getCropId()%>" <%=sel%>><%=c.getCropName()%></option>
-                    <% } %>
-                </select>
+                <span id="spanCrop<%=rowId%>"><%=displayCropName%></span>
+                <div class="chk-drop" id="cropDrop<%=rowId%>" style="display:none;">
+                    <button type="button" class="chk-drop-btn sm <%=cropCount > 0 ? "has-val" : ""%>"
+                        id="cropDropBtn<%=rowId%>"
+                        onclick="toggleDrop('cropDropPanel<%=rowId%>','cropDropBtn<%=rowId%>',event)"><%=dropBtnLabel%></button>
+                    <div class="chk-drop-panel sm" id="cropDropPanel<%=rowId%>" style="display:none;">
+                        <% for(ConfigCropEntity c : listOfCrop) {
+                            String chk = ("," + finalCropIdStr + ",").contains("," + c.getCropId() + ",") ? "checked" : "";
+                        %>
+                        <label class="chk-drop-item">
+                            <input type="checkbox" value="<%=c.getCropId()%>" <%=chk%>
+                                onchange="updateDropBtn('cropDropPanel<%=rowId%>','cropDropBtn<%=rowId%>')">
+                            <%=c.getCropName()%>
+                        </label>
+                        <% } %>
+                    </div>
+                </div>
             </td>
 
-            <!-- Actions -->
-            <td style="text-align:center; white-space:nowrap;">
+            <!-- Date -->
+            <td>
+                <span id="spanDate<%=rowId%>"><%=assignDate%></span>
+                <input type="text" class="edit-date-inp" id="inpDate<%=rowId%>"
+                    value="<%=assignDate%>" style="display:none;" placeholder="dd/mm/yyyy">
+            </td>
+
+            <!-- Actions: single row -->
+            <td class="actions-cell">
                 <button type="button" class="btn-row-edit" id="btnEdit<%=rowId%>"
                     onclick="editRow(<%=rowId%>)">Edit</button>
 
@@ -284,14 +371,13 @@ function clearSelection() {
                 <button type="button" class="btn-row-cancel" id="btnCancel<%=rowId%>"
                     style="display:none;" onclick="cancelEdit(<%=rowId%>)">Cancel</button>
 
-                <button type="button" class="btn-alloc-site" id="btnAlloc<%=rowId%>"
-                    onclick="window.location.href='allocateFertilizersToSite.jsp?cropToSiteId=<%=rowId%>'">
-                    Allocate Fertilizers
-                </button>
-                <button type="button" class="btn-emp-site" id="btnEmpAlloc<%=rowId%>"
-                    onclick="window.location.href='allocateEmployeeToSite.jsp?cropToSiteId=<%=rowId%>'">
-                    Allocate Employee
-                </button>
+                &nbsp;
+                <button type="button" class="btn-icon-nav btn-fert"
+                    title="Allocate Fertilizers"
+                    onclick="window.location.href='allocateFertilizersToSite.jsp?cropToSiteId=<%=rowId%>'">&#127807;</button>
+                <button type="button" class="btn-icon-nav btn-emp"
+                    title="Allocate Employees"
+                    onclick="window.location.href='allocateEmployeeToSite.jsp?cropToSiteId=<%=rowId%>'">&#128100;</button>
             </td>
         </tr>
         <% } %>
