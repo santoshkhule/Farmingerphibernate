@@ -56,7 +56,7 @@ public class UnitController extends HttpServlet {
 		} catch (Exception e) {
 			logger.error("Error processing Unit request", e);
 		} finally {
-			response.sendRedirect("view/user/addUnits.jsp");
+			response.sendRedirect("view/user/configuration.jsp?tab=unit");
 		}
 	}
 

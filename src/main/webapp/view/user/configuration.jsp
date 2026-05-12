@@ -2,25 +2,41 @@
 <%@page import="com.san.farm.adminuser.entity.ConfigSiteInformationEntity"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigCropEntity"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
+<%@page import="com.san.farm.adminuser.entity.CategoryEntity"%>
+<%@page import="com.san.farm.adminuser.entity.FertilizerEntity"%>
+<%@page import="com.san.farm.adminuser.entity.BrandEntity"%>
+<%@page import="com.san.farm.adminuser.entity.UnitEntity"%>
 <%@page import="com.san.farm.adminuser.dao.UserTypeService"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigCropService"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigFarmTaskService"%>
+<%@page import="com.san.farm.adminuser.dao.CategoryService"%>
+<%@page import="com.san.farm.adminuser.dao.FertilizerService"%>
+<%@page import="com.san.farm.adminuser.dao.BrandService"%>
+<%@page import="com.san.farm.adminuser.dao.UnitService"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     String activeTab = request.getParameter("tab");
     if (activeTab == null || activeTab.trim().isEmpty()) activeTab = "userType";
 
-    UserTypeService         utSvc   = new UserTypeService();
+    UserTypeService              utSvc = new UserTypeService();
     ConfigSiteInformationService siSvc = new ConfigSiteInformationService();
-    ConfigCropService       crSvc   = new ConfigCropService();
-    ConfigFarmTaskService   ftSvc   = new ConfigFarmTaskService();
+    ConfigCropService            crSvc = new ConfigCropService();
+    ConfigFarmTaskService        ftSvc = new ConfigFarmTaskService();
+    CategoryService              caSvc = new CategoryService();
+    FertilizerService            prSvc = new FertilizerService();
+    BrandService                 brSvc = new BrandService();
+    UnitService                  unSvc = new UnitService();
 
     List<UserTypeEntity>              utList = utSvc.fetch();
     List<ConfigSiteInformationEntity> siList = siSvc.fetch();
     List<ConfigCropEntity>            crList = crSvc.fetch();
     List<ConfigFarmTaskEntity>        ftList = ftSvc.fetch();
+    List<CategoryEntity>              caList = caSvc.fetch();
+    List<FertilizerEntity>            prList = prSvc.fetch();
+    List<BrandEntity>                 brList = brSvc.fetch();
+    List<UnitEntity>                  unList = unSvc.fetch();
 %>
 <!DOCTYPE html>
 <html>
@@ -107,6 +123,10 @@
     <button class="cfg-tab-btn<%="site".equals(activeTab)?" active":""%>"     onclick="switchTab('site')">Site Information</button>
     <button class="cfg-tab-btn<%="crop".equals(activeTab)?" active":""%>"     onclick="switchTab('crop')">Crops</button>
     <button class="cfg-tab-btn<%="task".equals(activeTab)?" active":""%>"     onclick="switchTab('task')">Farming Task</button>
+    <button class="cfg-tab-btn<%="category".equals(activeTab)?" active":""%>" onclick="switchTab('category')">Category</button>
+    <button class="cfg-tab-btn<%="product".equals(activeTab)?" active":""%>"  onclick="switchTab('product')">Product</button>
+    <button class="cfg-tab-btn<%="brand".equals(activeTab)?" active":""%>"    onclick="switchTab('brand')">Brand</button>
+    <button class="cfg-tab-btn<%="unit".equals(activeTab)?" active":""%>"     onclick="switchTab('unit')">Units</button>
 </div>
 
 <!-- ══════════════════════════════════════════════════
@@ -347,6 +367,230 @@
     </table>
 </div>
 
+<!-- ══════════════════════════════════════════════════
+     TAB 5 : Category
+     ══════════════════════════════════════════════════ -->
+<div id="tab-category" class="cfg-tab-panel<%="category".equals(activeTab)?" active":""%>">
+
+    <span class="cfg-count-chip"><%=caList.size()%> Categories</span>
+
+    <form method="post" id="ca_frm" action="../../CategoryController">
+        <input type="hidden" name="categoryId" id="ca_id">
+        <div class="cfg-form-card">
+            <div class="cfg-edit-banner" id="ca_banner"></div>
+            <div class="cfg-form-row">
+                <div class="cfg-field" style="min-width:220px;">
+                    <label for="ca_categoryName">Category Name</label>
+                    <input type="text" name="categoryName" id="ca_categoryName" required placeholder="e.g. Fertilizer, Pesticide">
+                </div>
+                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
+                    <input type="submit" class="btn-add"    id="ca_btnAdd"    name="add"  value="Add">
+                    <input type="submit" class="btn-update" id="ca_btnUpdate" name="edit" value="Update" style="display:none">
+                    <button type="button" class="btn-cancel" id="ca_btnCancel" style="display:none" onclick="cfgReset('ca')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="cfg-bulk-bar" id="ca_bulkBar">
+        <span><strong id="ca_selCount">0</strong> selected</span>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ca','../../CategoryController')">Delete Selected</button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('ca')">Clear</button>
+    </div>
+    <form method="post" id="ca_frmBulk" action="../../CategoryController"></form>
+
+    <table class="cfg-table tbl-data" id="ca_table">
+        <thead><tr>
+            <th width="4%" style="text-align:center;"><input type="checkbox" id="ca_chkAll" onclick="cfgToggleAll('ca',this)"></th>
+            <th width="8%">ID</th>
+            <th>Category Name</th>
+            <th width="10%" style="text-align:center;">Action</th>
+        </tr></thead>
+        <tbody>
+        <% for (CategoryEntity ca : caList) {
+               String caEsc = ca.getCategoryName() != null ? ca.getCategoryName().replace("\\","\\\\").replace("'","\\'") : ""; %>
+        <tr id="ca_row<%=ca.getCategoryId()%>">
+            <td class="center"><input type="checkbox" class="ca_chk" value="<%=ca.getCategoryId()%>" onchange="cfgUpdateBulkBar('ca','ca_chk')"></td>
+            <td><%=ca.getCategoryId()%></td>
+            <td><%=ca.getCategoryName()%></td>
+            <td class="center">
+                <button type="button" class="btn-row-edit"
+                    onclick="cfgEditRow1('ca','<%=ca.getCategoryId()%>','<%=caEsc%>','ca_categoryName','<%=caEsc%>')">Edit</button>
+            </td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TAB 6 : Product (Fertilizer)
+     ══════════════════════════════════════════════════ -->
+<div id="tab-product" class="cfg-tab-panel<%="product".equals(activeTab)?" active":""%>">
+
+    <span class="cfg-count-chip"><%=prList.size()%> Products</span>
+
+    <form method="post" id="pr_frm" action="../../FertilizerController">
+        <input type="hidden" name="fertilizerId" id="pr_id">
+        <div class="cfg-form-card">
+            <div class="cfg-edit-banner" id="pr_banner"></div>
+            <div class="cfg-form-row">
+                <div class="cfg-field" style="min-width:220px;">
+                    <label for="pr_fertilizerName">Product Name</label>
+                    <input type="text" name="fertilizerName" id="pr_fertilizerName" required placeholder="e.g. Urea, DAP, Neem Oil">
+                </div>
+                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
+                    <input type="submit" class="btn-add"    id="pr_btnAdd"    name="add"  value="Add">
+                    <input type="submit" class="btn-update" id="pr_btnUpdate" name="edit" value="Update" style="display:none">
+                    <button type="button" class="btn-cancel" id="pr_btnCancel" style="display:none" onclick="cfgReset('pr')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="cfg-bulk-bar" id="pr_bulkBar">
+        <span><strong id="pr_selCount">0</strong> selected</span>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('pr','../../FertilizerController')">Delete Selected</button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('pr')">Clear</button>
+    </div>
+    <form method="post" id="pr_frmBulk" action="../../FertilizerController"></form>
+
+    <table class="cfg-table tbl-data" id="pr_table">
+        <thead><tr>
+            <th width="4%" style="text-align:center;"><input type="checkbox" id="pr_chkAll" onclick="cfgToggleAll('pr',this)"></th>
+            <th width="8%">ID</th>
+            <th>Product Name</th>
+            <th width="10%" style="text-align:center;">Action</th>
+        </tr></thead>
+        <tbody>
+        <% for (FertilizerEntity pr : prList) {
+               String prEsc = pr.getFertilizerName() != null ? pr.getFertilizerName().replace("\\","\\\\").replace("'","\\'") : ""; %>
+        <tr id="pr_row<%=pr.getFertilizerId()%>">
+            <td class="center"><input type="checkbox" class="pr_chk" value="<%=pr.getFertilizerId()%>" onchange="cfgUpdateBulkBar('pr','pr_chk')"></td>
+            <td><%=pr.getFertilizerId()%></td>
+            <td><%=pr.getFertilizerName()%></td>
+            <td class="center">
+                <button type="button" class="btn-row-edit"
+                    onclick="cfgEditRow1('pr','<%=pr.getFertilizerId()%>','<%=prEsc%>','pr_fertilizerName','<%=prEsc%>')">Edit</button>
+            </td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TAB 7 : Brand
+     ══════════════════════════════════════════════════ -->
+<div id="tab-brand" class="cfg-tab-panel<%="brand".equals(activeTab)?" active":""%>">
+
+    <span class="cfg-count-chip"><%=brList.size()%> Brands</span>
+
+    <form method="post" id="br_frm" action="../../BrandController">
+        <input type="hidden" name="brandId" id="br_id">
+        <div class="cfg-form-card">
+            <div class="cfg-edit-banner" id="br_banner"></div>
+            <div class="cfg-form-row">
+                <div class="cfg-field" style="min-width:220px;">
+                    <label for="br_brandName">Brand Name</label>
+                    <input type="text" name="brandName" id="br_brandName" required placeholder="e.g. Tata, Coromandel">
+                </div>
+                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
+                    <input type="submit" class="btn-add"    id="br_btnAdd"    name="add"  value="Add">
+                    <input type="submit" class="btn-update" id="br_btnUpdate" name="edit" value="Update" style="display:none">
+                    <button type="button" class="btn-cancel" id="br_btnCancel" style="display:none" onclick="cfgReset('br')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="cfg-bulk-bar" id="br_bulkBar">
+        <span><strong id="br_selCount">0</strong> selected</span>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('br','../../BrandController')">Delete Selected</button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('br')">Clear</button>
+    </div>
+    <form method="post" id="br_frmBulk" action="../../BrandController"></form>
+
+    <table class="cfg-table tbl-data" id="br_table">
+        <thead><tr>
+            <th width="4%" style="text-align:center;"><input type="checkbox" id="br_chkAll" onclick="cfgToggleAll('br',this)"></th>
+            <th width="8%">ID</th>
+            <th>Brand Name</th>
+            <th width="10%" style="text-align:center;">Action</th>
+        </tr></thead>
+        <tbody>
+        <% for (BrandEntity br : brList) {
+               String brEsc = br.getBrandName() != null ? br.getBrandName().replace("\\","\\\\").replace("'","\\'") : ""; %>
+        <tr id="br_row<%=br.getBrandId()%>">
+            <td class="center"><input type="checkbox" class="br_chk" value="<%=br.getBrandId()%>" onchange="cfgUpdateBulkBar('br','br_chk')"></td>
+            <td><%=br.getBrandId()%></td>
+            <td><%=br.getBrandName()%></td>
+            <td class="center">
+                <button type="button" class="btn-row-edit"
+                    onclick="cfgEditRow1('br','<%=br.getBrandId()%>','<%=brEsc%>','br_brandName','<%=brEsc%>')">Edit</button>
+            </td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TAB 8 : Units
+     ══════════════════════════════════════════════════ -->
+<div id="tab-unit" class="cfg-tab-panel<%="unit".equals(activeTab)?" active":""%>">
+
+    <span class="cfg-count-chip"><%=unList.size()%> Units</span>
+
+    <form method="post" id="un_frm" action="../../UnitController">
+        <input type="hidden" name="unitId" id="un_id">
+        <div class="cfg-form-card">
+            <div class="cfg-edit-banner" id="un_banner"></div>
+            <div class="cfg-form-row">
+                <div class="cfg-field" style="min-width:220px;">
+                    <label for="un_unitName">Unit Name</label>
+                    <input type="text" name="unitName" id="un_unitName" required placeholder="e.g. Kg, Litre, Bag">
+                </div>
+                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
+                    <input type="submit" class="btn-add"    id="un_btnAdd"    name="add"  value="Add">
+                    <input type="submit" class="btn-update" id="un_btnUpdate" name="edit" value="Update" style="display:none">
+                    <button type="button" class="btn-cancel" id="un_btnCancel" style="display:none" onclick="cfgReset('un')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="cfg-bulk-bar" id="un_bulkBar">
+        <span><strong id="un_selCount">0</strong> selected</span>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('un','../../UnitController')">Delete Selected</button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('un')">Clear</button>
+    </div>
+    <form method="post" id="un_frmBulk" action="../../UnitController"></form>
+
+    <table class="cfg-table tbl-data" id="un_table">
+        <thead><tr>
+            <th width="4%" style="text-align:center;"><input type="checkbox" id="un_chkAll" onclick="cfgToggleAll('un',this)"></th>
+            <th width="8%">ID</th>
+            <th>Unit Name</th>
+            <th width="10%" style="text-align:center;">Action</th>
+        </tr></thead>
+        <tbody>
+        <% for (UnitEntity un : unList) {
+               String unEsc = un.getUnitName() != null ? un.getUnitName().replace("\\","\\\\").replace("'","\\'") : ""; %>
+        <tr id="un_row<%=un.getUnitId()%>">
+            <td class="center"><input type="checkbox" class="un_chk" value="<%=un.getUnitId()%>" onchange="cfgUpdateBulkBar('un','un_chk')"></td>
+            <td><%=un.getUnitId()%></td>
+            <td><%=un.getUnitName()%></td>
+            <td class="center">
+                <button type="button" class="btn-row-edit"
+                    onclick="cfgEditRow1('un','<%=un.getUnitId()%>','<%=unEsc%>','un_unitName','<%=unEsc%>')">Edit</button>
+            </td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+</div>
+
 </fieldset>
 <%@include file="../../footer.jsp"%>
 
@@ -370,8 +614,9 @@ function switchTab(name) {
 
 /* ── DataTables init (after document ready from header tableInit.js) ── */
 $(document).ready(function () {
-    ['ut_table','si_table','cr_table','ft_table'].forEach(function(id) {
-        var tabKey = {ut_table:'userType', si_table:'site', cr_table:'crop', ft_table:'task'}[id];
+    ['ut_table','si_table','cr_table','ft_table','ca_table','pr_table','br_table','un_table'].forEach(function(id) {
+        var tabKey = {ut_table:'userType', si_table:'site', cr_table:'crop', ft_table:'task',
+                      ca_table:'category', pr_table:'product', br_table:'brand', un_table:'unit'}[id];
         var dt;
         if ($.fn.DataTable.isDataTable('#' + id)) {
             dt = $('#' + id).DataTable();
@@ -497,7 +742,8 @@ function cfgClearSelection(p) {
 }
 
 function _tabForPrefix(p) {
-    return {ut:'userType', si:'site', cr:'crop', ft:'task'}[p] || p;
+    return {ut:'userType', si:'site', cr:'crop', ft:'task',
+            ca:'category', pr:'product', br:'brand', un:'unit'}[p] || p;
 }
 </script>
 </body>
