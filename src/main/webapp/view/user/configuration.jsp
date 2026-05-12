@@ -60,12 +60,11 @@
     .cfg-tab-panel     { display:none; }
     .cfg-tab-panel.active { display:block; }
 
-    /* ── form card ── */
+    /* ── add-new form card ── */
     .cfg-form-card     { background:#f8fdf8; border:1px solid var(--green-bd,#a5d6a7);
-                         border-radius:6px; padding:16px 20px; margin-bottom:16px; }
-    .cfg-edit-banner   { display:none; background:#fff8e1; border:1px solid #ffc107;
-                         color:#856404; padding:6px 12px; border-radius:4px;
-                         margin-bottom:10px; font-weight:700; font-size:13px; }
+                         border-radius:6px; padding:14px 18px; margin-bottom:16px; }
+    .cfg-form-card-title { font-size:11px; font-weight:700; text-transform:uppercase;
+                           letter-spacing:.5px; color:var(--green-dk,#2e7d32); margin-bottom:10px; }
     .cfg-form-row      { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px 20px; }
     .cfg-field         { display:flex; flex-direction:column; gap:4px; min-width:160px; }
     .cfg-field label   { font-size:11px; font-weight:700; text-transform:uppercase;
@@ -81,28 +80,37 @@
                          font-size:13px; align-items:center; gap:10px; }
     .cfg-bulk-bar.show { display:flex; }
 
-    /* ── buttons ── */
-    .btn-add    { background:var(--green-dk,#2e7d32); color:#fff; border:none; padding:7px 18px; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer; }
-    .btn-update { background:#1565c0; color:#fff; border:none; padding:7px 18px; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer; }
-    .btn-delete { background:#c62828; color:#fff; border:none; padding:6px 14px; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer; }
-    .btn-cancel { background:#fff; color:#555; border:1px solid #bbb; padding:6px 14px; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer; }
-    .btn-add:hover    { background:#1b5e20; }
-    .btn-update:hover { background:#0d47a1; }
+    /* ── shared buttons ── */
+    .btn-add        { background:var(--green-dk,#2e7d32); color:#fff; border:none; padding:7px 18px; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer; }
+    .btn-add:hover  { background:#1b5e20; }
+    .btn-delete     { background:#c62828; color:#fff; border:none; padding:6px 14px; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer; }
     .btn-delete:hover { background:#b71c1c; }
+    .btn-cancel     { background:#fff; color:#555; border:1px solid #bbb; padding:6px 14px; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer; }
     .btn-cancel:hover { background:#f5f5f5; }
-    .btn-row-edit { background:#e8f5e9; border:1px solid var(--green-bd,#a5d6a7); color:var(--green-dk,#2e7d32);
-                    padding:3px 10px; border-radius:3px; font-size:12px; font-weight:600; cursor:pointer; }
+
+    /* ── inline row edit buttons ── */
+    .btn-row-edit   { background:#e8f5e9; border:1px solid var(--green-bd,#a5d6a7); color:var(--green-dk,#2e7d32);
+                      padding:3px 10px; border-radius:3px; font-size:12px; font-weight:600; cursor:pointer; }
     .btn-row-edit:hover { background:#c8e6c9; }
+    .btn-row-save   { background:#1565c0; color:#fff; border:none; padding:3px 10px; border-radius:3px; font-size:12px; font-weight:600; cursor:pointer; }
+    .btn-row-save:hover { background:#0d47a1; }
+    .btn-row-cancel { background:#fff; color:#666; border:1px solid #bbb; padding:3px 8px; border-radius:3px; font-size:12px; cursor:pointer; }
+    .btn-row-cancel:hover { background:#f5f5f5; }
+
+    /* ── inline edit input inside table cell ── */
+    .inp-inline     { padding:4px 7px; border:1px solid var(--green-bd,#a5d6a7); border-radius:3px;
+                      font-size:13px; width:100%; box-sizing:border-box; min-width:100px; }
+    .inp-inline:focus { border-color:var(--green-dk,#2e7d32); outline:none; }
+    .inp-inline-sm  { width:80px; }
+    tr.editing-row  { background:#fff8e1 !important; }
 
     /* ── table ── */
     .cfg-table         { width:100%; border-collapse:collapse; font-size:13px; }
     .cfg-table thead th{ background:var(--green-dk,#2e7d32); color:#fff; padding:9px 10px;
                          text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.4px; }
-    .cfg-table thead th:first-child { border-radius:0; }
     .cfg-table tbody tr:nth-child(even) { background:#f5fdf5; }
     .cfg-table tbody tr:hover { background:#e8f5e9; }
-    .cfg-table tbody tr.sel-row { background:#c8e6c9 !important; font-weight:600; }
-    .cfg-table td      { padding:7px 10px; border-bottom:1px solid #e8e8e8; vertical-align:middle; }
+    .cfg-table td      { padding:6px 10px; border-bottom:1px solid #e8e8e8; vertical-align:middle; }
     .cfg-table td.center { text-align:center; }
 
     /* ── summary chips ── */
@@ -133,51 +141,55 @@
      TAB 1 : User Type
      ══════════════════════════════════════════════════ -->
 <div id="tab-userType" class="cfg-tab-panel<%="userType".equals(activeTab)?" active":""%>">
-
     <span class="cfg-count-chip"><%=utList.size()%> User Types</span>
-
     <form method="post" id="ut_frm" action="../../UserTypeController">
-        <input type="hidden" name="userTypeId" id="ut_id">
         <div class="cfg-form-card">
-            <div class="cfg-edit-banner" id="ut_banner"></div>
+            <div class="cfg-form-card-title">Add New User Type</div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
                     <label for="ut_name">User Type Name</label>
                     <input type="text" name="userType" id="ut_name" required placeholder="e.g. Admin, Supervisor">
                 </div>
-                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
-                    <input type="submit" class="btn-add"    id="ut_btnAdd"    name="add"  value="Add">
-                    <input type="submit" class="btn-update" id="ut_btnUpdate" name="edit" value="Update" style="display:none">
-                    <button type="button" class="btn-cancel" id="ut_btnCancel" style="display:none" onclick="cfgReset('ut')">Cancel</button>
+                <div style="align-self:flex-end;">
+                    <input type="submit" class="btn-add" name="add" value="Add">
                 </div>
             </div>
         </div>
     </form>
-
     <div class="cfg-bulk-bar" id="ut_bulkBar">
         <span><strong id="ut_selCount">0</strong> selected</span>
         <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ut','../../UserTypeController')">Delete Selected</button>
         <button type="button" class="btn-cancel" onclick="cfgClearSelection('ut')">Clear</button>
     </div>
     <form method="post" id="ut_frmBulk" action="../../UserTypeController"></form>
-
     <table class="cfg-table tbl-data" id="ut_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="ut_chkAll" onclick="cfgToggleAll('ut',this)"></th>
             <th width="7%">ID</th>
             <th>User Type</th>
-            <th width="10%" style="text-align:center;">Action</th>
+            <th width="16%" style="text-align:center;">Action</th>
         </tr></thead>
         <tbody>
         <% for (UserTypeEntity u : utList) {
-               String utEsc = u.getUserType() != null ? u.getUserType().replace("\\","\\\\").replace("'","\\'") : ""; %>
-        <tr id="ut_row<%=u.getUserTypeId()%>">
-            <td class="center"><input type="checkbox" class="ut_chk" value="<%=u.getUserTypeId()%>" onchange="cfgUpdateBulkBar('ut','ut_chk')"></td>
-            <td><%=u.getUserTypeId()%></td>
-            <td><%=u.getUserType()%></td>
+               int uid = u.getUserTypeId();
+               String uval = u.getUserType() != null ? u.getUserType() : "";
+               String uesc = uval.replace("\\","\\\\").replace("\"","&quot;"); %>
+        <tr id="ut_row<%=uid%>">
+            <td class="center"><input type="checkbox" class="ut_chk" value="<%=uid%>" onchange="cfgUpdateBulkBar('ut','ut_chk')"></td>
+            <td><%=uid%></td>
+            <td>
+                <span id="ut_vn_<%=uid%>"><%=uval%></span>
+                <input type="text" id="ut_en_<%=uid%>" class="inp-inline" value="<%=uesc%>" style="display:none">
+                <form id="ut_frmUpd_<%=uid%>" method="post" action="../../UserTypeController" style="display:none">
+                    <input type="hidden" name="userTypeId" value="<%=uid%>">
+                    <input type="hidden" name="userType"   id="ut_hn_<%=uid%>">
+                    <input type="hidden" name="edit"       value="1">
+                </form>
+            </td>
             <td class="center">
-                <button type="button" class="btn-row-edit"
-                    onclick="cfgEditRow1('ut','<%=u.getUserTypeId()%>','<%=utEsc%>','ut_name','<%=utEsc%>')">Edit</button>
+                <button id="ut_btnE_<%=uid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ut',<%=uid%>)">Edit</button>
+                <button id="ut_btnS_<%=uid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ut',<%=uid%>)" style="display:none">Save</button>
+                <button id="ut_btnC_<%=uid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ut',<%=uid%>)" style="display:none">Cancel</button>
             </td>
         </tr>
         <% } %>
@@ -189,65 +201,78 @@
      TAB 2 : Site Information
      ══════════════════════════════════════════════════ -->
 <div id="tab-site" class="cfg-tab-panel<%="site".equals(activeTab)?" active":""%>">
-
     <span class="cfg-count-chip"><%=siList.size()%> Sites</span>
-
     <form method="post" id="si_frm" action="../../ConfigSiteInformationController">
-        <input type="hidden" name="siteInfoId" id="si_id">
         <div class="cfg-form-card">
-            <div class="cfg-edit-banner" id="si_banner"></div>
+            <div class="cfg-form-card-title">Add New Site</div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:200px;">
                     <label for="si_siteName">Site Name</label>
                     <input type="text" name="siteName" id="si_siteName" required placeholder="Farm / Plot name">
                 </div>
-                <div class="cfg-field" style="min-width:130px;">
+                <div class="cfg-field" style="min-width:120px;">
                     <label for="si_siteArea">Area (acres)</label>
-                    <input type="text" name="siteArea" id="si_siteArea" required placeholder="e.g. 2.5" pattern="[0-9]+(\.[0-9]+)?">
+                    <input type="text" name="siteArea" id="si_siteArea" required placeholder="e.g. 2.5">
                 </div>
                 <div class="cfg-field" style="min-width:200px;">
                     <label for="si_siteLocation">Location</label>
                     <input type="text" name="siteLocation" id="si_siteLocation" required placeholder="Village / District">
                 </div>
-                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
-                    <input type="submit" class="btn-add"    id="si_btnAdd"    name="add"  value="Add">
-                    <input type="submit" class="btn-update" id="si_btnUpdate" name="edit" value="Update" style="display:none">
-                    <button type="button" class="btn-cancel" id="si_btnCancel" style="display:none" onclick="cfgReset('si')">Cancel</button>
+                <div style="align-self:flex-end;">
+                    <input type="submit" class="btn-add" name="add" value="Add">
                 </div>
             </div>
         </div>
     </form>
-
     <div class="cfg-bulk-bar" id="si_bulkBar">
         <span><strong id="si_selCount">0</strong> selected</span>
         <button type="button" class="btn-delete" onclick="cfgDeleteSelected('si','../../ConfigSiteInformationController')">Delete Selected</button>
         <button type="button" class="btn-cancel" onclick="cfgClearSelection('si')">Clear</button>
     </div>
     <form method="post" id="si_frmBulk" action="../../ConfigSiteInformationController"></form>
-
     <table class="cfg-table tbl-data" id="si_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="si_chkAll" onclick="cfgToggleAll('si',this)"></th>
-            <th width="6%">ID</th>
+            <th width="5%">ID</th>
             <th>Site Name</th>
             <th width="12%">Area (acres)</th>
             <th>Location</th>
-            <th width="9%" style="text-align:center;">Action</th>
+            <th width="14%" style="text-align:center;">Action</th>
         </tr></thead>
         <tbody>
         <% for (ConfigSiteInformationEntity s : siList) {
-               String siEscName = s.getSiteName()     != null ? s.getSiteName().replace("\\","\\\\").replace("'","\\'") : "";
-               String siEscLoc  = s.getSiteLocation() != null ? s.getSiteLocation().replace("\\","\\\\").replace("'","\\'") : "";
-               String siArea    = String.valueOf(s.getSiteArea()); %>
-        <tr id="si_row<%=s.getSiteInfoId()%>">
-            <td class="center"><input type="checkbox" class="si_chk" value="<%=s.getSiteInfoId()%>" onchange="cfgUpdateBulkBar('si','si_chk')"></td>
-            <td><%=s.getSiteInfoId()%></td>
-            <td><%=s.getSiteName()%></td>
-            <td><%=siArea%></td>
-            <td><%=s.getSiteLocation() != null ? s.getSiteLocation() : ""%></td>
+               int sid  = s.getSiteInfoId();
+               String sn  = s.getSiteName()     != null ? s.getSiteName()     : "";
+               String sa  = String.valueOf(s.getSiteArea());
+               String sl  = s.getSiteLocation() != null ? s.getSiteLocation() : "";
+               String snE = sn.replace("\\","\\\\").replace("\"","&quot;");
+               String slE = sl.replace("\\","\\\\").replace("\"","&quot;"); %>
+        <tr id="si_row<%=sid%>">
+            <td class="center"><input type="checkbox" class="si_chk" value="<%=sid%>" onchange="cfgUpdateBulkBar('si','si_chk')"></td>
+            <td><%=sid%></td>
+            <td>
+                <span id="si_vn_<%=sid%>"><%=sn%></span>
+                <input type="text" id="si_en_<%=sid%>" class="inp-inline" value="<%=snE%>" style="display:none">
+            </td>
+            <td>
+                <span id="si_va_<%=sid%>"><%=sa%></span>
+                <input type="text" id="si_ea_<%=sid%>" class="inp-inline inp-inline-sm" value="<%=sa%>" style="display:none">
+            </td>
+            <td>
+                <span id="si_vl_<%=sid%>"><%=sl%></span>
+                <input type="text" id="si_el_<%=sid%>" class="inp-inline" value="<%=slE%>" style="display:none">
+                <form id="si_frmUpd_<%=sid%>" method="post" action="../../ConfigSiteInformationController" style="display:none">
+                    <input type="hidden" name="siteInfoId"   value="<%=sid%>">
+                    <input type="hidden" name="siteName"     id="si_hn_<%=sid%>">
+                    <input type="hidden" name="siteArea"     id="si_ha_<%=sid%>">
+                    <input type="hidden" name="siteLocation" id="si_hl_<%=sid%>">
+                    <input type="hidden" name="edit"         value="1">
+                </form>
+            </td>
             <td class="center">
-                <button type="button" class="btn-row-edit"
-                    onclick="siEditRow(<%=s.getSiteInfoId()%>,'<%=siEscName%>','<%=siArea%>','<%=siEscLoc%>')">Edit</button>
+                <button id="si_btnE_<%=sid%>" type="button" class="btn-row-edit"   onclick="siInlineEdit(<%=sid%>)">Edit</button>
+                <button id="si_btnS_<%=sid%>" type="button" class="btn-row-save"   onclick="siInlineSave(<%=sid%>)" style="display:none">Save</button>
+                <button id="si_btnC_<%=sid%>" type="button" class="btn-row-cancel" onclick="siInlineCancel(<%=sid%>)" style="display:none">Cancel</button>
             </td>
         </tr>
         <% } %>
@@ -259,51 +284,55 @@
      TAB 3 : Crops
      ══════════════════════════════════════════════════ -->
 <div id="tab-crop" class="cfg-tab-panel<%="crop".equals(activeTab)?" active":""%>">
-
     <span class="cfg-count-chip"><%=crList.size()%> Crops</span>
-
     <form method="post" id="cr_frm" action="../../ConfigCropController">
-        <input type="hidden" name="cropId" id="cr_id">
         <div class="cfg-form-card">
-            <div class="cfg-edit-banner" id="cr_banner"></div>
+            <div class="cfg-form-card-title">Add New Crop</div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
                     <label for="cr_cropName">Crop Name</label>
                     <input type="text" name="cropName" id="cr_cropName" required placeholder="e.g. Wheat, Rice, Cotton">
                 </div>
-                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
-                    <input type="submit" class="btn-add"    id="cr_btnAdd"    name="add"  value="Add">
-                    <input type="submit" class="btn-update" id="cr_btnUpdate" name="edit" value="Update" style="display:none">
-                    <button type="button" class="btn-cancel" id="cr_btnCancel" style="display:none" onclick="cfgReset('cr')">Cancel</button>
+                <div style="align-self:flex-end;">
+                    <input type="submit" class="btn-add" name="add" value="Add">
                 </div>
             </div>
         </div>
     </form>
-
     <div class="cfg-bulk-bar" id="cr_bulkBar">
         <span><strong id="cr_selCount">0</strong> selected</span>
         <button type="button" class="btn-delete" onclick="cfgDeleteSelected('cr','../../ConfigCropController')">Delete Selected</button>
         <button type="button" class="btn-cancel" onclick="cfgClearSelection('cr')">Clear</button>
     </div>
     <form method="post" id="cr_frmBulk" action="../../ConfigCropController"></form>
-
     <table class="cfg-table tbl-data" id="cr_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="cr_chkAll" onclick="cfgToggleAll('cr',this)"></th>
             <th width="8%">ID</th>
             <th>Crop Name</th>
-            <th width="10%" style="text-align:center;">Action</th>
+            <th width="16%" style="text-align:center;">Action</th>
         </tr></thead>
         <tbody>
         <% for (ConfigCropEntity c : crList) {
-               String crEsc = c.getCropName() != null ? c.getCropName().replace("\\","\\\\").replace("'","\\'") : ""; %>
-        <tr id="cr_row<%=c.getCropId()%>">
-            <td class="center"><input type="checkbox" class="cr_chk" value="<%=c.getCropId()%>" onchange="cfgUpdateBulkBar('cr','cr_chk')"></td>
-            <td><%=c.getCropId()%></td>
-            <td><%=c.getCropName()%></td>
+               int cid = c.getCropId();
+               String cval = c.getCropName() != null ? c.getCropName() : "";
+               String cesc = cval.replace("\\","\\\\").replace("\"","&quot;"); %>
+        <tr id="cr_row<%=cid%>">
+            <td class="center"><input type="checkbox" class="cr_chk" value="<%=cid%>" onchange="cfgUpdateBulkBar('cr','cr_chk')"></td>
+            <td><%=cid%></td>
+            <td>
+                <span id="cr_vn_<%=cid%>"><%=cval%></span>
+                <input type="text" id="cr_en_<%=cid%>" class="inp-inline" value="<%=cesc%>" style="display:none">
+                <form id="cr_frmUpd_<%=cid%>" method="post" action="../../ConfigCropController" style="display:none">
+                    <input type="hidden" name="cropId"   value="<%=cid%>">
+                    <input type="hidden" name="cropName" id="cr_hn_<%=cid%>">
+                    <input type="hidden" name="edit"     value="1">
+                </form>
+            </td>
             <td class="center">
-                <button type="button" class="btn-row-edit"
-                    onclick="cfgEditRow1('cr','<%=c.getCropId()%>','<%=crEsc%>','cr_cropName','<%=crEsc%>')">Edit</button>
+                <button id="cr_btnE_<%=cid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('cr',<%=cid%>)">Edit</button>
+                <button id="cr_btnS_<%=cid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('cr',<%=cid%>)" style="display:none">Save</button>
+                <button id="cr_btnC_<%=cid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('cr',<%=cid%>)" style="display:none">Cancel</button>
             </td>
         </tr>
         <% } %>
@@ -315,51 +344,55 @@
      TAB 4 : Farming Task
      ══════════════════════════════════════════════════ -->
 <div id="tab-task" class="cfg-tab-panel<%="task".equals(activeTab)?" active":""%>">
-
     <span class="cfg-count-chip"><%=ftList.size()%> Tasks</span>
-
     <form method="post" id="ft_frm" action="../../ConfigFarmTaskController">
-        <input type="hidden" name="taskId" id="ft_id">
         <div class="cfg-form-card">
-            <div class="cfg-edit-banner" id="ft_banner"></div>
+            <div class="cfg-form-card-title">Add New Task</div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
                     <label for="ft_taskName">Task Name</label>
                     <input type="text" name="taskName" id="ft_taskName" required placeholder="e.g. Ploughing, Irrigation">
                 </div>
-                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
-                    <input type="submit" class="btn-add"    id="ft_btnAdd"    name="add"  value="Add">
-                    <input type="submit" class="btn-update" id="ft_btnUpdate" name="edit" value="Update" style="display:none">
-                    <button type="button" class="btn-cancel" id="ft_btnCancel" style="display:none" onclick="cfgReset('ft')">Cancel</button>
+                <div style="align-self:flex-end;">
+                    <input type="submit" class="btn-add" name="add" value="Add">
                 </div>
             </div>
         </div>
     </form>
-
     <div class="cfg-bulk-bar" id="ft_bulkBar">
         <span><strong id="ft_selCount">0</strong> selected</span>
         <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ft','../../ConfigFarmTaskController')">Delete Selected</button>
         <button type="button" class="btn-cancel" onclick="cfgClearSelection('ft')">Clear</button>
     </div>
     <form method="post" id="ft_frmBulk" action="../../ConfigFarmTaskController"></form>
-
     <table class="cfg-table tbl-data" id="ft_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="ft_chkAll" onclick="cfgToggleAll('ft',this)"></th>
             <th width="8%">ID</th>
             <th>Task Name</th>
-            <th width="10%" style="text-align:center;">Action</th>
+            <th width="16%" style="text-align:center;">Action</th>
         </tr></thead>
         <tbody>
         <% for (ConfigFarmTaskEntity t : ftList) {
-               String ftEsc = t.getTaskName() != null ? t.getTaskName().replace("\\","\\\\").replace("'","\\'") : ""; %>
-        <tr id="ft_row<%=t.getTaskId()%>">
-            <td class="center"><input type="checkbox" class="ft_chk" value="<%=t.getTaskId()%>" onchange="cfgUpdateBulkBar('ft','ft_chk')"></td>
-            <td><%=t.getTaskId()%></td>
-            <td><%=t.getTaskName()%></td>
+               int tid = t.getTaskId();
+               String tval = t.getTaskName() != null ? t.getTaskName() : "";
+               String tesc = tval.replace("\\","\\\\").replace("\"","&quot;"); %>
+        <tr id="ft_row<%=tid%>">
+            <td class="center"><input type="checkbox" class="ft_chk" value="<%=tid%>" onchange="cfgUpdateBulkBar('ft','ft_chk')"></td>
+            <td><%=tid%></td>
+            <td>
+                <span id="ft_vn_<%=tid%>"><%=tval%></span>
+                <input type="text" id="ft_en_<%=tid%>" class="inp-inline" value="<%=tesc%>" style="display:none">
+                <form id="ft_frmUpd_<%=tid%>" method="post" action="../../ConfigFarmTaskController" style="display:none">
+                    <input type="hidden" name="taskId"   value="<%=tid%>">
+                    <input type="hidden" name="taskName" id="ft_hn_<%=tid%>">
+                    <input type="hidden" name="edit"     value="1">
+                </form>
+            </td>
             <td class="center">
-                <button type="button" class="btn-row-edit"
-                    onclick="cfgEditRow1('ft','<%=t.getTaskId()%>','<%=ftEsc%>','ft_taskName','<%=ftEsc%>')">Edit</button>
+                <button id="ft_btnE_<%=tid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ft',<%=tid%>)">Edit</button>
+                <button id="ft_btnS_<%=tid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ft',<%=tid%>)" style="display:none">Save</button>
+                <button id="ft_btnC_<%=tid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ft',<%=tid%>)" style="display:none">Cancel</button>
             </td>
         </tr>
         <% } %>
@@ -371,51 +404,55 @@
      TAB 5 : Category
      ══════════════════════════════════════════════════ -->
 <div id="tab-category" class="cfg-tab-panel<%="category".equals(activeTab)?" active":""%>">
-
     <span class="cfg-count-chip"><%=caList.size()%> Categories</span>
-
     <form method="post" id="ca_frm" action="../../CategoryController">
-        <input type="hidden" name="categoryId" id="ca_id">
         <div class="cfg-form-card">
-            <div class="cfg-edit-banner" id="ca_banner"></div>
+            <div class="cfg-form-card-title">Add New Category</div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
                     <label for="ca_categoryName">Category Name</label>
                     <input type="text" name="categoryName" id="ca_categoryName" required placeholder="e.g. Fertilizer, Pesticide">
                 </div>
-                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
-                    <input type="submit" class="btn-add"    id="ca_btnAdd"    name="add"  value="Add">
-                    <input type="submit" class="btn-update" id="ca_btnUpdate" name="edit" value="Update" style="display:none">
-                    <button type="button" class="btn-cancel" id="ca_btnCancel" style="display:none" onclick="cfgReset('ca')">Cancel</button>
+                <div style="align-self:flex-end;">
+                    <input type="submit" class="btn-add" name="add" value="Add">
                 </div>
             </div>
         </div>
     </form>
-
     <div class="cfg-bulk-bar" id="ca_bulkBar">
         <span><strong id="ca_selCount">0</strong> selected</span>
         <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ca','../../CategoryController')">Delete Selected</button>
         <button type="button" class="btn-cancel" onclick="cfgClearSelection('ca')">Clear</button>
     </div>
     <form method="post" id="ca_frmBulk" action="../../CategoryController"></form>
-
     <table class="cfg-table tbl-data" id="ca_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="ca_chkAll" onclick="cfgToggleAll('ca',this)"></th>
             <th width="8%">ID</th>
             <th>Category Name</th>
-            <th width="10%" style="text-align:center;">Action</th>
+            <th width="16%" style="text-align:center;">Action</th>
         </tr></thead>
         <tbody>
         <% for (CategoryEntity ca : caList) {
-               String caEsc = ca.getCategoryName() != null ? ca.getCategoryName().replace("\\","\\\\").replace("'","\\'") : ""; %>
-        <tr id="ca_row<%=ca.getCategoryId()%>">
-            <td class="center"><input type="checkbox" class="ca_chk" value="<%=ca.getCategoryId()%>" onchange="cfgUpdateBulkBar('ca','ca_chk')"></td>
-            <td><%=ca.getCategoryId()%></td>
-            <td><%=ca.getCategoryName()%></td>
+               int caid = ca.getCategoryId();
+               String caval = ca.getCategoryName() != null ? ca.getCategoryName() : "";
+               String caesc = caval.replace("\\","\\\\").replace("\"","&quot;"); %>
+        <tr id="ca_row<%=caid%>">
+            <td class="center"><input type="checkbox" class="ca_chk" value="<%=caid%>" onchange="cfgUpdateBulkBar('ca','ca_chk')"></td>
+            <td><%=caid%></td>
+            <td>
+                <span id="ca_vn_<%=caid%>"><%=caval%></span>
+                <input type="text" id="ca_en_<%=caid%>" class="inp-inline" value="<%=caesc%>" style="display:none">
+                <form id="ca_frmUpd_<%=caid%>" method="post" action="../../CategoryController" style="display:none">
+                    <input type="hidden" name="categoryId"   value="<%=caid%>">
+                    <input type="hidden" name="categoryName" id="ca_hn_<%=caid%>">
+                    <input type="hidden" name="edit"         value="1">
+                </form>
+            </td>
             <td class="center">
-                <button type="button" class="btn-row-edit"
-                    onclick="cfgEditRow1('ca','<%=ca.getCategoryId()%>','<%=caEsc%>','ca_categoryName','<%=caEsc%>')">Edit</button>
+                <button id="ca_btnE_<%=caid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ca',<%=caid%>)">Edit</button>
+                <button id="ca_btnS_<%=caid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ca',<%=caid%>)" style="display:none">Save</button>
+                <button id="ca_btnC_<%=caid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ca',<%=caid%>)" style="display:none">Cancel</button>
             </td>
         </tr>
         <% } %>
@@ -424,54 +461,58 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     TAB 6 : Product (Fertilizer)
+     TAB 6 : Product
      ══════════════════════════════════════════════════ -->
 <div id="tab-product" class="cfg-tab-panel<%="product".equals(activeTab)?" active":""%>">
-
     <span class="cfg-count-chip"><%=prList.size()%> Products</span>
-
     <form method="post" id="pr_frm" action="../../FertilizerController">
-        <input type="hidden" name="fertilizerId" id="pr_id">
         <div class="cfg-form-card">
-            <div class="cfg-edit-banner" id="pr_banner"></div>
+            <div class="cfg-form-card-title">Add New Product</div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
                     <label for="pr_fertilizerName">Product Name</label>
                     <input type="text" name="fertilizerName" id="pr_fertilizerName" required placeholder="e.g. Urea, DAP, Neem Oil">
                 </div>
-                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
-                    <input type="submit" class="btn-add"    id="pr_btnAdd"    name="add"  value="Add">
-                    <input type="submit" class="btn-update" id="pr_btnUpdate" name="edit" value="Update" style="display:none">
-                    <button type="button" class="btn-cancel" id="pr_btnCancel" style="display:none" onclick="cfgReset('pr')">Cancel</button>
+                <div style="align-self:flex-end;">
+                    <input type="submit" class="btn-add" name="add" value="Add">
                 </div>
             </div>
         </div>
     </form>
-
     <div class="cfg-bulk-bar" id="pr_bulkBar">
         <span><strong id="pr_selCount">0</strong> selected</span>
         <button type="button" class="btn-delete" onclick="cfgDeleteSelected('pr','../../FertilizerController')">Delete Selected</button>
         <button type="button" class="btn-cancel" onclick="cfgClearSelection('pr')">Clear</button>
     </div>
     <form method="post" id="pr_frmBulk" action="../../FertilizerController"></form>
-
     <table class="cfg-table tbl-data" id="pr_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="pr_chkAll" onclick="cfgToggleAll('pr',this)"></th>
             <th width="8%">ID</th>
             <th>Product Name</th>
-            <th width="10%" style="text-align:center;">Action</th>
+            <th width="16%" style="text-align:center;">Action</th>
         </tr></thead>
         <tbody>
         <% for (FertilizerEntity pr : prList) {
-               String prEsc = pr.getFertilizerName() != null ? pr.getFertilizerName().replace("\\","\\\\").replace("'","\\'") : ""; %>
-        <tr id="pr_row<%=pr.getFertilizerId()%>">
-            <td class="center"><input type="checkbox" class="pr_chk" value="<%=pr.getFertilizerId()%>" onchange="cfgUpdateBulkBar('pr','pr_chk')"></td>
-            <td><%=pr.getFertilizerId()%></td>
-            <td><%=pr.getFertilizerName()%></td>
+               int prid = pr.getFertilizerId();
+               String prval = pr.getFertilizerName() != null ? pr.getFertilizerName() : "";
+               String presc = prval.replace("\\","\\\\").replace("\"","&quot;"); %>
+        <tr id="pr_row<%=prid%>">
+            <td class="center"><input type="checkbox" class="pr_chk" value="<%=prid%>" onchange="cfgUpdateBulkBar('pr','pr_chk')"></td>
+            <td><%=prid%></td>
+            <td>
+                <span id="pr_vn_<%=prid%>"><%=prval%></span>
+                <input type="text" id="pr_en_<%=prid%>" class="inp-inline" value="<%=presc%>" style="display:none">
+                <form id="pr_frmUpd_<%=prid%>" method="post" action="../../FertilizerController" style="display:none">
+                    <input type="hidden" name="fertilizerId"   value="<%=prid%>">
+                    <input type="hidden" name="fertilizerName" id="pr_hn_<%=prid%>">
+                    <input type="hidden" name="edit"           value="1">
+                </form>
+            </td>
             <td class="center">
-                <button type="button" class="btn-row-edit"
-                    onclick="cfgEditRow1('pr','<%=pr.getFertilizerId()%>','<%=prEsc%>','pr_fertilizerName','<%=prEsc%>')">Edit</button>
+                <button id="pr_btnE_<%=prid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('pr',<%=prid%>)">Edit</button>
+                <button id="pr_btnS_<%=prid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('pr',<%=prid%>)" style="display:none">Save</button>
+                <button id="pr_btnC_<%=prid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('pr',<%=prid%>)" style="display:none">Cancel</button>
             </td>
         </tr>
         <% } %>
@@ -483,51 +524,55 @@
      TAB 7 : Brand
      ══════════════════════════════════════════════════ -->
 <div id="tab-brand" class="cfg-tab-panel<%="brand".equals(activeTab)?" active":""%>">
-
     <span class="cfg-count-chip"><%=brList.size()%> Brands</span>
-
     <form method="post" id="br_frm" action="../../BrandController">
-        <input type="hidden" name="brandId" id="br_id">
         <div class="cfg-form-card">
-            <div class="cfg-edit-banner" id="br_banner"></div>
+            <div class="cfg-form-card-title">Add New Brand</div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
                     <label for="br_brandName">Brand Name</label>
                     <input type="text" name="brandName" id="br_brandName" required placeholder="e.g. Tata, Coromandel">
                 </div>
-                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
-                    <input type="submit" class="btn-add"    id="br_btnAdd"    name="add"  value="Add">
-                    <input type="submit" class="btn-update" id="br_btnUpdate" name="edit" value="Update" style="display:none">
-                    <button type="button" class="btn-cancel" id="br_btnCancel" style="display:none" onclick="cfgReset('br')">Cancel</button>
+                <div style="align-self:flex-end;">
+                    <input type="submit" class="btn-add" name="add" value="Add">
                 </div>
             </div>
         </div>
     </form>
-
     <div class="cfg-bulk-bar" id="br_bulkBar">
         <span><strong id="br_selCount">0</strong> selected</span>
         <button type="button" class="btn-delete" onclick="cfgDeleteSelected('br','../../BrandController')">Delete Selected</button>
         <button type="button" class="btn-cancel" onclick="cfgClearSelection('br')">Clear</button>
     </div>
     <form method="post" id="br_frmBulk" action="../../BrandController"></form>
-
     <table class="cfg-table tbl-data" id="br_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="br_chkAll" onclick="cfgToggleAll('br',this)"></th>
             <th width="8%">ID</th>
             <th>Brand Name</th>
-            <th width="10%" style="text-align:center;">Action</th>
+            <th width="16%" style="text-align:center;">Action</th>
         </tr></thead>
         <tbody>
         <% for (BrandEntity br : brList) {
-               String brEsc = br.getBrandName() != null ? br.getBrandName().replace("\\","\\\\").replace("'","\\'") : ""; %>
-        <tr id="br_row<%=br.getBrandId()%>">
-            <td class="center"><input type="checkbox" class="br_chk" value="<%=br.getBrandId()%>" onchange="cfgUpdateBulkBar('br','br_chk')"></td>
-            <td><%=br.getBrandId()%></td>
-            <td><%=br.getBrandName()%></td>
+               int brid = br.getBrandId();
+               String brval = br.getBrandName() != null ? br.getBrandName() : "";
+               String bresc = brval.replace("\\","\\\\").replace("\"","&quot;"); %>
+        <tr id="br_row<%=brid%>">
+            <td class="center"><input type="checkbox" class="br_chk" value="<%=brid%>" onchange="cfgUpdateBulkBar('br','br_chk')"></td>
+            <td><%=brid%></td>
+            <td>
+                <span id="br_vn_<%=brid%>"><%=brval%></span>
+                <input type="text" id="br_en_<%=brid%>" class="inp-inline" value="<%=bresc%>" style="display:none">
+                <form id="br_frmUpd_<%=brid%>" method="post" action="../../BrandController" style="display:none">
+                    <input type="hidden" name="brandId"   value="<%=brid%>">
+                    <input type="hidden" name="brandName" id="br_hn_<%=brid%>">
+                    <input type="hidden" name="edit"      value="1">
+                </form>
+            </td>
             <td class="center">
-                <button type="button" class="btn-row-edit"
-                    onclick="cfgEditRow1('br','<%=br.getBrandId()%>','<%=brEsc%>','br_brandName','<%=brEsc%>')">Edit</button>
+                <button id="br_btnE_<%=brid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('br',<%=brid%>)">Edit</button>
+                <button id="br_btnS_<%=brid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('br',<%=brid%>)" style="display:none">Save</button>
+                <button id="br_btnC_<%=brid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('br',<%=brid%>)" style="display:none">Cancel</button>
             </td>
         </tr>
         <% } %>
@@ -539,51 +584,55 @@
      TAB 8 : Units
      ══════════════════════════════════════════════════ -->
 <div id="tab-unit" class="cfg-tab-panel<%="unit".equals(activeTab)?" active":""%>">
-
     <span class="cfg-count-chip"><%=unList.size()%> Units</span>
-
     <form method="post" id="un_frm" action="../../UnitController">
-        <input type="hidden" name="unitId" id="un_id">
         <div class="cfg-form-card">
-            <div class="cfg-edit-banner" id="un_banner"></div>
+            <div class="cfg-form-card-title">Add New Unit</div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
                     <label for="un_unitName">Unit Name</label>
                     <input type="text" name="unitName" id="un_unitName" required placeholder="e.g. Kg, Litre, Bag">
                 </div>
-                <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:1px;">
-                    <input type="submit" class="btn-add"    id="un_btnAdd"    name="add"  value="Add">
-                    <input type="submit" class="btn-update" id="un_btnUpdate" name="edit" value="Update" style="display:none">
-                    <button type="button" class="btn-cancel" id="un_btnCancel" style="display:none" onclick="cfgReset('un')">Cancel</button>
+                <div style="align-self:flex-end;">
+                    <input type="submit" class="btn-add" name="add" value="Add">
                 </div>
             </div>
         </div>
     </form>
-
     <div class="cfg-bulk-bar" id="un_bulkBar">
         <span><strong id="un_selCount">0</strong> selected</span>
         <button type="button" class="btn-delete" onclick="cfgDeleteSelected('un','../../UnitController')">Delete Selected</button>
         <button type="button" class="btn-cancel" onclick="cfgClearSelection('un')">Clear</button>
     </div>
     <form method="post" id="un_frmBulk" action="../../UnitController"></form>
-
     <table class="cfg-table tbl-data" id="un_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="un_chkAll" onclick="cfgToggleAll('un',this)"></th>
             <th width="8%">ID</th>
             <th>Unit Name</th>
-            <th width="10%" style="text-align:center;">Action</th>
+            <th width="16%" style="text-align:center;">Action</th>
         </tr></thead>
         <tbody>
         <% for (UnitEntity un : unList) {
-               String unEsc = un.getUnitName() != null ? un.getUnitName().replace("\\","\\\\").replace("'","\\'") : ""; %>
-        <tr id="un_row<%=un.getUnitId()%>">
-            <td class="center"><input type="checkbox" class="un_chk" value="<%=un.getUnitId()%>" onchange="cfgUpdateBulkBar('un','un_chk')"></td>
-            <td><%=un.getUnitId()%></td>
-            <td><%=un.getUnitName()%></td>
+               int unid = un.getUnitId();
+               String unval = un.getUnitName() != null ? un.getUnitName() : "";
+               String unesc = unval.replace("\\","\\\\").replace("\"","&quot;"); %>
+        <tr id="un_row<%=unid%>">
+            <td class="center"><input type="checkbox" class="un_chk" value="<%=unid%>" onchange="cfgUpdateBulkBar('un','un_chk')"></td>
+            <td><%=unid%></td>
+            <td>
+                <span id="un_vn_<%=unid%>"><%=unval%></span>
+                <input type="text" id="un_en_<%=unid%>" class="inp-inline" value="<%=unesc%>" style="display:none">
+                <form id="un_frmUpd_<%=unid%>" method="post" action="../../UnitController" style="display:none">
+                    <input type="hidden" name="unitId"   value="<%=unid%>">
+                    <input type="hidden" name="unitName" id="un_hn_<%=unid%>">
+                    <input type="hidden" name="edit"     value="1">
+                </form>
+            </td>
             <td class="center">
-                <button type="button" class="btn-row-edit"
-                    onclick="cfgEditRow1('un','<%=un.getUnitId()%>','<%=unEsc%>','un_unitName','<%=unEsc%>')">Edit</button>
+                <button id="un_btnE_<%=unid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('un',<%=unid%>)">Edit</button>
+                <button id="un_btnS_<%=unid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('un',<%=unid%>)" style="display:none">Save</button>
+                <button id="un_btnC_<%=unid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('un',<%=unid%>)" style="display:none">Cancel</button>
             </td>
         </tr>
         <% } %>
@@ -605,25 +654,21 @@ function switchTab(name) {
     document.querySelectorAll('.cfg-tab-btn').forEach(function(b) {
         if (b.getAttribute('onclick') === "switchTab('" + name + "')") b.classList.add('active');
     });
-    /* adjust DataTables column widths for newly visible table */
-    if (dtMap[name]) {
-        dtMap[name].columns.adjust().draw(false);
-    }
+    if (dtMap[name]) dtMap[name].columns.adjust().draw(false);
     history.replaceState(null, '', '?tab=' + name);
 }
 
-/* ── DataTables init (after document ready from header tableInit.js) ── */
+/* ── DataTables init ── */
 $(document).ready(function () {
-    ['ut_table','si_table','cr_table','ft_table','ca_table','pr_table','br_table','un_table'].forEach(function(id) {
-        var tabKey = {ut_table:'userType', si_table:'site', cr_table:'crop', ft_table:'task',
-                      ca_table:'category', pr_table:'product', br_table:'brand', un_table:'unit'}[id];
+    var idToTab = {ut_table:'userType', si_table:'site', cr_table:'crop', ft_table:'task',
+                   ca_table:'category', pr_table:'product', br_table:'brand', un_table:'unit'};
+    Object.keys(idToTab).forEach(function(id) {
         var dt;
         if ($.fn.DataTable.isDataTable('#' + id)) {
             dt = $('#' + id).DataTable();
         } else {
             dt = $('#' + id).DataTable({
-                pageLength: 25,
-                autoWidth: false,
+                pageLength: 25, autoWidth: false,
                 language: {
                     search: '', searchPlaceholder: 'Search...',
                     lengthMenu: 'Show _MENU_ entries',
@@ -633,68 +678,86 @@ $(document).ready(function () {
                 }
             });
         }
-        dtMap[tabKey] = dt;
+        dtMap[idToTab[id]] = dt;
     });
 });
 
-/* ── generic single-field edit (User Type, Crop, Farm Task) ──
-   p       = prefix ('ut','cr','ft')
-   id      = record id
-   label   = shown in edit banner
-   fieldId = element id of the single text input
-   val     = field value
-*/
-function cfgEditRow1(p, id, label, fieldId, val) {
-    var oldRow = document.querySelector('#tab-' + _tabForPrefix(p) + ' tr.sel-row');
-    if (oldRow) oldRow.classList.remove('sel-row');
+/* ══════════════════════════════════════════
+   INLINE ROW EDITING — single-field tabs
+   p  = prefix (ut, cr, ft, ca, pr, br, un)
+   id = record id
+   ══════════════════════════════════════════ */
+function cfgInlineEdit(p, id) {
+    var span = document.getElementById(p + '_vn_' + id);
+    var inp  = document.getElementById(p + '_en_' + id);
+    span.style.display = 'none';
+    inp.style.display  = '';
+    inp.focus(); inp.select();
+    document.getElementById(p + '_btnE_' + id).style.display = 'none';
+    document.getElementById(p + '_btnS_' + id).style.display = '';
+    document.getElementById(p + '_btnC_' + id).style.display = '';
     var row = document.getElementById(p + '_row' + id);
-    if (row) row.classList.add('sel-row');
-
-    document.getElementById(p + '_id').value = id;
-    document.getElementById(fieldId).value   = val;
-
-    _cfgShowEditMode(p, label);
+    if (row) row.classList.add('editing-row');
+    /* save on Enter */
+    inp.onkeydown = function(e) { if (e.key === 'Enter') cfgInlineSave(p, id); };
 }
 
-/* Site Information has 3 extra fields */
-function siEditRow(id, name, area, loc) {
-    var oldRow = document.querySelector('#tab-site tr.sel-row');
-    if (oldRow) oldRow.classList.remove('sel-row');
-    var row = document.getElementById('si_row' + id);
-    if (row) row.classList.add('sel-row');
-
-    document.getElementById('si_id').value           = id;
-    document.getElementById('si_siteName').value     = name;
-    document.getElementById('si_siteArea').value     = area;
-    document.getElementById('si_siteLocation').value = loc;
-
-    _cfgShowEditMode('si', name);
+function cfgInlineCancel(p, id) {
+    var span = document.getElementById(p + '_vn_' + id);
+    var inp  = document.getElementById(p + '_en_' + id);
+    inp.value          = span.innerText;   /* restore original */
+    span.style.display = '';
+    inp.style.display  = 'none';
+    document.getElementById(p + '_btnE_' + id).style.display = '';
+    document.getElementById(p + '_btnS_' + id).style.display = 'none';
+    document.getElementById(p + '_btnC_' + id).style.display = 'none';
+    var row = document.getElementById(p + '_row' + id);
+    if (row) row.classList.remove('editing-row');
 }
 
-function _cfgShowEditMode(p, label) {
-    var banner = document.getElementById(p + '_banner');
-    banner.innerText     = 'Editing: ' + label;
-    banner.style.display = 'block';
-    document.getElementById(p + '_btnAdd').style.display    = 'none';
-    document.getElementById(p + '_btnUpdate').style.display = 'inline-block';
-    document.getElementById(p + '_btnCancel').style.display = 'inline-block';
-    document.getElementById(p + '_frm').scrollIntoView({behavior:'smooth', block:'nearest'});
+function cfgInlineSave(p, id) {
+    var val = document.getElementById(p + '_en_' + id).value.trim();
+    if (!val) { document.getElementById(p + '_en_' + id).focus(); return; }
+    document.getElementById(p + '_hn_' + id).value = val;
+    document.getElementById(p + '_frmUpd_' + id).submit();
 }
 
-function cfgReset(p) {
-    var panel = document.getElementById('tab-' + _tabForPrefix(p));
-    var oldRow = panel ? panel.querySelector('tr.sel-row') : null;
-    if (oldRow) oldRow.classList.remove('sel-row');
-
-    /* clear all text inputs in the form card */
-    document.querySelectorAll('#' + p + '_frm input[type=text], #' + p + '_frm input[type=hidden]:not([name$="Id"])').forEach(function(el) {
-        el.value = '';
+/* ══════════════════════════════════════════
+   INLINE ROW EDITING — Site Information (3 fields)
+   ══════════════════════════════════════════ */
+function siInlineEdit(id) {
+    ['n','a','l'].forEach(function(f) {
+        document.getElementById('si_v' + f + '_' + id).style.display = 'none';
+        document.getElementById('si_e' + f + '_' + id).style.display = '';
     });
-    document.getElementById(p + '_id').value = '';
-    document.getElementById(p + '_banner').style.display    = 'none';
-    document.getElementById(p + '_btnAdd').style.display    = 'inline-block';
-    document.getElementById(p + '_btnUpdate').style.display = 'none';
-    document.getElementById(p + '_btnCancel').style.display = 'none';
+    document.getElementById('si_en_' + id).focus();
+    document.getElementById('si_btnE_' + id).style.display = 'none';
+    document.getElementById('si_btnS_' + id).style.display = '';
+    document.getElementById('si_btnC_' + id).style.display = '';
+    var row = document.getElementById('si_row' + id);
+    if (row) row.classList.add('editing-row');
+}
+
+function siInlineCancel(id) {
+    ['n','a','l'].forEach(function(f) {
+        var span = document.getElementById('si_v' + f + '_' + id);
+        var inp  = document.getElementById('si_e' + f + '_' + id);
+        inp.value         = span.innerText;
+        span.style.display = '';
+        inp.style.display  = 'none';
+    });
+    document.getElementById('si_btnE_' + id).style.display = '';
+    document.getElementById('si_btnS_' + id).style.display = 'none';
+    document.getElementById('si_btnC_' + id).style.display = 'none';
+    var row = document.getElementById('si_row' + id);
+    if (row) row.classList.remove('editing-row');
+}
+
+function siInlineSave(id) {
+    document.getElementById('si_hn_' + id).value = document.getElementById('si_en_' + id).value.trim();
+    document.getElementById('si_ha_' + id).value = document.getElementById('si_ea_' + id).value.trim();
+    document.getElementById('si_hl_' + id).value = document.getElementById('si_el_' + id).value.trim();
+    document.getElementById('si_frmUpd_' + id).submit();
 }
 
 /* ── checkbox / bulk delete ── */
@@ -739,11 +802,6 @@ function cfgClearSelection(p) {
     document.querySelectorAll('.' + p + '_chk').forEach(function(b) { b.checked = false; });
     document.getElementById(p + '_chkAll').checked = false;
     document.getElementById(p + '_bulkBar').classList.remove('show');
-}
-
-function _tabForPrefix(p) {
-    return {ut:'userType', si:'site', cr:'crop', ft:'task',
-            ca:'category', pr:'product', br:'brand', un:'unit'}[p] || p;
 }
 </script>
 </body>
