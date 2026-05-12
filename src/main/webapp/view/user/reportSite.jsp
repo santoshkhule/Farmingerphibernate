@@ -88,7 +88,7 @@ $(document).ready(function() {
 <legend>Site Expenditure &amp; Dispatch Status Report</legend>
 
 <!-- ===== SITE SUMMARY TABLE (grouped by site + date + crop) ===== -->
-<h3 style="margin:8px 0 8px; color:var(--green-dk); font-size:1em;">Site Summary — by Site, Date &amp; Crop</h3>
+<h3 style="margin:8px 0 8px; color:var(--green-dk); font-size:1em;">Site Summary by Site, Date &amp; Crop</h3>
 <table id="siteSummaryTable" border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
