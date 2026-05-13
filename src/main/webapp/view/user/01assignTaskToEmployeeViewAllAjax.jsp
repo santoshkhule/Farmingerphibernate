@@ -33,16 +33,16 @@ if (taskIdParam != null && !taskIdParam.trim().isEmpty() && !taskIdParam.equals(
 <table border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
-        <th width="3%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)"></th>
-        <th>Sr. No.</th>
+        <th><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)"></th>
+        <th>#</th>
         <th>Name</th>
         <th>Date</th>
-        <th>Site Name</th>
-        <th>Crop Name</th>
+        <th>Site</th>
+        <th>Crop</th>
         <th>Work Type</th>
-        <th>Work Status</th>
-        <th>Assign Work</th>
-        <th>Amount To Pay</th>
+        <th>Status</th>
+        <th>Tasks</th>
+        <th>Amount</th>
         <th>Paid</th>
         <th>Balance</th>
         <th>Action</th>
@@ -93,10 +93,9 @@ try {
             cnt++;
 %>
     <tr id="rowId<%=cnt%>">
-        <td style="text-align:center;"><input type="checkbox" class="rowChk" value="<%=employeeToFarm.getAssignResourceId()%>" onchange="updateBulkBar()"></td>
+        <td><input type="checkbox" class="rowChk" value="<%=employeeToFarm.getAssignResourceId()%>" onchange="updateBulkBar()"></td>
         <td><%=cnt%></td>
-        <td>
-            <%
+        <td><%
             if (employeeToFarm.getEmployeeInfoEntity() != null) {
                 if (employeeToFarm.getEmployeeInfoEntity().getFirstName() != null)
                     out.print(employeeToFarm.getEmployeeInfoEntity().getFirstName() + " ");
@@ -105,56 +104,38 @@ try {
                 if (employeeToFarm.getEmployeeInfoEntity().getLastName() != null)
                     out.print(employeeToFarm.getEmployeeInfoEntity().getLastName());
             }
-            %>
-        </td>
-        <td>
-            <%
-            if (employeeToFarm.getAssignWorkDate() != null) {
-                out.println(FarmUtility.convertfrom_yymmddToddmmyy(
-                        employeeToFarm.getAssignWorkDate().toString()));
-            }
-            %>
-        </td>
-        <td>
-            <%
+        %></td>
+        <td><%
+            if (employeeToFarm.getAssignWorkDate() != null)
+                out.print(FarmUtility.convertfrom_yymmddToddmmyy(employeeToFarm.getAssignWorkDate().toString()));
+        %></td>
+        <td><%
             if (employeeToFarm.getCropToSiteEntity() != null
                     && employeeToFarm.getCropToSiteEntity().getSiteInformationEntity() != null
-                    && employeeToFarm.getCropToSiteEntity().getSiteInformationEntity().getSiteName() != null) {
-                out.println(employeeToFarm.getCropToSiteEntity().getSiteInformationEntity().getSiteName());
+                    && employeeToFarm.getCropToSiteEntity().getSiteInformationEntity().getSiteName() != null)
+                out.print(employeeToFarm.getCropToSiteEntity().getSiteInformationEntity().getSiteName());
+        %></td>
+        <td><%
+            if (employeeToFarm.getCropEntity() != null && employeeToFarm.getCropEntity().getCropName() != null)
+                out.print(employeeToFarm.getCropEntity().getCropName());
+        %></td>
+        <td><%
+            if (employeeToFarm.getTypeOfWork() != null)
+                out.print(employeeToFarm.getTypeOfWork());
+        %></td>
+        <td><%
+            String ws = employeeToFarm.getWorkStatus();
+            if (ws != null && !ws.isEmpty()) {
+        %><span class="ws-pill ws-<%=ws%>"><%=ws%></span><%
             }
-            %>
-        </td>
-        <td>
-            <%
-            if (employeeToFarm.getCropEntity() != null
-                    && employeeToFarm.getCropEntity().getCropName() != null) {
-                out.println(employeeToFarm.getCropEntity().getCropName());
-            }
-            %>
-        </td>
-        <td>
-            <%
-            if (employeeToFarm.getTypeOfWork() != null) {
-                out.println(employeeToFarm.getTypeOfWork());
-            }
-            %>
-        </td>
-        <td>
-            <%
-            if (employeeToFarm.getWorkStatus() != null) {
-                out.println(employeeToFarm.getWorkStatus());
-            }
-            %>
-        </td>
-        <td>
-            <%
+        %></td>
+        <td><%
             int i = 0;
             for (ConfigFarmTaskEntity task : employeeToFarm.getListFarmTaskEntities()) {
                 if (i++ > 0) out.print(", ");
                 out.print(task.getTaskName());
             }
-            %>
-        </td>
+        %></td>
         <%
         double totalSalaryPaid = salaryProcessingDao.getTotalSalaryPaidByAssignResourceId(employeeToFarm.getAssignResourceId());
         double totalPaid = employeeToFarm.getAdvPayment() + totalSalaryPaid;
@@ -164,9 +145,9 @@ try {
         <td><%=employeeToFarm.getAmount()%></td>
         <td><%=totalSalaryPaid%></td>
         <td><%=balanceAmount%></td>
-        <td style="text-align:center; white-space:nowrap;">
+        <td>
             <button type="button" class="btn-row-edit" onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'edit')">Edit</button>
-            <button type="button" class="btn-update" onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'view')">View</button>
+            <button type="button" class="btn-update"   onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'view')">View</button>
         </td>
     </tr>
 <%
