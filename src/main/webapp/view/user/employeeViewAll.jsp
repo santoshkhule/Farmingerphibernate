@@ -57,8 +57,6 @@
 		<input type="submit" class="btn-action" name="sbtView"           value="View"                 onclick="return doAction('view')">
 		<input type="submit" class="btn-action" name="sbtEdit"           value="Edit"                 onclick="return doAction('edit')">
 		<input type="submit" class="btn-delete" name="delete"            value="Delete"               onclick="return doAction('delete')">
-		<input type="submit" class="btn-action" name="sbtAssignTask"     value="Assign Task"          onclick="return doAction('assignTask')">
-		<input type="submit" class="btn-action" name="sbtViewAllTransac" value="View All Transaction" onclick="return doAction('viewTransaction')">
 	</div>
 	<table border="1" width="100%" class="tbl-data">
 		<thead>
