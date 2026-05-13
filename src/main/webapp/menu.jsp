@@ -23,7 +23,6 @@
 	<div class="nav-group">
 		<div class="nav-group-title">&#128203; Farm Setup</div>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Site Resource Allocation</a>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/01createFarm.jsp">Create Farm</a>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">View Assign Tasks</a>
 	</div>
 
