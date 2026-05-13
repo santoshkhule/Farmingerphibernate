@@ -894,14 +894,14 @@ The nested `<ul>` width is fixed at `8em` (`width: 8em` in `li:hover ul`). If dr
 When a row has more than one editable field, pass all values as JS arguments and populate each field:
 
 ```javascript
-function editRow(id, vendorName, shopName, perContactNo, ofcContactNo, address, emailId) {
+function editRow(id, vendorName, shopName, perContactNo, ofcContactNo, address, username) {
     document.getElementById('vendorId').value     = id;
     document.getElementById('vendorName').value   = vendorName;
     document.getElementById('shopName').value     = shopName;
     document.getElementById('perContactNo').value = perContactNo;
     document.getElementById('ofcContactNo').value = ofcContactNo;
     document.getElementById('address').value      = address;
-    document.getElementById('emailId').value      = emailId;
+    document.getElementById('username').value      = username;
     ...
 }
 ```
@@ -916,7 +916,7 @@ Call it from the row's Edit button — escape single quotes and strip newlines f
 %>
 <button type="button" class="btn-row-edit"
     onclick="editRow(<%=vendor.getVendorId()%>,'<%=eVendorName%>','<%=eShopName%>',
-             '<%=ePerContact%>','<%=eOfcContact%>','<%=eAddress%>','<%=eEmailId%>')">Edit</button>
+             '<%=ePerContact%>','<%=eOfcContact%>','<%=eAddress%>','<%=eusername%>')">Edit</button>
 ```
 
 The `resetForm()` function must clear **all** fields — not just the name — or old values linger after the user clicks Cancel:
@@ -928,7 +928,7 @@ function resetForm() {
     document.getElementById('perContactNo').value = '';
     document.getElementById('ofcContactNo').value = '';
     document.getElementById('address').value      = '';
-    document.getElementById('emailId').value      = '';
+    document.getElementById('username').value      = '';
     ...
 }
 ```
