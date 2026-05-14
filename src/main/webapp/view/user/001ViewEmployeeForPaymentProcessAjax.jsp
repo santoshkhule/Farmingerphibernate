@@ -1,4 +1,3 @@
-<%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
 <%@page import="java.sql.Date"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
@@ -70,26 +69,30 @@
         entities = new ArrayList<AssignEmployeeToFarmEntity>();
     }
 
-    double ttlAmountToPay = 0, ttlAdvancedPaid = 0, ttlAmountPaid = 0;
-    double ttlBalance = 0, ttlExcessAmount = 0;
+    double ttlAmountToPay = 0, ttlBalance = 0;
 %>
+<style>
+    .ws-pill { display:inline-block; padding:2px 8px; border-radius:8px; font-size:10px; font-weight:700; white-space:nowrap; }
+    .ws-Completed { background:#e8f5e9; color:#1b5e20; }
+    .ws-Pending   { background:#fdecea; color:#b71c1c; }
+    .ws-default   { background:#f5f5f5; color:#757575; }
+    .btn-select { background:var(--green-lt,#e8f5e9); border:1px solid var(--green-bd,#a5d6a7);
+        color:var(--green-dk,#1b5e20); padding:2px 10px; cursor:pointer;
+        border-radius:3px; font-size:11px; font-family:inherit; }
+    .btn-select:hover { background:#c8e6c9; }
+</style>
 <table border="1" cellspacing="0" width="100%" class="tbl-data">
     <thead>
     <tr>
-        <th>Select</th>
-        <th>Sr. No.</th>
+        <th width="6%">Select</th>
+        <th width="4%">#</th>
         <th>Name</th>
-        <th>Date</th>
+        <th width="9%">Date</th>
         <th>Site Name</th>
-        <th>Crop Name</th>
-        <th>Work Type</th>
-        <th>Work Status</th>
-        <th>Assign Work</th>
-        <th>Amount To Pay</th>
-        <th>Advanced Paid</th>
-        <th>Amount Paid</th>
-        <th>Balance</th>
-        <th>Excess Amount</th>
+        <th width="10%">Work Type</th>
+        <th width="9%">Status</th>
+        <th width="9%">Amount</th>
+        <th width="9%">Balance</th>
     </tr>
     </thead>
     <tbody>
@@ -102,50 +105,40 @@
         double totalSalaryPaid = salaryDao.getTotalSalaryPaidByAssignResourceId(assignResourceId);
         double totalPaid       = employeeToFarm.getAdvPayment() + totalSalaryPaid;
         double balanceAmount   = employeeToFarm.getAmount() - totalPaid;
-        double excessAmount    = 0;
-        if (balanceAmount < 0) { excessAmount = -balanceAmount; balanceAmount = 0; }
-        ttlAmountToPay  += employeeToFarm.getAmount();
-        ttlAdvancedPaid += employeeToFarm.getAdvPayment();
-        ttlAmountPaid   += totalSalaryPaid;
-        ttlBalance      += balanceAmount;
-        ttlExcessAmount += excessAmount;
+        if (balanceAmount < 0) balanceAmount = 0;
+        ttlAmountToPay += employeeToFarm.getAmount();
+        ttlBalance     += balanceAmount;
+
+        String ws = employeeToFarm.getWorkStatus() != null ? employeeToFarm.getWorkStatus() : "";
+        String wsClass = "Completed".equalsIgnoreCase(ws) ? "ws-Completed"
+                       : "Pending".equalsIgnoreCase(ws)   ? "ws-Pending"
+                       : "ws-default";
+
+        String empFullName = "";
+        if (employeeToFarm.getEmployeeInfoEntity() != null) {
+            if (employeeToFarm.getEmployeeInfoEntity().getFirstName()  != null) empFullName += employeeToFarm.getEmployeeInfoEntity().getFirstName()  + " ";
+            if (employeeToFarm.getEmployeeInfoEntity().getMiddleName() != null) empFullName += employeeToFarm.getEmployeeInfoEntity().getMiddleName() + " ";
+            if (employeeToFarm.getEmployeeInfoEntity().getLastName()   != null) empFullName += employeeToFarm.getEmployeeInfoEntity().getLastName();
+        }
+        empFullName = empFullName.trim();
+
+        String siteName = (employeeToFarm.getCropToSiteEntity() != null
+            && employeeToFarm.getCropToSiteEntity().getSiteInformationEntity() != null)
+            ? employeeToFarm.getCropToSiteEntity().getSiteInformationEntity().getSiteName() : "";
 %>
     <tr>
         <td style="text-align:center;">
-            <input type="radio" name="radAssignWorkId" value="<%=assignResourceId%>"
-                   onclick="processSalary(<%=assignResourceId%>);">
+            <button type="button" class="btn-select" onclick="processSalary(<%=assignResourceId%>)">Select</button>
         </td>
         <td><%=cnt%></td>
-        <td><%
-            if (employeeToFarm.getEmployeeInfoEntity() != null) {
-                if (employeeToFarm.getEmployeeInfoEntity().getFirstName() != null)
-                    out.print(employeeToFarm.getEmployeeInfoEntity().getFirstName() + " ");
-                if (employeeToFarm.getEmployeeInfoEntity().getMiddleName() != null)
-                    out.print(employeeToFarm.getEmployeeInfoEntity().getMiddleName() + " ");
-                if (employeeToFarm.getEmployeeInfoEntity().getLastName() != null)
-                    out.print(employeeToFarm.getEmployeeInfoEntity().getLastName());
-            }
-        %></td>
+        <td><%=empFullName%></td>
         <td><%=employeeToFarm.getAssignWorkDate() != null
             ? FarmUtility.convertfrom_yymmddToddmmyy(employeeToFarm.getAssignWorkDate().toString()) : ""%></td>
-        <td><%=employeeToFarm.getCropToSiteEntity() != null
-            && employeeToFarm.getCropToSiteEntity().getSiteInformationEntity() != null
-            ? employeeToFarm.getCropToSiteEntity().getSiteInformationEntity().getSiteName() : ""%></td>
-        <td><%=employeeToFarm.getCropEntity() != null ? employeeToFarm.getCropEntity().getCropName() : ""%></td>
+        <td><%=siteName%></td>
         <td><%=employeeToFarm.getTypeOfWork() != null ? employeeToFarm.getTypeOfWork() : ""%></td>
-        <td><%=employeeToFarm.getWorkStatus() != null ? employeeToFarm.getWorkStatus() : ""%></td>
-        <td><%
-            int ti = 0;
-            for (ConfigFarmTaskEntity t : employeeToFarm.getListFarmTaskEntities()) {
-                if (ti++ > 0) out.print(", ");
-                out.print(t.getTaskName());
-            }
-        %></td>
-        <td><%=employeeToFarm.getAmount()%></td>
-        <td><%=employeeToFarm.getAdvPayment()%></td>
-        <td><%=totalSalaryPaid%></td>
-        <td><%=balanceAmount%></td>
-        <td><%=excessAmount%></td>
+        <td style="text-align:center;"><span class="ws-pill <%=wsClass%>"><%=ws.isEmpty() ? "—" : ws%></span></td>
+        <td style="text-align:right;"><%=employeeToFarm.getAmount()%></td>
+        <td style="text-align:right;"><%=balanceAmount%></td>
     </tr>
 <%
     }
@@ -153,12 +146,9 @@
     </tbody>
     <tfoot>
     <tr>
-        <td style="font-weight:bold; text-align:right;" colspan="9">Total</td>
-        <td><b><%=ttlAmountToPay%></b></td>
-        <td><b><%=ttlAdvancedPaid%></b></td>
-        <td><b><%=ttlAmountPaid%></b></td>
-        <td><b><%=ttlBalance%></b></td>
-        <td><b><%=ttlExcessAmount%></b></td>
+        <td style="font-weight:bold; text-align:right;" colspan="7">Total</td>
+        <td style="text-align:right;"><b><%=ttlAmountToPay%></b></td>
+        <td style="text-align:right;"><b><%=ttlBalance%></b></td>
     </tr>
     </tfoot>
 </table>

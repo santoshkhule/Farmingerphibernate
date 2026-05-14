@@ -110,6 +110,32 @@ public class EmployeeInfoService {
 		}
 		return flag;
 	}
+	public boolean deleteEmployeeById(int employeeInfoId) {
+		logger.debug("Deleting EmployeeInfo by id: {}", employeeInfoId);
+		boolean flag = false;
+		Session session = HibernateUtil.opensession();
+		Transaction transaction = session.beginTransaction();
+		try {
+			EmployeeInfoEntity managed = (EmployeeInfoEntity) session.get(EmployeeInfoEntity.class, employeeInfoId);
+			if (managed != null) {
+				session.delete(managed);
+				transaction.commit();
+				flag = true;
+				logger.info("EmployeeInfo deleted successfully for id: {}", employeeInfoId);
+			} else {
+				transaction.rollback();
+				logger.warn("EmployeeInfo not found for id: {}", employeeInfoId);
+			}
+		} catch (HibernateException exception) {
+			if (transaction != null) transaction.rollback();
+			logger.error("Error deleting EmployeeInfo for id: {}", employeeInfoId, exception);
+		} finally {
+			session.clear();
+			session.close();
+		}
+		return flag;
+	}
+
 	/**
 	 * fetch Operation:Fecthing List Object from Database table
 	 *

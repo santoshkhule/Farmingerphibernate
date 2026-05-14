@@ -91,7 +91,12 @@ public class PaymentProcessingServlet extends HttpServlet {
 				salaryProcessingDao.updateSalaryTransaction(salaryProcess);
 				logger.info("Salary transaction updated successfully");
 			}
-			response.sendRedirect(request.getContextPath() + "/view/user/02PaymentProcessing.jsp?assignResourceId=" + assignResourceId);
+			if(request.getParameter("sbtDelete")!=null){
+				logger.info("Deleting salary transaction with id: {}", salaryProcessId);
+				salaryProcessingDao.deleteSalaryTransaction(salaryProcessId);
+				logger.info("Salary transaction deleted successfully");
+			}
+			response.sendRedirect(request.getContextPath() + "/view/user/02employeePaymentProcess.jsp?assignResourceId=" + assignResourceId);
 		} catch (Exception exception) {
 			logger.error("Error processing SalaryProcessing request", exception);
 		}

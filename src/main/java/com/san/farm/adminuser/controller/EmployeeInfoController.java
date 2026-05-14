@@ -136,6 +136,22 @@ public class EmployeeInfoController extends HttpServlet {
 				employeeInfoService.deleteAuthEmployeeInfo(employeeInfoEntity);
 				logger.info("Employee deleted successfully");
 			}
+			//Bulk Delete Operation
+			if (null != mrequest.getParameter("deleteBulk")) {
+				String idsParam = mrequest.getParameter("deleteIds");
+				if (idsParam != null && !idsParam.trim().isEmpty()) {
+					for (String idStr : idsParam.split(",")) {
+						try {
+							int delId = Integer.parseInt(idStr.trim());
+							employeeInfoService.deleteEmployeeById(delId);
+							logger.info("Bulk delete: employee {} deleted", delId);
+						} catch (NumberFormatException nfe) {
+							logger.warn("Invalid id in bulk delete: {}", idStr);
+						}
+					}
+				}
+				logger.info("Bulk delete completed");
+			}
 		}catch(Exception ex){
 			logger.error("Error processing EmployeeInfo request", ex);
 		}finally{

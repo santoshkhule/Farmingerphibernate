@@ -116,11 +116,49 @@
 
 	<!-- ── Content iframe ── -->
 	<iframe id="contentFrame" name="contentFrame"
-		src="view/user/dashboard.jsp"
+		src="about:blank"
 		frameborder="0">
 	</iframe>
 
 </div>
+
+<script>
+(function() {
+    var frame   = document.getElementById('contentFrame');
+    var ctxPath = '<%=request.getContextPath()%>';
+    var base    = window.location.origin + (ctxPath ? ctxPath + '/' : '/');
+
+    function safeRelPage(raw) {
+        if (!raw) return '';
+        if (raw.indexOf('://') !== -1) return '';   // no absolute URLs
+        if (raw.charAt(0) === '/') return '';        // no root-relative paths
+        if (raw.indexOf('..') !== -1) return '';     // no path traversal
+        return raw;
+    }
+
+    // Restore last-viewed page from hash, or fall back to dashboard
+    var initial = safeRelPage(decodeURIComponent((window.location.hash || '').slice(1)))
+                  || 'view/user/dashboard.jsp';
+    frame.src = initial;
+
+    // After every iframe navigation: update hash (strip query params — avoids
+    // replaying stale ?msg=... banners on reload)
+    frame.addEventListener('load', function() {
+        try {
+            var href = frame.contentWindow.location.href;
+            if (!href || href === 'about:blank') return;
+            if (href.indexOf(base) === 0) {
+                var rel = href.slice(base.length);
+                var q = rel.indexOf('?');
+                if (q !== -1) rel = rel.substring(0, q);
+                if (rel && rel.indexOf('login.jsp') === -1) {
+                    history.replaceState(null, '', '#' + rel);
+                }
+            }
+        } catch (e) { /* cross-origin safety */ }
+    });
+})();
+</script>
 
 </body>
 </html>

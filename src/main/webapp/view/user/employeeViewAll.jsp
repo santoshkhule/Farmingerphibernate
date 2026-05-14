@@ -9,123 +9,174 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../../css/style.css">
+<script src="../../js/jquery-1.9.1.js"></script>
+<script src="../../js/datatables.min.js"></script>
 <title>View All Employee</title>
+<style>
+    #bulkBar {
+        display: none;
+        background: var(--red-lt, #fdecea); border: 1px solid var(--red-bd, #ef9a9a);
+        padding: 7px 12px; border-radius: 4px; margin-bottom: 8px; font-size: 12px;
+    }
+    .btn-view {
+        background: var(--green-lt, #e8f5e9); border: 1px solid var(--green-bd, #a5d6a7);
+        color: var(--green-dk, #1b5e20); padding: 2px 8px; cursor: pointer;
+        border-radius: 3px; font-size: 11px; font-family: inherit;
+        transition: background 0.1s;
+    }
+    .btn-view:hover { background: #c8e6c9; }
+    .ps-pill {
+        display: inline-block; padding: 2px 8px; border-radius: 8px;
+        font-size: 10px; font-weight: 700; white-space: nowrap;
+    }
+    .ps-Paid    { background: #e8f5e9; color: #1b5e20; }
+    .ps-Partial { background: #fff8e1; color: #e65100; }
+    .ps-Unpaid  { background: #fdecea; color: #b71c1c; }
+    .ps-NoWork  { background: #f5f5f5; color: #757575; }
+    .dataTables_wrapper { width: 100%; }
+</style>
 </head>
 <script type="text/javascript">
-	function doAction(action) {
-		var radios = document.getElementsByName('radEmpId');
-		var selectedId = '';
-		for (var i = 0; i < radios.length; i++) {
-			if (radios[i].checked) {
-				selectedId = radios[i].value;
-				break;
-			}
-		}
-		if (selectedId === '') {
-			alert('Please select an employee first.');
-			return false;
-		}
-		if (action === 'view') {
-			window.location = 'employeeInfo.jsp?employeeInfoId=' + selectedId + '&mode=view';
-			return false;
-		} else if (action === 'edit') {
-			window.location = 'employeeInfo.jsp?employeeInfoId=' + selectedId + '&mode=edit';
-			return false;
-		} else if (action === 'delete') {
-			if (!confirm('Are you sure you want to delete this employee?')) return false;
-			document.getElementById('hdnEmployeeInfoId').value = selectedId;
-			document.getElementById('frmEmpList').action = '../../EmployeeInfoController';
-			return true;
-		} else if (action === 'assignTask') {
-			window.location = '01assignTaskToEmployeeViewAll.jsp?employeeInfoId=' + selectedId;
-			return false;
-		} else if (action === 'viewTransaction') {
-			window.location = '02ViewEmployeeForPaymentProcess.jsp?employeeInfoId=' + selectedId;
-			return false;
-		}
-		return false;
-	}
+    function toggleSelectAll(chk) {
+        document.querySelectorAll('input.rowChk').forEach(function(b) { b.checked = chk.checked; });
+        updateBulkBar();
+    }
+
+    function updateBulkBar() {
+        var checked = document.querySelectorAll('input.rowChk:checked');
+        var bar = document.getElementById('bulkBar');
+        if (checked.length > 0) {
+            bar.style.display = 'block';
+            document.getElementById('selCount').innerText = checked.length;
+        } else {
+            bar.style.display = 'none';
+            document.getElementById('chkAll').checked = false;
+        }
+        var all = document.querySelectorAll('input.rowChk');
+        document.getElementById('chkAll').checked = (checked.length === all.length && all.length > 0);
+    }
+
+    function deleteSelected() {
+        var checked = document.querySelectorAll('input.rowChk:checked');
+        if (!checked.length) return;
+        if (!confirm('Delete ' + checked.length + ' employee(s)? This cannot be undone.')) return;
+        var ids = Array.prototype.map.call(checked, function(c) { return c.value; }).join(',');
+        document.getElementById('hdnDeleteIds').value = ids;
+        document.getElementById('frmBulkDelete').submit();
+    }
+
+    function clearSelection() {
+        document.querySelectorAll('input.rowChk').forEach(function(b) { b.checked = false; });
+        document.getElementById('chkAll').checked = false;
+        document.getElementById('bulkBar').style.display = 'none';
+    }
+
+    $(document).ready(function() {
+        $('#empTable').DataTable({
+            columnDefs: [{ orderable: false, targets: [0, 10] }],
+            pageLength: 25,
+            dom: '<"dt-toolbar"lf>t<"dt-footer"ip>'
+        });
+    });
 </script>
 <body>
 <%@include file="../../header.jsp" %>
 <fieldset><legend>View All Employee</legend>
-	<form id="frmEmpList" action="" method="post" enctype="multipart/form-data">
-		<input type="hidden" name="employeeInfoId" id="hdnEmployeeInfoId" value="">
 
-	<div style="margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap;">
-		<input type="submit" class="btn-action" name="sbtView"           value="View"                 onclick="return doAction('view')">
-		<input type="submit" class="btn-action" name="sbtEdit"           value="Edit"                 onclick="return doAction('edit')">
-		<input type="submit" class="btn-delete" name="delete"            value="Delete"               onclick="return doAction('delete')">
-	</div>
-	<table border="1" width="100%" class="tbl-data">
-		<thead>
-			<tr>
-				<th width="2%">Select</th>
-				<th width="2%">Id</th>
-				<th>Name</th>
-				<th width="15%">Contact No.</th>
-				<th>Address</th>
-				<th>Bank Name</th>
-				<th>Acc No</th>
-				<th>Total Amount</th>
-				<th>Amount Unpaid</th>
-				<th>Pay Status</th>
-			</tr>
-		</thead>
-		<tbody>
-			<%
-				EmployeeInfoService employeeInfoService=new EmployeeInfoService();
-				PaymentProcessingDao salaryProcessingDao=new PaymentProcessingDao();
-				AssignResourceEmployeeToFarmService assignService=new AssignResourceEmployeeToFarmService();
-				List<EmployeeInfoEntity> listOfEmployee=employeeInfoService.getListOfEmployee();
-				for(EmployeeInfoEntity entity:listOfEmployee){
-					if(entity!=null){
-						int empId=entity.getEmployeeInfoId();
-						double[] amountAdv=assignService.getTotalAmountAndAdvByEmployeeInfoId(empId);
-						double totalAssigned=amountAdv[0];
-						double totalAdv=amountAdv[1];
-						double totalSalaryPaid=salaryProcessingDao.getTotalSalaryPaidByEmployeeInfoId(empId);
-						double totalPaid=totalAdv+totalSalaryPaid;
-						String payStatus;
-						String payStatusColor;
-						if(totalAssigned==0){
-							payStatus="No Work";
-							payStatusColor="#888888";
-						}else if(totalPaid>=totalAssigned){
-							payStatus="Paid";
-							payStatusColor="#007700";
-						}else if(totalPaid>0){
-							payStatus="Partial";
-							payStatusColor="#cc7700";
-						}else{
-							payStatus="Unpaid";
-							payStatusColor="#cc0000";
-						}
-			%>
-			<tr align="center">
-				<td>
-					<input type="radio" name="radEmpId" value="<%=entity.getEmployeeInfoId()%>" required="required">
-				</td>
-				<td><%=entity.getEmployeeInfoId() %></td>
-				<td>
-					<%if(null!=entity.getFirstName() && !entity.getFirstName().equalsIgnoreCase("")){out.println(entity.getFirstName());} %>
-					<%if(null!=entity.getMiddleName() && !entity.getMiddleName().equalsIgnoreCase("")){out.print(entity.getMiddleName());} %>
-					<%if(null!=entity.getLastName() && !entity.getLastName().equalsIgnoreCase("")){out.print(entity.getLastName());} %>
-				</td>
-				<td><%if(null!=entity.getContactNo1() && !entity.getContactNo1().equalsIgnoreCase("")){out.print(entity.getContactNo1());} %></td>
-				<td><%if(null!=entity.getLocalAddress() && !entity.getLocalAddress().equalsIgnoreCase("")){out.print(entity.getLocalAddress());} %></td>
-				<td><%if(null!=entity.getBankName() && !entity.getBankName().equalsIgnoreCase("")){out.print(entity.getBankName());} %></td>
-				<td><%if(null!=entity.getAccountNumber() && !entity.getAccountNumber().equalsIgnoreCase("")){out.print(entity.getAccountNumber());} %></td>
-				<td><%=totalAssigned%></td>
-				<td style="color:#cc0000;"><%=(totalAssigned - totalPaid) > 0 ? (totalAssigned - totalPaid) : 0%></td>
-				<td style="font-weight:bold; color:<%=payStatusColor%>;"><%=payStatus%></td>
-			</tr>
-			<%}} %>
-		</tbody>
-	</table>
-	</form>
-	</fieldset>
-	<%@include file="../../footer.jsp" %>
+    <%-- Bulk delete bar --%>
+    <div id="bulkBar">
+        <span id="selCount">0</span> employee(s) selected &nbsp;
+        <button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+        &nbsp;
+        <button type="button" class="btn-cancel" onclick="clearSelection()">Clear Selection</button>
+    </div>
+
+    <%-- Hidden form for bulk delete — multipart to match EmployeeInfoController --%>
+    <form id="frmBulkDelete" method="post" enctype="multipart/form-data" action="../../EmployeeInfoController">
+        <input type="hidden" name="deleteIds"  id="hdnDeleteIds" value="">
+        <input type="hidden" name="deleteBulk" value="1">
+    </form>
+
+    <table border="1" width="100%" class="tbl-data" id="empTable" cellspacing="0">
+        <thead>
+            <tr>
+                <th width="3%" title="Select All">
+                    <input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)">
+                </th>
+                <th width="4%">Id</th>
+                <th>Name</th>
+                <th width="11%">Contact</th>
+                <th>Address</th>
+                <th>Bank</th>
+                <th>Acc No</th>
+                <th width="9%">Total Amt</th>
+                <th width="9%">Unpaid</th>
+                <th width="8%">Pay Status</th>
+                <th width="13%">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        <%
+            try {
+                EmployeeInfoService employeeInfoService = new EmployeeInfoService();
+                PaymentProcessingDao salaryProcessingDao = new PaymentProcessingDao();
+                AssignResourceEmployeeToFarmService assignService = new AssignResourceEmployeeToFarmService();
+                List<EmployeeInfoEntity> listOfEmployee = employeeInfoService.getListOfEmployee();
+                for (EmployeeInfoEntity entity : listOfEmployee) {
+                    if (entity == null) continue;
+                    int empId = entity.getEmployeeInfoId();
+                    double[] amountAdv   = assignService.getTotalAmountAndAdvByEmployeeInfoId(empId);
+                    double totalAssigned = amountAdv[0];
+                    double totalAdv      = amountAdv[1];
+                    double totalSalaryPaid = salaryProcessingDao.getTotalSalaryPaidByEmployeeInfoId(empId);
+                    double totalPaid     = totalAdv + totalSalaryPaid;
+                    double unpaid        = (totalAssigned - totalPaid) > 0 ? (totalAssigned - totalPaid) : 0;
+                    String payStatus, psClass;
+                    if (totalAssigned == 0)        { payStatus = "No Work"; psClass = "NoWork";  }
+                    else if (totalPaid >= totalAssigned) { payStatus = "Paid";    psClass = "Paid";    }
+                    else if (totalPaid > 0)         { payStatus = "Partial"; psClass = "Partial"; }
+                    else                            { payStatus = "Unpaid";  psClass = "Unpaid";  }
+
+                    String fullName = "";
+                    if (entity.getFirstName()  != null && !entity.getFirstName().isEmpty())  fullName += entity.getFirstName()  + " ";
+                    if (entity.getMiddleName() != null && !entity.getMiddleName().isEmpty()) fullName += entity.getMiddleName() + " ";
+                    if (entity.getLastName()   != null && !entity.getLastName().isEmpty())   fullName += entity.getLastName();
+                    fullName = fullName.trim();
+        %>
+            <tr>
+                <td style="text-align:center;">
+                    <input type="checkbox" class="rowChk" value="<%=empId%>" onchange="updateBulkBar()">
+                </td>
+                <td><%=empId%></td>
+                <td><%=fullName%></td>
+                <td><%=entity.getContactNo1() != null ? entity.getContactNo1() : ""%></td>
+                <td><%=entity.getLocalAddress() != null ? entity.getLocalAddress() : ""%></td>
+                <td><%=entity.getBankName() != null ? entity.getBankName() : ""%></td>
+                <td><%=entity.getAccountNumber() != null ? entity.getAccountNumber() : ""%></td>
+                <td style="text-align:right;"><%=totalAssigned%></td>
+                <td style="text-align:right;"><%=unpaid%></td>
+                <td style="text-align:center;">
+                    <span class="ps-pill ps-<%=psClass%>"><%=payStatus%></span>
+                </td>
+                <td style="text-align:center; white-space:nowrap;">
+                    <button type="button" class="btn-row-edit"
+                        onclick="window.location='employeeInfo.jsp?employeeInfoId=<%=empId%>&mode=edit'">Edit</button>
+                    <button type="button" class="btn-view"
+                        onclick="window.location='employeeInfo.jsp?employeeInfoId=<%=empId%>&mode=view'">View</button>
+                </td>
+            </tr>
+        <%
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        %>
+        </tbody>
+    </table>
+
+</fieldset>
+<%@include file="../../footer.jsp" %>
 </body>
 </html>
