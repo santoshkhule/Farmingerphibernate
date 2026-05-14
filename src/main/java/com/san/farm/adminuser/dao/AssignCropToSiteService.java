@@ -199,6 +199,55 @@ public class AssignCropToSiteService {
 		return cropToSiteEntity;
 	}
 	/**
+	 * Toggle readyToDispatch flag for a site-crop allocation.
+	 */
+	public boolean toggleReadyToDispatch(int cropToSiteId) {
+		logger.debug("Toggling readyToDispatch for id: {}", cropToSiteId);
+		Session session = HibernateUtil.opensession();
+		Transaction transaction = session.beginTransaction();
+		try {
+			Object result = session.createQuery(
+				"SELECT a.readyToDispatch FROM AssignCropToSiteEntity a WHERE a.assignCroptoSiteId = :id")
+				.setParameter("id", cropToSiteId).uniqueResult();
+			boolean current = result != null && (Boolean) result;
+			session.createQuery(
+				"UPDATE AssignCropToSiteEntity SET readyToDispatch = :v WHERE assignCroptoSiteId = :id")
+				.setParameter("v", !current).setParameter("id", cropToSiteId).executeUpdate();
+			transaction.commit();
+			logger.info("Toggled readyToDispatch to {} for id: {}", !current, cropToSiteId);
+			return true;
+		} catch (HibernateException ex) {
+			if (transaction != null) transaction.rollback();
+			logger.error("Error toggling readyToDispatch for id: {}", cropToSiteId, ex);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+
+	/**
+	 * Fetch all site-crop allocations marked as ready to dispatch.
+	 */
+	public List<AssignCropToSiteEntity> getReadyToDispatch() {
+		logger.debug("Fetching ready-to-dispatch records");
+		Session session = HibernateUtil.opensession();
+		try {
+			List<AssignCropToSiteEntity> list = session.createQuery(
+				"SELECT DISTINCT a FROM AssignCropToSiteEntity a " +
+				"LEFT JOIN FETCH a.cropToSiteRefEntity " +
+				"WHERE a.readyToDispatch = true",
+				AssignCropToSiteEntity.class).getResultList();
+			logger.info("Retrieved {} ready-to-dispatch records", list.size());
+			return list;
+		} catch (HibernateException ex) {
+			logger.error("Error fetching ready-to-dispatch records", ex);
+			return new ArrayList<AssignCropToSiteEntity>();
+		} finally {
+			session.close();
+		}
+	}
+
+	/**
 	 * Fetch Operation: testtttttttttttttingggggggggg
 	 * @return cropToSiteEntity
 	 * */

@@ -102,6 +102,12 @@ public class AssignCropToSiteController extends HttpServlet {
 				logger.info("Crop assignment updated successfully");
 			}
 					
+			// Toggle Ready to Dispatch
+			if (null != request.getParameter("toggleDispatch")) {
+				logger.info("Toggling readyToDispatch for cropToSiteId: {}", cropToSiteId);
+				cropToSiteService.toggleReadyToDispatch(cropToSiteId);
+			}
+
 			// Bulk delete operation
 			if (null != request.getParameter("deleteSelected")) {
 				String[] deleteIds = request.getParameterValues("deleteIds");

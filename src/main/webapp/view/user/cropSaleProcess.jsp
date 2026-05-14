@@ -1,5 +1,6 @@
 <%@page import="com.san.farm.adminuser.dao.AssignCropToSiteService"%>
 <%@page import="com.san.farm.adminuser.dao.BuyerService"%>
+<%@page import="com.san.farm.adminuser.entity.AssignCropToSiteRefEntity"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigCropService"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
 <%@page import="com.san.farm.adminuser.dao.CropSaleDao"%>
@@ -71,12 +72,15 @@
     int selBuyerId = (selectedSale != null && selectedSale.getBuyerEntity() != null) ? selectedSale.getBuyerEntity().getBuyerId() : 0;
 
     // Preload data for dropdowns
-    List<AssignCropToSiteEntity>      siteList     = new ArrayList<AssignCropToSiteEntity>();
-    List<ConfigSiteInformationEntity> siteInfoList = new ArrayList<ConfigSiteInformationEntity>();
-    List<ConfigCropEntity>            cropList     = new ArrayList<ConfigCropEntity>();
-    List<BuyerEntity>                 buyerList    = new ArrayList<BuyerEntity>();
+    List<AssignCropToSiteEntity>      siteList          = new ArrayList<AssignCropToSiteEntity>();
+    List<AssignCropToSiteEntity>      readyToDispatchList = new ArrayList<AssignCropToSiteEntity>();
+    List<ConfigSiteInformationEntity> siteInfoList      = new ArrayList<ConfigSiteInformationEntity>();
+    List<ConfigCropEntity>            cropList          = new ArrayList<ConfigCropEntity>();
+    List<BuyerEntity>                 buyerList         = new ArrayList<BuyerEntity>();
     try {
-        siteList     = new AssignCropToSiteService().getListOFAssignCropToSite();
+        AssignCropToSiteService assignSvc = new AssignCropToSiteService();
+        siteList          = assignSvc.getListOFAssignCropToSite();
+        readyToDispatchList = assignSvc.getReadyToDispatch();
         siteInfoList = new ConfigSiteInformationService().fetch();
         cropList     = new ConfigCropService().fetch();
         buyerList    = new BuyerService().getAll();
@@ -309,6 +313,16 @@
         }
     }
 
+    function quickSale(assignId) {
+        resetSaleForm();
+        setSelectValue('assignCroptoSiteId', assignId);
+        var body = document.getElementById('panelNewSaleBody');
+        var chev = document.getElementById('newSaleChev');
+        body.style.display = '';
+        chev.classList.add('open');
+        body.scrollIntoView({ behavior: 'smooth' });
+    }
+
     $(document).ready(function() {
         $('#txtDate').datepicker({ changeMonth: true, changeYear: true, dateFormat: 'dd/mm/yy' });
         $('#paymentDate').datepicker({ changeMonth: true, changeYear: true, dateFormat: 'dd/mm/yy' });
@@ -317,6 +331,72 @@
     });
 </script>
 <fieldset><legend>Crop Sale Processing</legend>
+
+    <!-- Panel 0: Ready to Dispatch -->
+    <div class="cpanel">
+        <div class="cpanel-head clickable" onclick="togglePanel('panelDispatchBody','dispatchChev')">
+            <h3>&#128666; Ready to Dispatch
+                <% if (!readyToDispatchList.isEmpty()) { %>
+                <span class="cpanel-sub">(<%=readyToDispatchList.size()%> item<%=readyToDispatchList.size() > 1 ? "s" : ""%>)</span>
+                <% } %>
+            </h3>
+            <span class="cpanel-chevron open" id="dispatchChev">&#9660;</span>
+        </div>
+        <div id="panelDispatchBody" class="cpanel-body">
+            <% if (readyToDispatchList.isEmpty()) { %>
+            <p style="color:var(--text-muted); font-size:12px; margin:4px 0;">
+                No items marked as ready to dispatch. Go to
+                <a href="assignCropToSite.jsp" style="color:var(--green-dk);">Site Resource Allocation</a>
+                and click <strong>Mark Ready</strong> on any site-crop that is ready for sale.
+            </p>
+            <% } else { %>
+            <table border="1" cellspacing="0" class="tbl-data" width="100%">
+                <thead>
+                    <tr>
+                        <th width="4%">#</th>
+                        <th>Site</th>
+                        <th>Crops</th>
+                        <th width="13%">Assign Date</th>
+                        <th width="11%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <%
+                    int rdc = 0;
+                    for (AssignCropToSiteEntity rd : readyToDispatchList) {
+                        if (rd == null) continue;
+                        rdc++;
+                        String rdSite = (rd.getSiteInformationEntity() != null
+                                && rd.getSiteInformationEntity().getSiteName() != null)
+                                ? rd.getSiteInformationEntity().getSiteName() : "";
+                        StringBuilder rdCropsSb = new StringBuilder();
+                        if (rd.getCropToSiteRefEntity() != null) {
+                            for (AssignCropToSiteRefEntity ref : rd.getCropToSiteRefEntity()) {
+                                if (ref != null && ref.getConfigCropEntity() != null) {
+                                    if (rdCropsSb.length() > 0) rdCropsSb.append(", ");
+                                    rdCropsSb.append(ref.getConfigCropEntity().getCropName());
+                                }
+                            }
+                        }
+                        String rdDate = rd.getCropAssignDate() != null
+                                ? FarmUtility.convertfrom_yymmddToddmmyy(rd.getCropAssignDate().toString()) : "";
+                %>
+                <tr>
+                    <td><%=rdc%></td>
+                    <td><strong><%=rdSite%></strong></td>
+                    <td><%=rdCropsSb.toString()%></td>
+                    <td><%=rdDate%></td>
+                    <td style="text-align:center;">
+                        <button type="button" class="btn-add" style="font-size:11px; padding:3px 10px;"
+                            onclick="quickSale(<%=rd.getAssignCroptoSiteId()%>)">+ New Sale</button>
+                    </td>
+                </tr>
+                <% } %>
+                </tbody>
+            </table>
+            <% } %>
+        </div>
+    </div>
 
     <!-- Panel 1: All Sales -->
     <div class="cpanel">

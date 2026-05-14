@@ -87,6 +87,15 @@
     .btn-emp:hover { background:var(--green-row); }
     .actions-cell  { text-align:center; white-space:nowrap; }
     .actions-cell > * { vertical-align:middle; }
+
+    .btn-dispatch-mark  { background:#fff8e1; border:1px solid #ffe082; color:#e65100;
+                          padding:2px 8px; border-radius:var(--r-sm); cursor:pointer;
+                          font-size:10px; font-weight:700; line-height:1.4; }
+    .btn-dispatch-mark:hover { background:#fff3e0; border-color:#ffb300; }
+    .btn-dispatch-ready { background:#e8f5e9; border:1px solid var(--green-bd); color:#1b5e20;
+                          padding:2px 8px; border-radius:var(--r-sm); cursor:pointer;
+                          font-size:10px; font-weight:700; line-height:1.4; }
+    .btn-dispatch-ready:hover { background:#c8e6c9; }
 </style>
 </head>
 <body>
@@ -203,6 +212,11 @@ function deleteSelected() {
 function clearSelection() {
     $('input.rowChk, #chkAll').prop('checked', false);
     $('#bulkBar').hide();
+}
+
+function doToggleDispatch(id) {
+    document.getElementById('toggleDispatchId').value = id;
+    document.getElementById('frmToggleDispatch').submit();
 }
 </script>
 
@@ -378,11 +392,26 @@ function clearSelection() {
                 <button type="button" class="btn-icon-nav btn-emp"
                     title="Allocate Employees"
                     onclick="window.location.href='allocateEmployeeToSite.jsp?cropToSiteId=<%=rowId%>'">&#128100;</button>
+                <br style="line-height:4px;">
+                <% if (cropToSiteEntity.isReadyToDispatch()) { %>
+                <button type="button" class="btn-dispatch-ready"
+                    title="Ready to dispatch — click to unmark"
+                    onclick="doToggleDispatch(<%=rowId%>)">&#10003; Ready</button>
+                <% } else { %>
+                <button type="button" class="btn-dispatch-mark"
+                    title="Mark this crop as ready to dispatch"
+                    onclick="doToggleDispatch(<%=rowId%>)">&#128666; Mark Ready</button>
+                <% } %>
             </td>
         </tr>
         <% } %>
         </tbody>
     </table>
+
+    <form id="frmToggleDispatch" method="post" action="../../AssignCropToSiteController" style="display:none;">
+        <input type="hidden" name="toggleDispatch" value="1">
+        <input type="hidden" name="cropToSiteId"   id="toggleDispatchId" value="">
+    </form>
 
 </fieldset>
 <%@include file="../../footer.jsp" %>
