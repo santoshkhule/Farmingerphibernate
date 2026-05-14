@@ -8,20 +8,20 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%
     String fromDateParam = request.getParameter("fromDate");
-    String siteNameParam = request.getParameter("siteName");
+    String siteIdParam   = request.getParameter("siteId");
     String cropIdParam   = request.getParameter("cropId");
     String buyerIdParam  = request.getParameter("buyerId");
 
     String filterDate = null;
-    String filterSite = null;
+    int    filterSite = 0;
     int    filterCrop = 0;
     int    filterBuyer = 0;
 
     if (fromDateParam != null && !fromDateParam.trim().isEmpty()) {
         filterDate = FarmUtility.convertfrom_ddmmyyToyymmdd(fromDateParam.trim());
     }
-    if (siteNameParam != null && !siteNameParam.trim().isEmpty() && !"-1".equals(siteNameParam.trim())) {
-        filterSite = siteNameParam.trim();
+    if (siteIdParam != null && !siteIdParam.trim().isEmpty() && !"-1".equals(siteIdParam.trim())) {
+        try { filterSite = Integer.parseInt(siteIdParam.trim()); } catch (Exception e) {}
     }
     if (cropIdParam != null && !cropIdParam.trim().isEmpty() && !"-1".equals(cropIdParam.trim())) {
         try { filterCrop = Integer.parseInt(cropIdParam.trim()); } catch (Exception e) {}
@@ -77,14 +77,10 @@
         if (filterDate != null) {
             if (cs.getSaleDate() == null || !cs.getSaleDate().toString().equals(filterDate)) continue;
         }
-        if (filterSite != null) {
-            String siteName = "";
-            if (cs.getAssignCropToSiteEntity() != null
-                    && cs.getAssignCropToSiteEntity().getSiteInformationEntity() != null
-                    && cs.getAssignCropToSiteEntity().getSiteInformationEntity().getSiteName() != null) {
-                siteName = cs.getAssignCropToSiteEntity().getSiteInformationEntity().getSiteName();
-            }
-            if (!siteName.toLowerCase().contains(filterSite.toLowerCase())) continue;
+        if (filterSite > 0) {
+            if (cs.getAssignCropToSiteEntity() == null
+                    || cs.getAssignCropToSiteEntity().getSiteInformationEntity() == null
+                    || cs.getAssignCropToSiteEntity().getSiteInformationEntity().getSiteInfoId() != filterSite) continue;
         }
         if (filterCrop > 0) {
             if (cs.getCropEntity() == null || cs.getCropEntity().getCropId() != filterCrop) continue;

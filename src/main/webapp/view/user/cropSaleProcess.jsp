@@ -1,11 +1,13 @@
 <%@page import="com.san.farm.adminuser.dao.AssignCropToSiteService"%>
 <%@page import="com.san.farm.adminuser.dao.BuyerService"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigCropService"%>
+<%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
 <%@page import="com.san.farm.adminuser.dao.CropSaleDao"%>
 <%@page import="com.san.farm.adminuser.dao.SalePaymentDao"%>
 <%@page import="com.san.farm.adminuser.entity.AssignCropToSiteEntity"%>
 <%@page import="com.san.farm.adminuser.entity.BuyerEntity"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigCropEntity"%>
+<%@page import="com.san.farm.adminuser.entity.ConfigSiteInformationEntity"%>
 <%@page import="com.san.farm.adminuser.entity.CropSaleEntity"%>
 <%@page import="com.san.farm.adminuser.entity.SalePaymentEntity"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
@@ -63,13 +65,15 @@
     }
 
     // Preload data for dropdowns
-    List<AssignCropToSiteEntity> siteList = new ArrayList<AssignCropToSiteEntity>();
-    List<ConfigCropEntity>       cropList = new ArrayList<ConfigCropEntity>();
-    List<BuyerEntity>            buyerList = new ArrayList<BuyerEntity>();
+    List<AssignCropToSiteEntity>      siteList     = new ArrayList<AssignCropToSiteEntity>();
+    List<ConfigSiteInformationEntity> siteInfoList = new ArrayList<ConfigSiteInformationEntity>();
+    List<ConfigCropEntity>            cropList     = new ArrayList<ConfigCropEntity>();
+    List<BuyerEntity>                 buyerList    = new ArrayList<BuyerEntity>();
     try {
-        siteList  = new AssignCropToSiteService().getListOFAssignCropToSite();
-        cropList  = new ConfigCropService().fetch();
-        buyerList = new BuyerService().getAll();
+        siteList     = new AssignCropToSiteService().getListOFAssignCropToSite();
+        siteInfoList = new ConfigSiteInformationService().fetch();
+        cropList     = new ConfigCropService().fetch();
+        buyerList    = new BuyerService().getAll();
     } catch (Exception ex) { ex.printStackTrace(); }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -175,7 +179,7 @@
 
     function clearAllFilters() {
         document.getElementById('txtDate').value    = '';
-        document.getElementById('txtSite').value    = '';
+        document.getElementById('selSiteId').value  = '-1';
         document.getElementById('selCropId').value  = '-1';
         document.getElementById('selBuyerId').value = '-1';
         loadSaleTable();
@@ -183,7 +187,7 @@
 
     function loadSaleTable() {
         var fromDate  = document.getElementById('txtDate').value;
-        var siteName  = document.getElementById('txtSite').value;
+        var siteId    = document.getElementById('selSiteId').value;
         var cropId    = document.getElementById('selCropId').value;
         var buyerId   = document.getElementById('selBuyerId').value;
         var xmlhttp   = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
@@ -197,7 +201,7 @@
         };
         xmlhttp.open('GET', '01cropSaleViewAllAjax.jsp'
             + '?fromDate='  + encodeURIComponent(fromDate)
-            + '&siteName='  + encodeURIComponent(siteName)
+            + '&siteId='    + encodeURIComponent(siteId)
             + '&cropId='    + encodeURIComponent(cropId)
             + '&buyerId='   + encodeURIComponent(buyerId), true);
         xmlhttp.send();
@@ -269,7 +273,15 @@
                 </div>
                 <div class="filter-field">
                     <label>Site</label>
-                    <input type="text" id="txtSite" placeholder="Site name" oninput="loadSaleTable()">
+                    <select id="selSiteId" onchange="loadSaleTable()">
+                        <option value="-1">All Sites</option>
+                        <%
+                            for (ConfigSiteInformationEntity si : siteInfoList) {
+                                if (si == null) continue;
+                        %>
+                        <option value="<%=si.getSiteInfoId()%>"><%=si.getSiteName() != null ? si.getSiteName() : ""%></option>
+                        <% } %>
+                    </select>
                 </div>
                 <div class="filter-field">
                     <label>Crop</label>
