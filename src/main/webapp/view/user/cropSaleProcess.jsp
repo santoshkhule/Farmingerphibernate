@@ -64,6 +64,12 @@
         } catch (Exception ex) { ex.printStackTrace(); }
     }
 
+    // IDs needed to pre-populate dropdowns when editing
+    int selAssignCroptoSiteId = (selectedSale != null && selectedSale.getAssignCropToSiteEntity() != null)
+            ? selectedSale.getAssignCropToSiteEntity().getAssignCroptoSiteId() : 0;
+    int selCropId  = (selectedSale != null && selectedSale.getCropEntity()  != null) ? selectedSale.getCropEntity().getCropId()   : 0;
+    int selBuyerId = (selectedSale != null && selectedSale.getBuyerEntity() != null) ? selectedSale.getBuyerEntity().getBuyerId() : 0;
+
     // Preload data for dropdowns
     List<AssignCropToSiteEntity>      siteList     = new ArrayList<AssignCropToSiteEntity>();
     List<ConfigSiteInformationEntity> siteInfoList = new ArrayList<ConfigSiteInformationEntity>();
@@ -250,6 +256,59 @@
         document.getElementById('sbtAddPayment').removeAttribute('hidden');
     }
 
+    /* ── Sale edit ── */
+    function editSale() {
+        var selSiteId  = <%=selAssignCroptoSiteId%>;
+        var selCropId  = <%=selCropId%>;
+        var selBuyerId = <%=selBuyerId%>;
+
+        document.getElementById('editSaleId').value = <%=saleId%>;
+        setSelectValue('assignCroptoSiteId', selSiteId);
+        setSelectValue('cropId',             selCropId);
+        setSelectValue('buyerId',            selBuyerId);
+        document.getElementById('saleQty').value      = '<%=saleQty%>';
+        document.getElementById('saleUnit').value     = '<%=saleUnit%>';
+        document.getElementById('salePrice').value    = '<%=salePrice%>';
+        document.getElementById('saleTotalAmt').value = '<%=saleTotalDisp%>';
+        document.getElementById('saleDate').value     = '<%=saleDateDisp%>';
+        document.getElementById('saleComment').value  = '<%=saleComment.replace("'", "\\'")%>';
+
+        document.getElementById('saleFormTitle').innerText = 'Edit Sale';
+        document.getElementById('btnRecordSale').style.display = 'none';
+        document.getElementById('btnUpdateSale').style.display = '';
+        document.getElementById('btnClearSale').style.display  = '';
+
+        var body = document.getElementById('panelNewSaleBody');
+        var chev = document.getElementById('newSaleChev');
+        body.style.display = '';
+        chev.classList.add('open');
+        body.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetSaleForm() {
+        document.getElementById('editSaleId').value   = '';
+        document.getElementById('assignCroptoSiteId').selectedIndex = 0;
+        document.getElementById('cropId').selectedIndex    = 0;
+        document.getElementById('buyerId').selectedIndex   = 0;
+        document.getElementById('saleQty').value      = '';
+        document.getElementById('saleUnit').selectedIndex = 0;
+        document.getElementById('salePrice').value    = '';
+        document.getElementById('saleTotalAmt').value = '';
+        document.getElementById('saleDate').value     = '';
+        document.getElementById('saleComment').value  = '';
+        document.getElementById('saleFormTitle').innerText = 'Record New Sale';
+        document.getElementById('btnRecordSale').style.display = '';
+        document.getElementById('btnUpdateSale').style.display = 'none';
+        document.getElementById('btnClearSale').style.display  = 'none';
+    }
+
+    function setSelectValue(id, val) {
+        var sel = document.getElementById(id);
+        for (var i = 0; i < sel.options.length; i++) {
+            if (parseInt(sel.options[i].value) === val) { sel.selectedIndex = i; return; }
+        }
+    }
+
     $(document).ready(function() {
         $('#txtDate').datepicker({ changeMonth: true, changeYear: true, dateFormat: 'dd/mm/yy' });
         $('#paymentDate').datepicker({ changeMonth: true, changeYear: true, dateFormat: 'dd/mm/yy' });
@@ -324,7 +383,8 @@
             </h3>
             <div style="display:flex; gap:8px;">
                 <button type="button" class="btn-cancel" onclick="togglePanel('panelSalesBody','salesChev'); document.getElementById('panelSalesBody').scrollIntoView({behavior:'smooth'});">&#8645; All Sales</button>
-                <button type="button" class="btn-add" onclick="togglePanel('panelNewSaleBody','newSaleChev'); document.getElementById('panelNewSaleBody').scrollIntoView({behavior:'smooth'});">+ New Sale</button>
+                <button type="button" class="btn-update" onclick="editSale()">&#9998; Edit Sale</button>
+                <button type="button" class="btn-add" onclick="resetSaleForm(); togglePanel('panelNewSaleBody','newSaleChev'); document.getElementById('panelNewSaleBody').scrollIntoView({behavior:'smooth'});">+ New Sale</button>
             </div>
         </div>
         <div class="cpanel-body">
@@ -459,15 +519,16 @@
     </div>
     <% } %>
 
-    <!-- Panel 3: Record New Sale -->
+    <!-- Panel 3: Record / Edit Sale -->
     <div class="cpanel" id="panelNewSale">
         <div class="cpanel-head clickable" onclick="togglePanel('panelNewSaleBody','newSaleChev')">
-            <h3>Record New Sale</h3>
+            <h3 id="saleFormTitle">Record New Sale</h3>
             <span class="cpanel-chevron" id="newSaleChev">&#9660;</span>
         </div>
         <div id="panelNewSaleBody" class="cpanel-body" style="display:none;">
             <div class="sale-form">
                 <form method="post" action="../../CropSaleController">
+                    <input type="hidden" name="saleId" id="editSaleId" value="">
                     <div class="sale-grid">
                         <label for="assignCroptoSiteId">Site Allocation *</label>
                         <select name="assignCroptoSiteId" id="assignCroptoSiteId" required style="width:240px;">
@@ -536,9 +597,9 @@
                         <input type="text" name="comment" id="saleComment" placeholder="Optional" style="width:240px;">
 
                         <div class="sale-btns">
-                            <input type="submit" class="btn-add" name="add" value="Record Sale">
-                            <input type="button" class="btn-cancel" value="Clear"
-                                   onclick="document.getElementById('saleQty').value=''; document.getElementById('salePrice').value=''; document.getElementById('saleTotalAmt').value=''; document.getElementById('saleDate').value=''; document.getElementById('saleComment').value='';">
+                            <input type="submit" class="btn-add"    id="btnRecordSale" name="add"  value="Record Sale">
+                            <input type="submit" class="btn-update" id="btnUpdateSale" name="edit" value="Update Sale" style="display:none">
+                            <input type="button" class="btn-cancel" id="btnClearSale"  value="Clear" style="display:none" onclick="resetSaleForm()">
                         </div>
                     </div>
                 </form>

@@ -40,6 +40,7 @@ public class BuyerController extends HttpServlet {
             String buyerName    = request.getParameter("buyerName")    != null ? request.getParameter("buyerName").trim()    : "";
             String buyerType    = request.getParameter("buyerType")    != null ? request.getParameter("buyerType").trim()    : "";
             String companyName  = request.getParameter("companyName")  != null ? request.getParameter("companyName").trim()  : "";
+            String gstNumber    = request.getParameter("gstNumber")    != null ? request.getParameter("gstNumber").trim()    : "";
             String contactNo    = request.getParameter("contactNo")    != null ? request.getParameter("contactNo").trim()    : "";
             String address      = request.getParameter("address")      != null ? request.getParameter("address").trim()      : "";
             String email        = request.getParameter("email")        != null ? request.getParameter("email").trim()        : "";
@@ -52,6 +53,7 @@ public class BuyerController extends HttpServlet {
                 buyer.setBuyerName(buyerName);
                 buyer.setBuyerType(buyerType);
                 buyer.setCompanyName(companyName);
+                buyer.setGstNumber(gstNumber);
                 buyer.setContactNo(contactNo);
                 buyer.setAddress(address);
                 buyer.setEmail(email);
@@ -68,6 +70,7 @@ public class BuyerController extends HttpServlet {
                 buyer.setBuyerName(buyerName);
                 buyer.setBuyerType(buyerType);
                 buyer.setCompanyName(companyName);
+                buyer.setGstNumber(gstNumber);
                 buyer.setContactNo(contactNo);
                 buyer.setAddress(address);
                 buyer.setEmail(email);

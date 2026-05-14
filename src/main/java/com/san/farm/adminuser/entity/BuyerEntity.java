@@ -15,6 +15,7 @@ public class BuyerEntity {
     private String buyerName;
     private String buyerType;
     private String companyName;
+    private String gstNumber;
     private String contactNo;
     private String address;
     private String email;
@@ -31,6 +32,9 @@ public class BuyerEntity {
 
     public String getCompanyName() { return companyName; }
     public void setCompanyName(String companyName) { this.companyName = companyName; }
+
+    public String getGstNumber() { return gstNumber; }
+    public void setGstNumber(String gstNumber) { this.gstNumber = gstNumber; }
 
     public String getContactNo() { return contactNo; }
     public void setContactNo(String contactNo) { this.contactNo = contactNo; }
