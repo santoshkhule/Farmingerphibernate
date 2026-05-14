@@ -614,7 +614,7 @@
                         <select name="assignCroptoSiteId" id="assignCroptoSiteId" required style="width:240px;">
                             <option value="">--- Select Site ---</option>
                             <%
-                                for (AssignCropToSiteEntity s : siteList) {
+                                for (AssignCropToSiteEntity s : readyToDispatchList) {
                                     if (s == null) continue;
                                     String sn = (s.getSiteInformationEntity() != null && s.getSiteInformationEntity().getSiteName() != null)
                                         ? s.getSiteInformationEntity().getSiteName() : "Site #" + s.getAssignCroptoSiteId();
