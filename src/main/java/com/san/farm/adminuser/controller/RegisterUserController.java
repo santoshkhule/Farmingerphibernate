@@ -80,9 +80,8 @@ public class RegisterUserController extends HttpServlet {
                 return;
             }
 
-            String uname      = request.getParameter("username");
-            String password   = request.getParameter("passwrd");
-            String curPasswrd = request.getParameter("curPasswrd");
+            String uname    = request.getParameter("username");
+            String password = request.getParameter("passwrd");
 
             // ── ADD ───────────────────────────────────────────────────────────
             if (request.getParameter("add") != null) {
@@ -107,11 +106,7 @@ public class RegisterUserController extends HttpServlet {
             if (request.getParameter("edit") != null) {
                 long loginUserId = Long.parseLong(request.getParameter("loginUserId"));
                 LoginUser existing = loginUserService.getLoginUserInfoByLoginId(loginUserId);
-                logger.debug("Validating current password for loginUserId: {}", loginUserId);
-                if (existing == null || !existing.getPassword().equals(curPasswrd)) {
-                    logger.warn("Password validation failed for loginUserId: {}", loginUserId);
-                    redirectUrl = "view/user/registerUser.jsp?err=wrong_pwd";
-                } else if (isAdmin(existing)) {
+                if (isAdmin(existing)) {
                     // Admin: only password may change; username and roles are locked.
                     existing.setPassword(password);
                     loginUserService.mergeLoginUser(existing);

@@ -28,7 +28,6 @@
     else if ("updated".equals(msgParam))        { bannerMsg = "User updated successfully.";                                          bannerClass = "banner-ok"; }
     else if ("deleted".equals(msgParam))        { bannerMsg = "User deleted successfully.";                                          bannerClass = "banner-ok"; }
     else if ("username_exists".equals(errParam)){ bannerMsg = "Username already exists. Please choose a different username.";        bannerClass = "banner-err"; }
-    else if ("wrong_pwd".equals(errParam))      { bannerMsg = "Current password is incorrect. Update cancelled.";                   bannerClass = "banner-err"; }
     else if ("admin_protected".equals(errParam)){ bannerMsg = "Admin user cannot be deleted.";                                      bannerClass = "banner-err"; }
 
     List<UserTypeEntity> utList = new ArrayList<UserTypeEntity>();
@@ -105,9 +104,6 @@
     .role-item label.chk-active { box-shadow:0 1px 4px rgba(0,0,0,.18); }
     .role-item label.chk-disabled { opacity:.55; cursor:not-allowed; pointer-events:none; }
 
-    /* ── Current-pwd row (hidden by default) ────────────────────── */
-    #curPwdGroup { display:none; }
-
     /* ── Users table ────────────────────────────────────────────── */
     .tbl-data td, .tbl-data th { vertical-align:middle; }
     .tbl-data td.action-cell { text-align:center; white-space:nowrap; }
@@ -156,7 +152,6 @@
         document.getElementById('username').value    = usernameVal;
         document.getElementById('passwrd').value     = '';
         document.getElementById('confirmPasswrd').value = '';
-        document.getElementById('curPasswrd').value  = '';
 
         /* Uncheck all, then check matching IDs. */
         var chks = document.querySelectorAll('.type-chk');
@@ -187,9 +182,6 @@
         }
         updateChkStyles();
 
-        /* Show current-password field. */
-        document.getElementById('curPwdGroup').style.display = '';
-
         /* Swap buttons. */
         document.getElementById('btnAdd').style.display    = 'none';
         document.getElementById('btnUpdate').style.display = '';
@@ -201,7 +193,7 @@
         notice.style.display = 'block';
 
         document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        document.getElementById('curPasswrd').focus();
+        document.getElementById('passwrd').focus();
     }
 
     /* Reset form to add-mode defaults. */
@@ -212,7 +204,6 @@
         document.getElementById('username').value        = '';
         document.getElementById('passwrd').value         = '';
         document.getElementById('confirmPasswrd').value  = '';
-        document.getElementById('curPasswrd').value      = '';
         document.getElementById('username').readOnly     = false;
 
         var chks = document.querySelectorAll('.type-chk');
@@ -223,7 +214,6 @@
         }
         updateChkStyles();
 
-        document.getElementById('curPwdGroup').style.display   = 'none';
         document.getElementById('adminNotice').style.display   = 'none';
         document.getElementById('editNotice').style.display    = 'none';
         document.getElementById('btnAdd').style.display        = '';
@@ -322,12 +312,6 @@
             <!-- Admin notice (shown only when editing admin) -->
             <div id="adminNotice" class="field-full">
                 Admin account: username and roles are locked &mdash; only password can be changed.
-            </div>
-
-            <!-- Current Password (hidden in add mode) -->
-            <div class="field-group field-full" id="curPwdGroup">
-                <label for="curPasswrd">Current Password *</label>
-                <input type="password" name="curPasswrd" id="curPasswrd">
             </div>
 
             <!-- New Password -->
