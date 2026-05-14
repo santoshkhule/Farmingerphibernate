@@ -37,6 +37,13 @@ public class DataSeeder implements ServletContextListener {
             UserTypeEntity adminType = seedUserType(session, "Admin");
             seedLoginUser(session, "admin", "admin", adminType);
 
+            seedUserType(session, "Owner");
+            seedUserType(session, "Farm Manager");
+            seedUserType(session, "Site Supervisor");
+            seedUserType(session, "Accountant");
+            seedUserType(session, "Field Worker");
+            seedUserType(session, "Viewer");
+
             tx.commit();
             logger.info("DataSeeder: seed checks complete.");
         } catch (Exception e) {
