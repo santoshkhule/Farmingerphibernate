@@ -6,7 +6,6 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,18 +146,18 @@ public class LoginUserService {
      *
      * @return list
      */
-    @SuppressWarnings("unchecked")
     public List<LoginUser> fetch() {
         logger.debug("Fetching all LoginUser records");
         List<LoginUser> list = new ArrayList<LoginUser>();
         Session session = HibernateUtil.opensession();
         try {
-            list = session.createCriteria(LoginUser.class).list();
+            list = session.createQuery(
+                "SELECT DISTINCT u FROM LoginUser u LEFT JOIN FETCH u.userTypes",
+                LoginUser.class).getResultList();
             logger.info("Retrieved {} LoginUser records", list.size());
         } catch (HibernateException exception) {
             logger.error("Error fetching LoginUser list", exception);
         } finally {
-            session.clear();
             session.close();
         }
         return list;
@@ -171,17 +170,18 @@ public class LoginUserService {
      */
     public LoginUser getLoginUserInfoByLoginId(long loginUserId) {
         logger.debug("Fetching LoginUser by loginUserId: {}", loginUserId);
-        LoginUser loginUser = new LoginUser();
+        LoginUser loginUser = null;
         Session session = HibernateUtil.opensession();
         try {
-            loginUser = (LoginUser) session.createCriteria(LoginUser.class)
-                .add(Restrictions.eq("loginUserId", loginUserId))
+            loginUser = (LoginUser) session.createQuery(
+                "SELECT u FROM LoginUser u LEFT JOIN FETCH u.userTypes WHERE u.loginUserId = :id",
+                LoginUser.class)
+                .setParameter("id", loginUserId)
                 .uniqueResult();
             logger.info("Retrieved LoginUser for loginUserId: {}", loginUserId);
         } catch (HibernateException exception) {
             logger.error("Error fetching LoginUser for loginUserId: {}", loginUserId, exception);
         } finally {
-            session.clear();
             session.close();
         }
         return loginUser;
@@ -226,9 +226,12 @@ public class LoginUserService {
         logger.debug("Authenticating user: {}", uname);
         Session session = HibernateUtil.opensession();
         try {
-            LoginUser user = (LoginUser) session.createCriteria(LoginUser.class)
-                .add(Restrictions.eq("uname", uname))
-                .add(Restrictions.eq("password", password))
+            LoginUser user = (LoginUser) session.createQuery(
+                "SELECT u FROM LoginUser u LEFT JOIN FETCH u.userTypes " +
+                "WHERE u.uname = :uname AND u.password = :password",
+                LoginUser.class)
+                .setParameter("uname", uname)
+                .setParameter("password", password)
                 .uniqueResult();
             if (user != null) {
                 logger.info("Authentication successful for user: {}", uname);
@@ -240,7 +243,6 @@ public class LoginUserService {
             logger.error("Error during authentication for user: {}", uname, exception);
             return null;
         } finally {
-            session.clear();
             session.close();
         }
     }
