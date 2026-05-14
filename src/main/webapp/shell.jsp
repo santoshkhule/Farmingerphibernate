@@ -71,7 +71,7 @@
 			</div>
 
 			<div class="nav-group">
-				<div class="nav-group-title">&#9881; Configuration</div>
+				<div class="nav-group-title">&#9881; Master Data</div>
 				<a class="nav-link" href="view/user/configuration.jsp" target="contentFrame">Configuration</a>
 				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame">Register User</a>
 			</div>
@@ -101,9 +101,17 @@
 			</div>
 
 			<div class="nav-group">
+				<div class="nav-group-title">&#128176; Sales</div>
+				<a class="nav-link" href="view/user/addBuyer.jsp" target="contentFrame">Manage Buyers</a>
+				<a class="nav-link" href="view/user/cropSaleProcess.jsp" target="contentFrame">Crop Sales</a>
+			</div>
+
+			<div class="nav-group">
 				<div class="nav-group-title">&#128202; Reports</div>
 				<a class="nav-link" href="view/user/reportSite.jsp" target="contentFrame">Site Expenditure</a>
 				<a class="nav-link" href="view/user/reportEmployee.jsp" target="contentFrame">Employee Payments</a>
+				<a class="nav-link" href="view/user/reportIncome.jsp" target="contentFrame">Income Report</a>
+				<a class="nav-link" href="view/user/reportProfitLoss.jsp" target="contentFrame">Profit &amp; Loss</a>
 			</div>
 
 		</nav>

@@ -212,4 +212,28 @@
     <servlet-name>DashboardServlet</servlet-name>
     <url-pattern>/DashboardServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>BuyerController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.BuyerController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BuyerController</servlet-name>
+    <url-pattern>/BuyerController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>CropSaleController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.CropSaleController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CropSaleController</servlet-name>
+    <url-pattern>/CropSaleController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>SalePaymentController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.SalePaymentController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SalePaymentController</servlet-name>
+    <url-pattern>/SalePaymentController</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -27,6 +27,9 @@
         <mapping class="com.san.farm.adminuser.entity.AssignVendorToProductEntity" />
         <mapping class="com.san.farm.adminuser.entity.CategoryEntity" />
         <mapping class="com.san.farm.adminuser.entity.SiteProductAllocationEntity" />
+        <mapping class="com.san.farm.adminuser.entity.BuyerEntity" />
+        <mapping class="com.san.farm.adminuser.entity.CropSaleEntity" />
+        <mapping class="com.san.farm.adminuser.entity.SalePaymentEntity" />
 
     </session-factory>
 </hibernate-configuration>
