@@ -1,10 +1,11 @@
 
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
+<%@page import="com.san.farm.adminuser.dao.ConfigFarmTaskService"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
-<%@page import="com.san.farm.adminuser.dao.SalaryProcessingDao"%>
+<%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -16,7 +17,7 @@
 <script src="../../js/jquery-1.9.1.js"></script>
 <script src="../../js/datatables.min.js"></script>
 <script src="../../js/jquery-ui.js"></script>
-<title>View Employee To Salary Process</title>
+<title>View Employee For Process Payment</title>
 </head>
 <script>
 	$(function() {		
@@ -33,11 +34,18 @@
 	function processSalary(assignResourceId){
 		var iframe = parent.document.querySelector('iframe[name="iframSalProcess"]');
 		if (iframe) {
-			iframe.src = '02SalaryProcessing.jsp?assignResourceId=' + assignResourceId;
+			iframe.src = '02PaymentProcessing.jsp?assignResourceId=' + assignResourceId;
 		}
 	}
 </script>
 <script type="text/javascript">
+function clearAllFilters() {
+	document.getElementById("txtDate").value = "";
+	document.getElementById("txtName").value = "";
+	document.getElementById("work_status").value = "-1";
+	document.getElementById("selWorkId").value = "-1";
+	showAllEmployeeByFilterId();
+}
 function showAllEmployeeByFilterId() {
 	var fromDate=document.getElementById("txtDate").value;
 	var empName=document.getElementById("txtName").value;
@@ -53,7 +61,7 @@ function showAllEmployeeByFilterId() {
 			initSalaryTable();
 		}
 	};
-	var url = "001ViewEmployeeForSalaryProcessAjax.jsp?fromDate="+fromDate+"&empName="+empName+"&work_status="+work_status+"&work_Id="+work_Id;
+	var url = "001ViewEmployeeForPaymentProcessAjax.jsp?fromDate="+fromDate+"&empName="+empName+"&work_status="+work_status+"&work_Id="+work_Id;
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
 }
@@ -95,7 +103,6 @@ $(document).ready(function() { initSalaryTable(); });
 		<tr>
 			<td>Date:</td>
 			<td><input type="text" name="txtDate" id="txtDate"
-				readonly="readonly"
 				pattern="(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}"
 				oninvalid="setCustomValidity('Enter Date: Select From Calender')"
 				title="Select Date" placeholder="dd/mm/yyyy"
@@ -106,12 +113,16 @@ $(document).ready(function() { initSalaryTable(); });
 			<td>Work:</td>
 			<td><select name="selWorkId" id="selWorkId"
 				onchange="showAllEmployeeByFilterId()">
-					<option>Select</option>
+					<option value="-1">Select</option>
 					<%
 						try {
+							ConfigFarmTaskService farmTaskService = new ConfigFarmTaskService();
+							List<ConfigFarmTaskEntity> taskList = farmTaskService.fetch();
+							for (ConfigFarmTaskEntity taskEntity : taskList) {
 					%>
-					<option value=""></option>
+					<option value="<%=taskEntity.getTaskId()%>"><%=taskEntity.getTaskName()%></option>
 					<%
+							}
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -125,6 +136,7 @@ $(document).ready(function() { initSalaryTable(); });
 					<option value="Pending">Pending</option>
 					<option value="Reject">Reject</option>
 			</select></td>
+			<td><input type="button" value="Clear All" onclick="clearAllFilters()"></td>
 		</tr>
 	</table>
 	<hr>
@@ -154,7 +166,7 @@ $(document).ready(function() { initSalaryTable(); });
 
 						int cnt = 0;
 						AssignResourceEmployeeToFarmService employeeToFarmService=new AssignResourceEmployeeToFarmService();
-						SalaryProcessingDao salaryProcessingDao = new SalaryProcessingDao();
+						PaymentProcessingDao salaryProcessingDao = new PaymentProcessingDao();
 						List<AssignEmployeeToFarmEntity> employeeToFarmEntities=employeeToFarmService.getListOFEmployeeToFarm();
 						for(AssignEmployeeToFarmEntity employeeToFarm:employeeToFarmEntities){
 						cnt++;

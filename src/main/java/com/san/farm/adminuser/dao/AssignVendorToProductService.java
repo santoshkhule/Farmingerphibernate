@@ -92,6 +92,34 @@ public class AssignVendorToProductService {
 	}
 
 	@SuppressWarnings("unchecked")
+	public List<AssignVendorToProductEntity> fetchFiltered(int vendorId, int categoryId, int fertilizerId) {
+		List<AssignVendorToProductEntity> list = new ArrayList<AssignVendorToProductEntity>();
+		Session session = HibernateUtil.opensession();
+		try {
+			StringBuilder q = new StringBuilder("FROM AssignVendorToProductEntity avp");
+			java.util.List<String> conds = new java.util.ArrayList<String>();
+			if (vendorId > 0)     conds.add("avp.vendorEntity.vendorId = " + vendorId);
+			if (categoryId > 0)   conds.add("avp.categoryEntity.categoryId = " + categoryId);
+			if (fertilizerId > 0) conds.add("avp.fertilizerEntity.fertilizerId = " + fertilizerId);
+			if (!conds.isEmpty()) {
+				q.append(" WHERE ");
+				for (int i = 0; i < conds.size(); i++) {
+					if (i > 0) q.append(" AND ");
+					q.append(conds.get(i));
+				}
+			}
+			q.append(" ORDER BY avp.vendorEntity.vendorName, avp.fertilizerEntity.fertilizerName");
+			list = session.createQuery(q.toString()).list();
+			logger.info("fetchFiltered: {} records (vendor={}, cat={}, fert={})", list.size(), vendorId, categoryId, fertilizerId);
+		} catch (HibernateException e) {
+			logger.error("Error in fetchFiltered", e);
+		} finally {
+			session.close();
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<AssignVendorToProductEntity> fetchByVendor(int vendorId) {
 		List<AssignVendorToProductEntity> list = new ArrayList<AssignVendorToProductEntity>();
 		Session session = HibernateUtil.opensession();

@@ -13,23 +13,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService;
-import com.san.farm.adminuser.dao.SalaryProcessingDao;
+import com.san.farm.adminuser.dao.PaymentProcessingDao;
 import com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity;
-import com.san.farm.adminuser.entity.SalaryProcessingEntity;
+import com.san.farm.adminuser.entity.PaymentProcessingEntity;
 import com.san.farm.util.FarmUtility;
 import com.san.farm.util.Symbols;
 
 /**
- * Servlet implementation class SalaryProcessingServlet
+ \* Servlet implementation class PaymentProcessingServlet
  */
-@WebServlet("/SalaryProcessingServlet")
-public class SalaryProcessingServlet extends HttpServlet {
+@WebServlet("/PaymentProcessingServlet")
+public class PaymentProcessingServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LoggerFactory.getLogger(SalaryProcessingServlet.class);
+	private static final Logger logger = LoggerFactory.getLogger(PaymentProcessingServlet.class);
 
 	@Override
 	public void init() throws ServletException {
-		logger.info("SalaryProcessingServlet initialized");
+		logger.info("PaymentProcessingServlet initialized");
 	}
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -71,7 +71,7 @@ public class SalaryProcessingServlet extends HttpServlet {
 			AssignResourceEmployeeToFarmService employeeToFarmService=new AssignResourceEmployeeToFarmService();
 			AssignEmployeeToFarmEntity employeeToFarm=employeeToFarmService.getEmployeeToFarmById(assignResourceId);
 
-			SalaryProcessingEntity salaryProcess=new SalaryProcessingEntity();
+			PaymentProcessingEntity salaryProcess=new PaymentProcessingEntity();
 			salaryProcess.setAccountNumber(accountNumber);
 			salaryProcess.setAmount(amount);
 			salaryProcess.setBankName(bankName);
@@ -79,7 +79,7 @@ public class SalaryProcessingServlet extends HttpServlet {
 			salaryProcess.setDate(date);
 			salaryProcess.setPaymentType(paymentType);
 			salaryProcess.setEmployeeToFarm(employeeToFarm);
-			SalaryProcessingDao salaryProcessingDao=new SalaryProcessingDao();
+			PaymentProcessingDao salaryProcessingDao=new PaymentProcessingDao();
 			if(request.getParameter("sbtPayAmount")!=null){
 				logger.info("Saving salary transaction for assignResourceId: {}, amount: {}", assignResourceId, amount);
 				salaryProcessingDao.saveSalaryTransaction(salaryProcess);
@@ -91,7 +91,12 @@ public class SalaryProcessingServlet extends HttpServlet {
 				salaryProcessingDao.updateSalaryTransaction(salaryProcess);
 				logger.info("Salary transaction updated successfully");
 			}
-			response.sendRedirect(request.getContextPath() + "/view/user/02SalaryProcessing.jsp?assignResourceId=" + assignResourceId);
+			if(request.getParameter("sbtDelete")!=null){
+				logger.info("Deleting salary transaction with id: {}", salaryProcessId);
+				salaryProcessingDao.deleteSalaryTransaction(salaryProcessId);
+				logger.info("Salary transaction deleted successfully");
+			}
+			response.sendRedirect(request.getContextPath() + "/view/user/02employeePaymentProcess.jsp?assignResourceId=" + assignResourceId);
 		} catch (Exception exception) {
 			logger.error("Error processing SalaryProcessing request", exception);
 		}

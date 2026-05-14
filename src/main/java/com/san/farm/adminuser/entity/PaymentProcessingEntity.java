@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="salaryTransactions")
-public class SalaryProcessingEntity {
+public class PaymentProcessingEntity {
 	@Id
 	@GeneratedValue
 	private int salaryProcessId;

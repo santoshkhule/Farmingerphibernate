@@ -56,7 +56,7 @@ public class FertilizerController extends HttpServlet {
 		} catch (Exception e) {
 			logger.error("Error processing Fertilizer request", e);
 		} finally {
-			response.sendRedirect("view/user/addFertilizer.jsp");
+			response.sendRedirect("view/user/configuration.jsp?tab=product");
 		}
 	}
 

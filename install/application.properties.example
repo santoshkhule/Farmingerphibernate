@@ -1,0 +1,78 @@
+# =============================================================================
+#  Santosh Farming ERP - Database Configuration Template
+#
+#  HOW TO USE:
+#    1. Copy this file to:  src/main/resources/application.properties
+#    2. Fill in the values for your target database (examples below).
+#    3. Build and deploy the WAR.
+#    4. On first startup the app auto-creates the schema and seeds:
+#         Username : admin
+#         Password : admin
+#       Change this password immediately after first login.
+# =============================================================================
+
+
+# =============================================================================
+#  OPTION A — H2 (embedded, no external install needed)
+#  Best for: development, demos, single-machine deployments
+# =============================================================================
+db.driver=org.h2.Driver
+db.url=jdbc:h2:file:./farmingErpDb;AUTO_SERVER=TRUE
+db.username=sa
+db.password=
+hibernate.dialect=org.hibernate.dialect.H2Dialect
+
+
+# =============================================================================
+#  OPTION B — MySQL 5.x / MariaDB
+#  1. Install MySQL and create the database:
+#       CREATE DATABASE farmingerpdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+#       CREATE USER 'farmuser'@'localhost' IDENTIFIED BY 'yourpassword';
+#       GRANT ALL ON farmingerpdb.* TO 'farmuser'@'localhost';
+#  2. Uncomment the lines below and comment out OPTION A above.
+# =============================================================================
+# db.driver=com.mysql.jdbc.Driver
+# db.url=jdbc:mysql://localhost:3306/farmingerpdb?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+# db.username=farmuser
+# db.password=yourpassword
+# hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+
+
+# =============================================================================
+#  OPTION C — MySQL 8.x
+# =============================================================================
+# db.driver=com.mysql.cj.jdbc.Driver
+# db.url=jdbc:mysql://localhost:3306/farmingerpdb?useSSL=false&serverTimezone=UTC
+# db.username=farmuser
+# db.password=yourpassword
+# hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+
+# =============================================================================
+#  OPTION D — PostgreSQL
+#  1. CREATE DATABASE farmingerpdb;
+#     CREATE USER farmuser WITH PASSWORD 'yourpassword';
+#     GRANT ALL ON DATABASE farmingerpdb TO farmuser;
+#  2. Add the PostgreSQL JDBC driver to pom.xml dependencies.
+# =============================================================================
+# db.driver=org.postgresql.Driver
+# db.url=jdbc:postgresql://localhost:5432/farmingerpdb
+# db.username=farmuser
+# db.password=yourpassword
+# hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+
+# =============================================================================
+#  HIBERNATE SETTINGS (common to all databases)
+# =============================================================================
+
+# Schema management:
+#   update   — add missing columns/tables, never drops anything  (recommended)
+#   create   — drops ALL tables and recreates on every startup   (DANGEROUS: all data lost)
+#   validate — fail fast if schema does not match entities       (strict production mode)
+#   none     — do nothing
+hibernate.hbm2ddl.auto=update
+
+# Print every SQL statement to the server log (useful for debugging)
+hibernate.show_sql=false
+hibernate.format_sql=false

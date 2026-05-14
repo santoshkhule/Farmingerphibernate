@@ -26,70 +26,97 @@ import com.san.farm.login.entity.LoginUser;
 public class RegisterUserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(RegisterUserController.class);
+	private static final String ADMIN_TYPE = "Admin";
+
+	private boolean isAdmin(LoginUser user) {
+		return user != null && user.getUserTypeEntity() != null
+				&& ADMIN_TYPE.equalsIgnoreCase(user.getUserTypeEntity().getUserType());
+	}
        
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.debug("Processing RegisterUser request");
-		String uname=null,password=null,curPasswrd=null;
-		int userTypeId=0;
-		long loginUserId=0;
-		boolean isValid=false,isCurPwdValid=false;
+		String redirectUrl = "view/user/registerUser.jsp";
 		try {
-			uname=request.getParameter("emailId");
-			password=request.getParameter("passwrd");
-			userTypeId=Integer.parseInt(request.getParameter("selUserTypeId"));
-			curPasswrd=request.getParameter("curPasswrd");
+			LoginUserService loginUserService = new LoginUserService();
 
-			UserTypeService userTypeService=new UserTypeService();
-			UserTypeEntity userTypeEntity=userTypeService.getUsertypeIdByUserTypeId(userTypeId);
-
-			LoginUserService loginUserService=new LoginUserService();
-			LoginUser loginUser=new LoginUser();
-			loginUser.setUname(uname);
-			loginUser.setPassword(password);
-			loginUser.setUserTypeEntity(userTypeEntity);
-
-			//insert Operation
-			if(null!=request.getParameter("add")){
-				logger.info("Registering new user: {}", uname);
-				loginUserService.saveLoginUser(loginUser);
-				logger.info("User registered successfully");
-
-				/*EmployeeInfoService authEmployeeInfoService=new EmployeeInfoService();
-				EmployeeInfoAuthEntity authEmployeeInfo=new EmployeeInfoAuthEntity();
-				authEmployeeInfo.setLoginUser(loginUser);
-				authEmployeeInfoService.saveAuthEmployeeInfo(authEmployeeInfo);*/
-			}
-			//update operation
-			if(null!=request.getParameter("edit")){
-				LoginUser user=new LoginUser();
-				loginUserId=Long.parseLong(request.getParameter("loginUserId"));
-				user=loginUserService.getLoginUserInfoByLoginId(loginUserId);
-				logger.debug("Validating current password for loginUserId: {}", loginUserId);
-				if(user.getPassword().equals(curPasswrd)){
-					logger.info("Password validation successful, updating user with id: {}", loginUserId);
-					loginUser.setLoginUserId(loginUserId);
-					loginUserService.updateLoginUser(loginUser);
-					logger.info("User updated successfully");
-				}else{
-					logger.warn("Password validation failed for loginUserId: {}", loginUserId);
-					isCurPwdValid=true;
+			// Delete handled separately — only needs loginUserId
+			if (request.getParameter("delete") != null) {
+				long loginUserId = Long.parseLong(request.getParameter("loginUserId"));
+				LoginUser toDelete = loginUserService.getLoginUserInfoByLoginId(loginUserId);
+				if (isAdmin(toDelete)) {
+					logger.warn("Attempt to delete admin user with id: {} blocked", loginUserId);
+					redirectUrl = "view/user/registerUser.jsp?err=admin_protected";
+					return;
 				}
-			}
-			//Delete Operation
-			if(null!=request.getParameter("delete")){
-				loginUserId=Long.parseLong(request.getParameter("loginUserId"));
 				logger.info("Deleting user with id: {}", loginUserId);
 				loginUserService.deleteLoginUser(loginUserId);
 				logger.info("User deleted successfully");
+				redirectUrl = "view/user/registerUser.jsp?msg=deleted";
+				return;
 			}
-		} catch (Exception exception) {
-			logger.error("Error processing RegisterUser request", exception);
+
+			String uname     = request.getParameter("username");
+			String password  = request.getParameter("passwrd");
+			String curPasswrd = request.getParameter("curPasswrd");
+
+			if (request.getParameter("add") != null) {
+				int userTypeId = Integer.parseInt(request.getParameter("selUserTypeId"));
+				UserTypeEntity userTypeEntity = new UserTypeService().getUsertypeIdByUserTypeId(userTypeId);
+				LoginUser loginUser = new LoginUser();
+				loginUser.setUname(uname);
+				loginUser.setPassword(password);
+				loginUser.setUserTypeEntity(userTypeEntity);
+				if (loginUserService.existsByUname(uname)) {
+					logger.warn("Duplicate username rejected: {}", uname);
+					redirectUrl = "view/user/registerUser.jsp?err=username_exists";
+				} else {
+					logger.info("Registering new user: {}", uname);
+					loginUserService.saveLoginUser(loginUser);
+					logger.info("User registered successfully");
+					redirectUrl = "view/user/registerUser.jsp?msg=registered";
+				}
+			}
+
+			if (request.getParameter("edit") != null) {
+				long loginUserId = Long.parseLong(request.getParameter("loginUserId"));
+				LoginUser existing = loginUserService.getLoginUserInfoByLoginId(loginUserId);
+				logger.debug("Validating current password for loginUserId: {}", loginUserId);
+				if (existing == null || !existing.getPassword().equals(curPasswrd)) {
+					logger.warn("Password validation failed for loginUserId: {}", loginUserId);
+					redirectUrl = "view/user/registerUser.jsp?err=wrong_pwd";
+				} else if (isAdmin(existing)) {
+					// Admin user: only password may change; username and user type are locked
+					existing.setPassword(password);
+					loginUserService.updateLoginUser(existing);
+					logger.info("Admin user {} password updated successfully", loginUserId);
+					redirectUrl = "view/user/registerUser.jsp?msg=updated";
+				} else {
+					// Non-admin: parse selUserTypeId and check for duplicate username
+					int userTypeId = Integer.parseInt(request.getParameter("selUserTypeId"));
+					UserTypeEntity userTypeEntity = new UserTypeService().getUsertypeIdByUserTypeId(userTypeId);
+					LoginUser loginUser = new LoginUser();
+					loginUser.setUname(uname);
+					loginUser.setPassword(password);
+					loginUser.setUserTypeEntity(userTypeEntity);
+					if (loginUserService.existsByUnameExcludingId(uname, loginUserId)) {
+						logger.warn("Duplicate username on edit rejected: {}", uname);
+						redirectUrl = "view/user/registerUser.jsp?err=username_exists";
+					} else {
+						loginUser.setLoginUserId(loginUserId);
+						loginUserService.updateLoginUser(loginUser);
+						logger.info("User {} updated successfully", loginUserId);
+						redirectUrl = "view/user/registerUser.jsp?msg=updated";
+					}
+				}
+			}
+		} catch (Exception ex) {
+			logger.error("Error processing RegisterUser request", ex);
 		} finally {
-			logger.debug("Redirecting to registerUser.jsp");
-			response.sendRedirect("view/user/registerUser.jsp?isValid="+isValid+"&isCurPwdValid="+isCurPwdValid);
+			logger.debug("Redirecting to: {}", redirectUrl);
+			response.sendRedirect(redirectUrl);
 		}
 	}
 

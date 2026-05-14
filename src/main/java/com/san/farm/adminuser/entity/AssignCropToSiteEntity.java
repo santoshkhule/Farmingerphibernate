@@ -19,6 +19,7 @@ public class AssignCropToSiteEntity {
 	@Id
 	@GeneratedValue
 	int assignCroptoSiteId;
+
 	Date cropAssignDate;
 	
 	@ManyToOne

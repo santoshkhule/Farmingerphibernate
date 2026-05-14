@@ -80,7 +80,7 @@ public class ConfigCropController extends HttpServlet {
 			logger.error("Error processing ConfigCrop request", exception);
 		} finally {
 			logger.debug("Redirecting to configCrop.jsp");
-			response.sendRedirect("view/user/configCrop.jsp");
+			response.sendRedirect("view/user/configuration.jsp?tab=crop");
 		}
 	}
 

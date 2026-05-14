@@ -1,45 +1,32 @@
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<!--
+  Entity mappings only.
+  All connection settings (driver, url, username, password, dialect, ddl-auto)
+  are read from application.properties by HibernateUtil at startup.
+-->
 <hibernate-configuration>
-	<session-factory>
+    <session-factory>
 
-		<!-- H2 Driver & URL -->
-		<property name="hibernate.connection.driver_class">org.h2.Driver</property>
+        <mapping class="com.san.farm.login.entity.LoginUser" />
+        <mapping class="com.san.farm.adminuser.entity.UserTypeEntity" />
+        <mapping class="com.san.farm.adminuser.entity.EmployeeInfoEntity" />
+        <mapping class="com.san.farm.adminuser.entity.ConfigSiteInformationEntity" />
+        <mapping class="com.san.farm.adminuser.entity.ConfigCropEntity" />
+        <mapping class="com.san.farm.adminuser.entity.ConfigFarmTaskEntity" />
+        <mapping class="com.san.farm.adminuser.entity.AssignCropToSiteEntity" />
+        <mapping class="com.san.farm.adminuser.entity.AssignCropToSiteRefEntity" />
+        <mapping class="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity" />
+        <mapping class="com.san.farm.adminuser.entity.PaymentProcessingEntity" />
+        <mapping class="com.san.farm.adminuser.entity.BrandEntity" />
+        <mapping class="com.san.farm.adminuser.entity.FertilizerEntity" />
+        <mapping class="com.san.farm.adminuser.entity.UnitEntity" />
+        <mapping class="com.san.farm.adminuser.entity.VendorEntity" />
+        <mapping class="com.san.farm.adminuser.entity.AssignVendorToProductEntity" />
+        <mapping class="com.san.farm.adminuser.entity.CategoryEntity" />
+        <mapping class="com.san.farm.adminuser.entity.SiteProductAllocationEntity" />
 
-		<!-- File-based (data persists across restarts) -->
-		<property name="hibernate.connection.url">jdbc:h2:file:./farmingErpDb;AUTO_SERVER=TRUE</property>
-
-		<!-- In-memory (data lost on restart — good for testing) -->
-		<!-- <property name="hibernate.connection.url">jdbc:h2:mem:farmingErpDb;DB_CLOSE_DELAY=-1</property> -->
-
-		<property name="hibernate.connection.username">sa</property>
-		<property name="hibernate.connection.password"></property>
-
-		<!-- H2 Dialect -->
-		<property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
-
-		<!-- Auto-create tables from your entities -->
-		<property name="hibernate.hbm2ddl.auto">update</property>
-
-		<!-- Helpful during development -->
-		<property name="hibernate.show_sql">false</property>
-		<property name="hibernate.format_sql">false</property>
-
-		<mapping class="com.san.farm.login.entity.LoginUser" />
-		<mapping class="com.san.farm.adminuser.entity.UserTypeEntity" />
-		<mapping class="com.san.farm.adminuser.entity.EmployeeInfoEntity" />
-		<mapping class="com.san.farm.adminuser.entity.ConfigSiteInformationEntity" />
-		<mapping class="com.san.farm.adminuser.entity.ConfigCropEntity" />
-		<mapping class="com.san.farm.adminuser.entity.ConfigFarmTaskEntity" />
-		<mapping class="com.san.farm.adminuser.entity.AssignCropToSiteEntity" />
-		<mapping class="com.san.farm.adminuser.entity.AssignCropToSiteRefEntity" />
-		<mapping class="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity" />
-		<mapping class="com.san.farm.adminuser.entity.SalaryProcessingEntity" />
-		<mapping class="com.san.farm.adminuser.entity.BrandEntity" />
-		<mapping class="com.san.farm.adminuser.entity.FertilizerEntity" />
-		<mapping class="com.san.farm.adminuser.entity.UnitEntity" />
-		<mapping class="com.san.farm.adminuser.entity.VendorEntity" />
-		<mapping class="com.san.farm.adminuser.entity.AssignVendorToProductEntity" />
-		<mapping class="com.san.farm.adminuser.entity.CategoryEntity" />
-
-	</session-factory>
+    </session-factory>
 </hibernate-configuration>

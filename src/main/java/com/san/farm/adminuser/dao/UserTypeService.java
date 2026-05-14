@@ -117,6 +117,26 @@ public class UserTypeService {
 		return list;
 	}
 	/**
+	 * Returns true if a UserType with the given name already exists (case-insensitive).
+	 */
+	public boolean existsByName(String userType) {
+		logger.debug("Checking existence of UserType: {}", userType);
+		Session session = HibernateUtil.opensession();
+		try {
+			Long count = (Long) session.createQuery(
+				"SELECT COUNT(u) FROM UserTypeEntity u WHERE LOWER(u.userType) = LOWER(:type)")
+				.setParameter("type", userType.trim())
+				.uniqueResult();
+			return count != null && count > 0;
+		} catch (HibernateException exception) {
+			logger.error("Error checking UserType existence for: {}", userType, exception);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+
+	/**
 	 * Fetch Operation:Taking userType Id from UserTypeController.java and Fetching respective Data From DB
 	 * @return UserTypeEntity
 	 * */

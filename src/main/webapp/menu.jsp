@@ -10,10 +10,8 @@
 
 	<div class="nav-group">
 		<div class="nav-group-title">&#9881; Configuration</div>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configuration.jsp">Basic Config</a>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configureCatSubCatBrand.jsp">Configure Items</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configuration.jsp">Configuration</a>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/registerUser.jsp">Register User</a>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Assign Crop To Site</a>
 	</div>
 
 	<div class="nav-group">
@@ -23,14 +21,14 @@
 	</div>
 
 	<div class="nav-group">
-		<div class="nav-group-title">&#128203; Task</div>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/01createFarm.jsp">Create Farm</a>
+		<div class="nav-group-title">&#128203; Farm Setup</div>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/assignCropToSite.jsp">Site Resource Allocation</a>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">View Assign Tasks</a>
 	</div>
 
 	<div class="nav-group">
 		<div class="nav-group-title">&#128176; Account</div>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/02employeeSalaryProcess.jsp">Process Salary</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/02employeePaymentProcess.jsp">Process Payment</a>
 	</div>
 
 	<div class="nav-group">

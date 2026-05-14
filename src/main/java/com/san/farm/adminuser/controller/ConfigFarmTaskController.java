@@ -80,7 +80,7 @@ public class ConfigFarmTaskController extends HttpServlet {
 			logger.error("Error processing ConfigFarmTask request", exception);
 		} finally {
 			logger.debug("Redirecting to configFarmTask.jsp");
-			response.sendRedirect("view/user/configFarmTask.jsp");
+			response.sendRedirect("view/user/configuration.jsp?tab=task");
 		}
 	}
 

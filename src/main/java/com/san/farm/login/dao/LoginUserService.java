@@ -155,4 +155,62 @@ public class LoginUserService {
 		}
 		return loginUser;
 	}
+
+	public boolean existsByUname(String uname) {
+		logger.debug("Checking existence of uname: {}", uname);
+		Session session = HibernateUtil.opensession();
+		try {
+			Long count = (Long) session.createQuery(
+				"SELECT COUNT(u) FROM LoginUser u WHERE u.uname = :uname")
+				.setParameter("uname", uname)
+				.uniqueResult();
+			return count != null && count > 0;
+		} catch (HibernateException ex) {
+			logger.error("Error checking uname existence: {}", uname, ex);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+
+	public boolean existsByUnameExcludingId(String uname, long excludeLoginUserId) {
+		logger.debug("Checking existence of uname: {} excluding loginUserId: {}", uname, excludeLoginUserId);
+		Session session = HibernateUtil.opensession();
+		try {
+			Long count = (Long) session.createQuery(
+				"SELECT COUNT(u) FROM LoginUser u WHERE u.uname = :uname AND u.loginUserId != :id")
+				.setParameter("uname", uname)
+				.setParameter("id", excludeLoginUserId)
+				.uniqueResult();
+			return count != null && count > 0;
+		} catch (HibernateException ex) {
+			logger.error("Error checking uname existence excluding id {}: {}", excludeLoginUserId, uname, ex);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+
+	public LoginUser authenticate(String uname, String password) {
+		logger.debug("Authenticating user: {}", uname);
+		Session session = HibernateUtil.opensession();
+		try {
+			LoginUser user = (LoginUser) session.createCriteria(LoginUser.class)
+					.add(Restrictions.eq("uname", uname))
+					.add(Restrictions.eq("password", password))
+					.uniqueResult();
+			if (user != null) {
+				logger.info("Authentication successful for user: {}", uname);
+			} else {
+				logger.warn("Authentication failed for user: {}", uname);
+			}
+			return user;
+		} catch (HibernateException exception) {
+			logger.error("Error during authentication for user: {}", uname, exception);
+			return null;
+		} finally {
+			session.clear();
+			session.close();
+		}
+	}
 }

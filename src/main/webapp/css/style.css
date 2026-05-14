@@ -138,6 +138,23 @@ a      { color: var(--blue-md); }
     text-decoration: none;
 }
 
+/* Dashboard top-level link */
+.nav-link-dash {
+    padding: 9px 14px 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #c8e6c9;
+    border-left: 3px solid var(--sidebar-accent);
+    background: rgba(255,255,255,0.06);
+    margin: 4px 6px;
+    border-radius: var(--r-sm);
+}
+.nav-link-dash:hover {
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    border-left-color: #fff;
+}
+
 /* Sidebar footer */
 #sidebar-foot {
     padding: 10px 12px;
@@ -300,6 +317,13 @@ table[border="1"] tbody tr:hover           { background: #dcedc8; }
     transition: background 0.15s;
 }
 .btn-delete:hover { background: var(--red-dk); }
+.btn-edit {
+    background: var(--green-dk); color: #fff; border: none;
+    padding: 5px 14px; cursor: pointer; border-radius: var(--r-sm);
+    font-size: 12px; font-weight: 600; font-family: inherit;
+    transition: background 0.15s; margin-right: 4px;
+}
+.btn-edit:hover { background: #2e7d32; }
 
 .btn-cancel {
     background: var(--gray-600); color: #fff; border: none;
@@ -515,6 +539,47 @@ div.dataTables_paginate .paginate_button.disabled { opacity: 0.4; cursor: defaul
 table.dataTable tbody tr.odd  { background: #fff; }
 table.dataTable tbody tr.even { background: #f4faf4; }
 table.dataTable tbody tr:hover { background: #dcedc8 !important; }
+
+/* =====================================================
+   REPORT PAGES
+   ===================================================== */
+.report-summary-bar {
+    display: flex; gap: 12px; flex-wrap: wrap; margin: 10px 0 14px;
+}
+.rpt-card {
+    background: #fff; border: 1px solid var(--green-bd);
+    border-radius: var(--r-md); padding: 10px 18px;
+    min-width: 120px; text-align: center; box-shadow: var(--sh-sm);
+}
+.rpt-card .rpt-label {
+    font-size: 0.75em; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.rpt-card .rpt-val {
+    font-size: 1.3em; font-weight: 700; color: var(--green-dk); margin-top: 3px;
+}
+.rpt-card.rpt-danger .rpt-val { color: var(--red-md); }
+.rpt-card.rpt-warn   .rpt-val { color: #e65100; }
+.rpt-card.rpt-ok     .rpt-val { color: #2e7d32; }
+
+.dispatch-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 10px;
+    font-size: 0.8em; font-weight: 700; white-space: nowrap;
+}
+.dispatch-badge.ready   { background: #d4edda; color: #155724; }
+.dispatch-badge.pending { background: #fdecea; color: #721c24; }
+
+.rpt-filter-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; border: 1px solid var(--gray-200);
+    border-radius: var(--r-md); padding: 8px 14px; margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.rpt-filter-bar label { font-weight: 600; font-size: 12px; }
+.rpt-filter-bar select, .rpt-filter-bar input[type=text] {
+    padding: 4px 8px; border: 1px solid var(--gray-400);
+    border-radius: var(--r-sm); font-size: 12px; font-family: inherit;
+}
 
 /* =====================================================
    LEGACY SUPPORT

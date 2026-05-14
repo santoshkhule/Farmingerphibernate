@@ -63,22 +63,18 @@ public class AssignCropToSiteRefService {
 
 	public boolean deleteAssignCropToSiteRef(final int cropToSiteId){
 		logger.debug("Deleting AssignCropToSiteRef records for cropToSiteId: {}", cropToSiteId);
-		AssignCropToSiteService cropToSiteService=new AssignCropToSiteService();
-		String qry="from AssignCropToSiteEntity where assignCroptoSiteId="+cropToSiteId;
-		AssignCropToSiteEntity CropToSite=cropToSiteService.getAssignCropToSiteInfoBySiteIdDate(qry);
-		Session session=null;
-		boolean flag=false;
-		session=HibernateUtil.opensession();
-		Transaction transaction=session.beginTransaction();
+		Session session = HibernateUtil.opensession();
+		Transaction transaction = session.beginTransaction();
+		boolean flag = false;
 		try{
-			for(AssignCropToSiteRefEntity cropToSiteRefEntity1:CropToSite.getCropToSiteRefEntity()){
-				session.delete(cropToSiteRefEntity1);
-				transaction.commit();
-				flag=true;
-			}
+			session.createQuery(
+				"DELETE FROM AssignCropToSiteRefEntity WHERE cropToSiteEntity.assignCroptoSiteId = " + cropToSiteId)
+				.executeUpdate();
+			transaction.commit();
+			flag = true;
 			logger.info("AssignCropToSiteRef records deleted for cropToSiteId: {}", cropToSiteId);
 		}catch(HibernateException exception){
-			if(transaction!=null){ transaction.rollback(); }
+			if(transaction != null){ transaction.rollback(); }
 			logger.error("Error deleting AssignCropToSiteRef for cropToSiteId: {}", cropToSiteId, exception);
 		}finally{
 			session.close();

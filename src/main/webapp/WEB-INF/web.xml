@@ -5,10 +5,31 @@
   <listener>
     <listener-class>com.san.farm.util.Log4jInitListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>com.san.farm.install.DataSeeder</listener-class>
+  </listener>
 
   <welcome-file-list>
-    <welcome-file>login.jsp</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
+
+  <filter>
+    <filter-name>SessionFilter</filter-name>
+    <filter-class>com.san.farm.filter.SessionFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>SessionFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>com.san.farm.login.controller.LoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/LoginServlet</url-pattern>
+  </servlet-mapping>
   <servlet>
     <description></description>
     <display-name>UserTypeController</display-name>
@@ -166,5 +187,29 @@
   <servlet-mapping>
     <servlet-name>H2Console</servlet-name>
     <url-pattern>/h2-console/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>SiteProductAllocationController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.SiteProductAllocationController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SiteProductAllocationController</servlet-name>
+    <url-pattern>/SiteProductAllocationController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>AllocateEmployeeController</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.AllocateEmployeeController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AllocateEmployeeController</servlet-name>
+    <url-pattern>/AllocateEmployeeController</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>DashboardServlet</servlet-name>
+    <servlet-class>com.san.farm.adminuser.controller.DashboardServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DashboardServlet</servlet-name>
+    <url-pattern>/DashboardServlet</url-pattern>
   </servlet-mapping>
 </web-app>
