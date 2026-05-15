@@ -72,30 +72,27 @@
     .edit-sel     { width:120px; font-size:11px; }
     .edit-date-inp{ width:88px;  font-size:11px; padding:2px; }
 
-    .btn-row-save  { background:#28a745; color:#fff; border:none; padding:3px 9px;
-                     cursor:pointer; border-radius:var(--r-sm); font-size:11px; }
-    .btn-row-cancel{ background:#6c757d; color:#fff; border:none; padding:3px 9px;
-                     cursor:pointer; border-radius:var(--r-sm); font-size:11px; }
-
-    /* icon nav buttons — always visible */
+    /* unified icon button — all action buttons share this base */
     .btn-icon-nav  { width:26px; height:26px; border-radius:var(--r-sm); cursor:pointer;
                      font-size:13px; display:inline-flex; align-items:center;
-                     justify-content:center; vertical-align:middle; line-height:1; }
-    .btn-fert      { background:#e3f2fd; border:1px solid #90caf9; }
-    .btn-fert:hover{ background:#bbdefb; }
-    .btn-emp       { background:#e8f5e9; border:1px solid var(--green-bd); }
-    .btn-emp:hover { background:var(--green-row); }
-    .actions-cell  { text-align:center; white-space:nowrap; }
-    .actions-cell > * { vertical-align:middle; }
-
-    .btn-dispatch-mark  { background:#fff8e1; border:1px solid #ffe082; color:#e65100;
-                          padding:2px 8px; border-radius:var(--r-sm); cursor:pointer;
-                          font-size:10px; font-weight:700; line-height:1.4; }
+                     justify-content:center; vertical-align:middle; line-height:1;
+                     padding:0; border:1px solid transparent; }
+    .btn-fert           { background:#e3f2fd; border-color:#90caf9; }
+    .btn-fert:hover     { background:#bbdefb; }
+    .btn-emp            { background:#e8f5e9; border-color:var(--green-bd); }
+    .btn-emp:hover      { background:var(--green-row); }
+    .btn-edit-ic        { background:#f5f5f5; border-color:#bdbdbd; color:#424242; }
+    .btn-edit-ic:hover  { background:#eeeeee; }
+    .btn-save-ic        { background:#e8f5e9; border-color:var(--green-bd); color:#1b5e20; }
+    .btn-save-ic:hover  { background:#c8e6c9; }
+    .btn-cancel-ic      { background:#fdecea; border-color:#ef9a9a; color:#b71c1c; }
+    .btn-cancel-ic:hover{ background:#ffcdd2; }
+    .btn-dispatch-mark  { background:#fff8e1; border-color:#ffe082; color:#e65100; }
     .btn-dispatch-mark:hover { background:#fff3e0; border-color:#ffb300; }
-    .btn-dispatch-ready { background:#e8f5e9; border:1px solid var(--green-bd); color:#1b5e20;
-                          padding:2px 8px; border-radius:var(--r-sm); cursor:pointer;
-                          font-size:10px; font-weight:700; line-height:1.4; }
+    .btn-dispatch-ready { background:#e8f5e9; border-color:var(--green-bd); color:#1b5e20; }
     .btn-dispatch-ready:hover { background:#c8e6c9; }
+    .actions-cell  { text-align:center; white-space:nowrap; }
+    .actions-cell > * { vertical-align:middle; margin:1px; }
 </style>
 </head>
 <body>
@@ -293,7 +290,7 @@ function doToggleDispatch(id) {
             <th>Site</th>
             <th>Crop</th>
             <th>Date</th>
-            <th width="14%">Actions</th>
+            <th width="160px">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -367,10 +364,10 @@ function doToggleDispatch(id) {
                     value="<%=assignDate%>" style="display:none;" placeholder="dd/mm/yyyy">
             </td>
 
-            <!-- Actions: single row -->
+            <!-- Actions: compact icon row -->
             <td class="actions-cell">
-                <button type="button" class="btn-row-edit" id="btnEdit<%=rowId%>"
-                    onclick="editRow(<%=rowId%>)">Edit</button>
+                <button type="button" class="btn-icon-nav btn-edit-ic" id="btnEdit<%=rowId%>"
+                    title="Edit" onclick="editRow(<%=rowId%>)">&#9998;</button>
 
                 <form method="post" action="../../AssignCropToSiteController"
                     id="frmEdit<%=rowId%>" style="display:inline;">
@@ -378,29 +375,27 @@ function doToggleDispatch(id) {
                     <input type="hidden" name="cropToSiteId"   value="<%=rowId%>">
                     <input type="hidden" name="siteInfoId"     id="hidSite<%=rowId%>">
                     <input type="hidden" name="cropAssignDate" id="hidDate<%=rowId%>">
-                    <button type="button" class="btn-row-save" id="btnSave<%=rowId%>"
-                        style="display:none;" onclick="saveRow(<%=rowId%>)">Save</button>
+                    <button type="button" class="btn-icon-nav btn-save-ic" id="btnSave<%=rowId%>"
+                        style="display:none;" title="Save" onclick="saveRow(<%=rowId%>)">&#10004;</button>
                 </form>
 
-                <button type="button" class="btn-row-cancel" id="btnCancel<%=rowId%>"
-                    style="display:none;" onclick="cancelEdit(<%=rowId%>)">Cancel</button>
+                <button type="button" class="btn-icon-nav btn-cancel-ic" id="btnCancel<%=rowId%>"
+                    style="display:none;" title="Cancel" onclick="cancelEdit(<%=rowId%>)">&#10005;</button>
 
-                &nbsp;
                 <button type="button" class="btn-icon-nav btn-fert"
                     title="Allocate Fertilizers"
                     onclick="window.location.href='allocateFertilizersToSite.jsp?cropToSiteId=<%=rowId%>'">&#127807;</button>
                 <button type="button" class="btn-icon-nav btn-emp"
                     title="Allocate Employees"
                     onclick="window.location.href='allocateEmployeeToSite.jsp?cropToSiteId=<%=rowId%>'">&#128100;</button>
-                <br style="line-height:4px;">
                 <% if (cropToSiteEntity.isReadyToDispatch()) { %>
-                <button type="button" class="btn-dispatch-ready"
+                <button type="button" class="btn-icon-nav btn-dispatch-ready"
                     title="Ready to dispatch — click to unmark"
-                    onclick="doToggleDispatch(<%=rowId%>)">&#10003; Ready</button>
+                    onclick="doToggleDispatch(<%=rowId%>)">&#10003;</button>
                 <% } else { %>
-                <button type="button" class="btn-dispatch-mark"
-                    title="Mark this crop as ready to dispatch"
-                    onclick="doToggleDispatch(<%=rowId%>)">&#128666; Mark Ready</button>
+                <button type="button" class="btn-icon-nav btn-dispatch-mark"
+                    title="Mark as ready to dispatch"
+                    onclick="doToggleDispatch(<%=rowId%>)">&#128666;</button>
                 <% } %>
             </td>
         </tr>
