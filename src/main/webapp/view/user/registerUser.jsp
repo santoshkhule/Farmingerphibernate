@@ -94,15 +94,19 @@
     .roles-label { font-size:11px; font-weight:600; color:#424242; margin-bottom:6px; display:block; }
     .roles-row { display:flex; flex-wrap:wrap; gap:8px; }
     .role-item label {
-        display:flex; align-items:center; gap:6px;
+        display:flex; align-items:center; gap:5px;
         padding:5px 12px; border-radius:16px; border:1.5px solid #bdbdbd;
-        background:#f5f5f5; cursor:pointer; font-size:11px; font-weight:600;
-        transition:box-shadow .12s, opacity .12s; user-select:none;
+        background:#f5f5f5; color:#757575; cursor:pointer; font-size:11px; font-weight:600;
+        transition:background .15s, border-color .15s, color .15s, box-shadow .15s;
+        user-select:none;
     }
-    .role-item label:hover { box-shadow:0 1px 4px rgba(0,0,0,.15); }
+    .role-item label:hover { box-shadow:0 2px 6px rgba(0,0,0,.18); filter:brightness(.97); }
     .role-item input[type=checkbox] { display:none; }
-    .role-item label.chk-active { box-shadow:0 1px 4px rgba(0,0,0,.18); }
-    .role-item label.chk-disabled { opacity:.55; cursor:not-allowed; pointer-events:none; }
+    .role-item label.chk-active { box-shadow:0 2px 8px rgba(0,0,0,.22); }
+    .role-item label.chk-disabled { opacity:.5; cursor:not-allowed; pointer-events:none; }
+    /* checkmark shown only when active */
+    .role-chk-mark { display:none; font-weight:900; font-size:12px; line-height:1; }
+    .chk-active .role-chk-mark { display:inline; }
 
     /* ── Users table ────────────────────────────────────────────── */
     .tbl-data td, .tbl-data th { vertical-align:middle; }
@@ -128,15 +132,21 @@
     var editingRowEl = null;
     var currentEditIsAdmin = false;
 
-    /* Apply chk-active CSS class to each checked checkbox's parent label. */
+    /* Toggle role pill color: apply data-* colors when checked, grey when unchecked. */
     function updateChkStyles() {
         var chks = document.querySelectorAll('.type-chk');
         for (var i = 0; i < chks.length; i++) {
             var lbl = chks[i].parentElement;
             if (chks[i].checked) {
                 lbl.classList.add('chk-active');
+                lbl.style.background   = lbl.getAttribute('data-bg');
+                lbl.style.borderColor  = lbl.getAttribute('data-border');
+                lbl.style.color        = lbl.getAttribute('data-color');
             } else {
                 lbl.classList.remove('chk-active');
+                lbl.style.background  = '';
+                lbl.style.borderColor = '';
+                lbl.style.color       = '';
             }
         }
     }
@@ -294,10 +304,11 @@
                         String tName = ute.getUserType() != null ? ute.getUserType() : "";
                         int    tId   = ute.getUserTypeId();
                         String[] clr = roleColors(tName);
-                        String pillStyle = "background:" + clr[0] + ";border-color:" + clr[1] + ";color:" + clr[2] + ";";
                 %>
                     <span class="role-item">
-                        <label for="typeChk_<%=tId%>" style="<%=pillStyle%>">
+                        <label for="typeChk_<%=tId%>"
+                               data-bg="<%=clr[0]%>" data-border="<%=clr[1]%>" data-color="<%=clr[2]%>">
+                            <span class="role-chk-mark">&#10003;</span>
                             <input type="checkbox" class="type-chk"
                                    name="userTypeIds" value="<%=tId%>"
                                    id="typeChk_<%=tId%>"
