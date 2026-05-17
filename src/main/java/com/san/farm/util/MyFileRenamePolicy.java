@@ -2,7 +2,6 @@ package com.san.farm.util;
 
 import java.io.File;
 
-import com.oreilly.servlet.multipart.FileRenamePolicy;
 
 /**
  * This is utility class which uses File rename policy with file uploads and
