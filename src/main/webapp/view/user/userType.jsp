@@ -1,15 +1,16 @@
 <%@page import="com.san.farm.adminuser.entity.UserTypeEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.UserTypeService"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
 <script src="../../js/jquery-1.9.1.js"></script>
-<title>Configuration: User Type</title>
+<title><%= msg.getString("config.user_type.fieldset_title") %></title>
 <style>
 	#formPanel {
 		background: #f0f6ff;
@@ -139,32 +140,32 @@
 </script>
 <body>
 	<%-- <%@include file="../../header.jsp" %> --%>
-	<fieldset><legend>User Type</legend>
+	<fieldset><legend><%= msg.getString("config.user_type.fieldset_title") %></legend>
 
 		<%-- Add / Edit form --%>
 		<form method="post" id="frmUserType">
 			<input type="hidden" name="userTypeId" id="userTypeId">
 			<div id="formPanel">
 				<div id="editBanner"></div>
-				<label for="userType">User Type:</label>
+				<label for="userType"><%= msg.getString("config.user_type.label_user_type") %>:</label>
 				<input type="text" name="userType" id="userType" required placeholder="Enter user type name">
 				&nbsp;
-				<input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="Add"    onclick="this.form.action='../../UserTypeController'">
-				<input type="submit" class="btn-update" id="btnUpdate" name="edit" value="Update" style="display:none" onclick="this.form.action='../../UserTypeController'">
-				<input type="button" class="btn-cancel" id="btnCancel"              value="Cancel" style="display:none" onclick="resetForm()">
+				<input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="<%= msg.getString("btn.add") %>"    onclick="this.form.action='../../UserTypeController'">
+				<input type="submit" class="btn-update" id="btnUpdate" name="edit" value="<%= msg.getString("btn.update") %>" style="display:none" onclick="this.form.action='../../UserTypeController'">
+				<input type="button" class="btn-cancel" id="btnCancel"              value="<%= msg.getString("btn.cancel") %>" style="display:none" onclick="resetForm()">
 			</div>
 		</form>
 
 		<%-- Bulk delete bar --%>
 		<div id="bulkBar">
 			<span id="selCount">0</span> record(s) selected &nbsp;
-			<button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+			<button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %> Selected</button>
 			&nbsp;
 			<button type="button" class="btn-cancel" onclick="
 				document.querySelectorAll('input.rowChk').forEach(function(b){b.checked=false;});
 				document.getElementById('chkAll').checked=false;
 				document.getElementById('bulkBar').style.display='none';">
-				Clear Selection
+				<%= msg.getString("btn.clear") %> Selection
 			</button>
 		</div>
 
@@ -174,12 +175,12 @@
 		<table border="1" width="100%" class="tbl-data" cellspacing="0">
 			<thead>
 				<tr>
-					<th width="4%" title="Select All">
+					<th width="4%" title="<%= msg.getString("tbl.col_select_all") %>">
 						<input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)">
 					</th>
 					<th width="8%">Id</th>
-					<th>User Type</th>
-					<th width="18%">Actions</th>
+					<th><%= msg.getString("config.user_type.label_user_type") %></th>
+					<th width="18%"><%= msg.getString("tbl.col_actions") %></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -198,7 +199,7 @@
 					<td><%=entity.getUserType()%></td>
 					<td style="text-align:center;">
 						<button type="button" class="btn-row-edit"
-							onclick="editRow(<%=entity.getUserTypeId()%>, '<%=escapedName%>')">Edit</button>
+							onclick="editRow(<%=entity.getUserTypeId()%>, '<%=escapedName%>')"><%= msg.getString("btn.edit") %></button>
 					</td>
 				</tr>
 				<%} %>

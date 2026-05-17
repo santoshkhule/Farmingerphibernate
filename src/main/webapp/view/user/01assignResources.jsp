@@ -3,17 +3,17 @@
 <%@page import="com.san.farm.adminuser.entity.EmployeeInfoEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.EmployeeInfoService"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
 <script src="../../js/jquery-1.9.1.js"></script>
 <script src="../../js/jquery-ui.js"></script> 
-<title>Insert title here</title>
+<title><%= msg.getString("task.assign_res.page_title") %></title>
 </head>
 <script>
 	$(function() {	
@@ -334,9 +334,9 @@ if(null!=request.getParameter("siteId")&& null!=request.getParameter("cropId")&&
 <div style="background: gray">
 	<table border="0">
 		<tr style="background: gray;">
-			<td onclick="hideShowEmployee()" id="colorEmp" style="background: white;" class="panel-head">Employee </td>
+			<td onclick="hideShowEmployee()" id="colorEmp" style="background: white;" class="panel-head"><%= msg.getString("task.assign_res.tab_employee") %></td>
 			<!-- <td onclick="hideShowHome()" id="colorProd" class="panel-head"> Home Products</td> -->
-			<td><input type="submit" name="sbtAdd" id="sbtAdd" value="Add"></td>
+			<td><input type="submit" name="sbtAdd" id="sbtAdd" value="<%= msg.getString("btn.add") %>"></td>
 		</tr>
 	</table>
 </div>
@@ -346,14 +346,14 @@ if(null!=request.getParameter("siteId")&& null!=request.getParameter("cropId")&&
 		<legend class="legend">Assign Work To Employee</legend> -->
 		<table border="1" cellspacing="0" id="dataTable" width="100%">
 			<tr>
-				<th>Name</th>
-				<th>Date</th>
-				<th>Work</th>
-				<th>Type of Work</th>
-				<th>Amount</th>
-				<th>Advance Payment</th>
-				<th>Work Status</th>
-				<th>Comment<img name="imgAdd" id="imgAdd" src="../../img/add.jpg" height="18" width="20" onclick="addRow('dataTable')"></th>
+				<th><%= msg.getString("task.assign_res.tbl_col_name") %></th>
+				<th><%= msg.getString("task.assign_res.tbl_col_date") %></th>
+				<th><%= msg.getString("task.assign_res.tbl_col_work") %></th>
+				<th><%= msg.getString("task.assign_res.tbl_col_work_type") %></th>
+				<th><%= msg.getString("task.assign_res.tbl_col_amount") %></th>
+				<th><%= msg.getString("task.assign_res.tbl_col_adv_payment") %></th>
+				<th><%= msg.getString("task.assign_res.tbl_col_work_status") %></th>
+				<th><%= msg.getString("task.assign_res.tbl_col_comment") %><img name="imgAdd" id="imgAdd" src="../../img/add.jpg" height="18" width="20" onclick="addRow('dataTable')"></th>
 			</tr>
 			<tr>
 				<td>

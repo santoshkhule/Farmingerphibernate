@@ -1,13 +1,14 @@
 <%@page import="com.san.farm.adminuser.entity.*"%>
 <%@page import="com.san.farm.adminuser.dao.*"%>
 <%@page import="java.util.List"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
-<title>Vendor Product Assignments</title>
+<title><%= msg.getString("vendor.view_products.page_title") %></title>
 <style>
 	#bulkBar { display:none; background:#fdecea; border:1px solid #e06060; padding:6px 12px; border-radius:3px; margin-bottom:8px; }
 .tbl-data th { background:#dce8ff; padding:5px 8px; font-size:12px; }
@@ -118,7 +119,7 @@
 <%
 	if (vendorIdStr == null || vendorIdStr.isEmpty()) {
 %>
-<p class="note">Note: Select a Vendor to view assignments.</p>
+<p class="note"><%= msg.getString("vendor.view_products.iframe_note") %></p>
 <%
 	} else {
 		int vendor_id = Integer.parseInt(vendorIdStr);
@@ -127,9 +128,9 @@
 %>
 	<div id="bulkBar">
 		<span id="selCount">0</span> record(s) selected &nbsp;
-		<button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+		<button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete_selected") %></button>
 		&nbsp;
-		<button type="button" class="btn-cancel" onclick="clearSelection()">Clear Selection</button>
+		<button type="button" class="btn-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear_selection") %></button>
 	</div>
 
 	<form method="post" id="frmBulkDelete" action="../../AssignVendorToProductController"></form>
@@ -138,14 +139,14 @@
 		<thead>
 			<tr>
 				<th width="3%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)"></th>
-				<th>Category</th>
-				<th>Product</th>
-				<th>Brand</th>
-				<th>Unit</th>
-				<th>Price</th>
-				<th>Description</th>
-				<th>Comment</th>
-				<th>Actions</th>
+				<th><%= msg.getString("tbl.col_category") %></th>
+				<th><%= msg.getString("tbl.col_product") %></th>
+				<th><%= msg.getString("tbl.col_brand") %></th>
+				<th><%= msg.getString("tbl.col_unit") %></th>
+				<th><%= msg.getString("tbl.col_price") %></th>
+				<th><%= msg.getString("tbl.col_description") %></th>
+				<th><%= msg.getString("tbl.col_comment") %></th>
+				<th><%= msg.getString("tbl.col_actions") %></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -213,7 +214,7 @@
 				<input class="edit-input" type="text" id="inpComment<%=id%>" name="comment" value="<%=comment%>" style="display:none">
 			</td>
 			<td style="text-align:center; white-space:nowrap;">
-				<button type="button" class="btn-row-edit" id="btnEdit<%=id%>" onclick="editRow(<%=id%>)">Edit</button>
+				<button type="button" class="btn-row-edit" id="btnEdit<%=id%>" onclick="editRow(<%=id%>)"><%= msg.getString("btn.edit") %></button>
 				<form method="post" action="../../AssignVendorToProductController" style="display:inline" id="frmEdit<%=id%>">
 					<input type="hidden" name="edit" value="edit">
 					<input type="hidden" name="assignVendorProductId" value="<%=id%>">
@@ -235,9 +236,9 @@
 							document.getElementById('hidPrice<%=id%>').value  = document.getElementById('inpPrice<%=id%>').value;
 							document.getElementById('hidDesc<%=id%>').value   = document.getElementById('inpDesc<%=id%>').value;
 							document.getElementById('hidComment<%=id%>').value= document.getElementById('inpComment<%=id%>').value;
-							document.getElementById('frmEdit<%=id%>').submit();">Save</button>
+							document.getElementById('frmEdit<%=id%>').submit();"><%= msg.getString("btn.save") %></button>
 				</form>
-				<button type="button" class="btn-cancel" id="btnCancel<%=id%>" style="display:none" onclick="cancelEdit(<%=id%>)">Cancel</button>
+				<button type="button" class="btn-cancel" id="btnCancel<%=id%>" style="display:none" onclick="cancelEdit(<%=id%>)"><%= msg.getString("btn.cancel") %></button>
 			</td>
 		</tr>
 		<% } %>

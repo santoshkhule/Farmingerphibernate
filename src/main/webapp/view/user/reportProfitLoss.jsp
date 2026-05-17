@@ -5,7 +5,8 @@
 <%@page import="com.san.farm.adminuser.entity.CropSaleEntity"%>
 <%@page import="java.sql.Date"%>
 <%@page import="java.util.*"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     /* ── Financial Year ── */
     Calendar cal = Calendar.getInstance();
@@ -109,9 +110,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Profit &amp; Loss Report</title>
+<title><%= msg.getString("report.profit_loss.page_title") %></title>
 <link rel="stylesheet" href="../../css/style.css">
 <script src="../../js/jquery-1.9.1.js"></script>
 <style>
@@ -187,13 +188,13 @@
 </head>
 <body>
 
-<fieldset><legend>Profit &amp; Loss Report by Site &amp; Crop</legend>
+<fieldset><legend><%= msg.getString("report.profit_loss.fieldset_title") %></legend>
 
 <!-- Filter bar -->
 <form method="get" class="no-print">
 <div class="filter-bar">
     <div class="filter-group">
-        <label for="fyYear">Financial Year</label>
+        <label for="fyYear"><%= msg.getString("report.profit_loss.filter_label_fy") %></label>
         <select name="fyYear" id="fyYear" onchange="this.form.submit()">
             <% for (int y = curFyStart; y >= curFyStart - 3; y--) { %>
             <option value="<%=y%>"<%=y==selFy?" selected":""%>>FY <%=y%>-<%=y+1%></option>
@@ -201,7 +202,7 @@
         </select>
     </div>
     <div style="align-self:flex-end; margin-left:auto; display:flex; gap:8px;">
-        <button type="button" class="btn-add" onclick="exportCSV()">&#8595; CSV</button>
+        <button type="button" class="btn-add" onclick="exportCSV()">&#8595; <%= msg.getString("btn.download_csv") %></button>
     </div>
 </div>
 </form>
@@ -210,23 +211,23 @@
 <div class="kpi-bar">
     <div class="kpi-card expense">
         <div class="kpi-val orange">&#8377; <%=String.format("%.2f", grandExp)%></div>
-        <div class="kpi-lbl">Total Expenditure</div>
+        <div class="kpi-lbl"><%= msg.getString("report.profit_loss.kpi_total_expenditure") %></div>
     </div>
     <div class="kpi-card income">
         <div class="kpi-val green">&#8377; <%=String.format("%.2f", grandInc)%></div>
-        <div class="kpi-lbl">Total Income (Expected)</div>
+        <div class="kpi-lbl"><%= msg.getString("report.profit_loss.kpi_income_expected") %></div>
     </div>
     <div class="kpi-card income">
         <div class="kpi-val green">&#8377; <%=String.format("%.2f", grandRec)%></div>
-        <div class="kpi-lbl">Total Income (Received)</div>
+        <div class="kpi-lbl"><%= msg.getString("report.profit_loss.kpi_income_received") %></div>
     </div>
     <div class="kpi-card <%=grandPL >= 0 ? "profit" : "loss"%>">
         <div class="kpi-val <%=grandPL >= 0 ? "blue" : "red"%>">&#8377; <%=String.format("%.2f", Math.abs(grandPL))%></div>
-        <div class="kpi-lbl">Net <%=grandPL >= 0 ? "Profit" : "Loss"%> (Expected)</div>
+        <div class="kpi-lbl"><%=grandPL >= 0 ? msg.getString("report.profit_loss.kpi_net_profit_expected") : msg.getString("report.profit_loss.kpi_net_loss_expected")%></div>
     </div>
     <div class="kpi-card <%=grandPLR >= 0 ? "profit" : "loss"%>">
         <div class="kpi-val <%=grandPLR >= 0 ? "blue" : "red"%>">&#8377; <%=String.format("%.2f", Math.abs(grandPLR))%></div>
-        <div class="kpi-lbl">Net <%=grandPLR >= 0 ? "Profit" : "Loss"%> (Received)</div>
+        <div class="kpi-lbl"><%=grandPLR >= 0 ? msg.getString("report.profit_loss.kpi_net_profit_received") : msg.getString("report.profit_loss.kpi_net_loss_received")%></div>
     </div>
 </div>
 
@@ -245,14 +246,14 @@
 <table id="plTable" border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
-        <th width="4%">#</th>
-        <th>Site</th>
-        <th>Crop</th>
-        <th width="12%">Expenditure (Rs)</th>
-        <th width="13%">Income Expected (Rs)</th>
-        <th width="13%">Income Received (Rs)</th>
-        <th width="12%">P&amp;L Expected (Rs)</th>
-        <th width="12%">P&amp;L Received (Rs)</th>
+        <th width="4%"><%= msg.getString("tbl.col_number") %></th>
+        <th><%= msg.getString("tbl.col_site") %></th>
+        <th><%= msg.getString("tbl.col_crop") %></th>
+        <th width="12%"><%= msg.getString("report.profit_loss.tbl_col_expenditure_rs") %></th>
+        <th width="13%"><%= msg.getString("report.profit_loss.tbl_col_income_expected_rs") %></th>
+        <th width="13%"><%= msg.getString("report.profit_loss.tbl_col_income_received_rs") %></th>
+        <th width="12%"><%= msg.getString("report.profit_loss.tbl_col_pl_expected_rs") %></th>
+        <th width="12%"><%= msg.getString("report.profit_loss.tbl_col_pl_received_rs") %></th>
     </tr>
     </thead>
     <tbody>
@@ -282,10 +283,10 @@
         <td style="text-align:right;"><%=String.format("%.2f", siteInc)%></td>
         <td style="text-align:right;"><%=String.format("%.2f", siteRec)%></td>
         <td style="text-align:right;" class="<%=sitePlClass%>">
-            <%=sitePlLabel%>: <%=String.format("%.2f", Math.abs(sitePL))%>
+            <%=sitePL >= 0 ? msg.getString("report.profit_loss.label_profit") : msg.getString("report.profit_loss.label_loss")%>: <%=String.format("%.2f", Math.abs(sitePL))%>
         </td>
         <td style="text-align:right;" class="<%=sitePlRClass%>">
-            <%=sitePlRLabel%>: <%=String.format("%.2f", Math.abs(sitePLR))%>
+            <%=sitePLR >= 0 ? msg.getString("report.profit_loss.label_profit") : msg.getString("report.profit_loss.label_loss")%>: <%=String.format("%.2f", Math.abs(sitePLR))%>
         </td>
     </tr>
 <%
@@ -314,7 +315,7 @@
     </tbody>
     <tfoot>
     <tr class="row-grandtotal">
-        <td colspan="3" style="text-align:right;">Grand Total &mdash; FY <%=selFy%>-<%=selFy+1%></td>
+        <td colspan="3" style="text-align:right;"><%= msg.getString("report.profit_loss.grand_total") %> &mdash; FY <%=selFy%>-<%=selFy+1%></td>
         <td style="text-align:right;"><%=String.format("%.2f", grandExp)%></td>
         <td style="text-align:right;"><%=String.format("%.2f", grandInc)%></td>
         <td style="text-align:right;"><%=String.format("%.2f", grandRec)%></td>

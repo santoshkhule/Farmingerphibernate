@@ -14,7 +14,8 @@
 <%@page import="com.san.farm.util.FarmUtility"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     int saleId = 0;
     String saleIdParam = request.getParameter("saleId");
@@ -85,9 +86,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crop Sale Processing</title>
+<title><%= msg.getString("sale.page_title") %></title>
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
 <script src="../../js/jquery-1.9.1.js"></script>
@@ -397,25 +398,25 @@
     });
 </script>
 
-<fieldset><legend>Crop Sale Processing</legend>
+<fieldset><legend><%= msg.getString("sale.fieldset_title") %></legend>
 
 <!-- ① Sale Entry / Edit Form (hidden until triggered) -->
 <div id="saleFormCard" class="sale-form-card" style="display:none;">
     <div class="sale-form-hdr">
         <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
-            <span class="sale-form-title" id="saleFormTitle">New Sale</span>
+            <span class="sale-form-title" id="saleFormTitle"><%= msg.getString("sale.form_title_new") %></span>
             <span class="sale-form-ctx" id="saleFormCtx" style="display:none;"></span>
         </div>
-        <button type="button" class="sale-form-close" onclick="hideSaleForm()">&#x2715; Close</button>
+        <button type="button" class="sale-form-close" onclick="hideSaleForm()">&#x2715; <%= msg.getString("btn.close") %></button>
     </div>
     <form method="post" action="../../CropSaleController">
         <input type="hidden" name="saleId" id="editSaleId" value="">
         <div class="sale-form-grid">
 
             <div class="sfg-field">
-                <label for="assignCroptoSiteId">Site Allocation *</label>
+                <label for="assignCroptoSiteId"><%= msg.getString("sale.label_site_allocation") %></label>
                 <select name="assignCroptoSiteId" id="assignCroptoSiteId" required>
-                    <option value="">--- Select Site ---</option>
+                    <option value=""><%= msg.getString("sale.select_site") %></option>
                     <%
                         for (AssignCropToSiteEntity s : readyToDispatchList) {
                             if (s == null) continue;
@@ -430,9 +431,9 @@
             </div>
 
             <div class="sfg-field">
-                <label for="cropId">Crop *</label>
+                <label for="cropId"><%= msg.getString("sale.label_crop") %></label>
                 <select name="cropId" id="cropId" required>
-                    <option value="">--- Select Crop ---</option>
+                    <option value=""><%= msg.getString("sale.select_crop") %></option>
                     <%
                         for (ConfigCropEntity cr : cropList) {
                             if (cr == null) continue;
@@ -443,9 +444,9 @@
             </div>
 
             <div class="sfg-field">
-                <label for="buyerId">Buyer *</label>
+                <label for="buyerId"><%= msg.getString("sale.label_buyer") %></label>
                 <select name="buyerId" id="buyerId" required>
-                    <option value="">--- Select Buyer ---</option>
+                    <option value=""><%= msg.getString("sale.select_buyer") %></option>
                     <%
                         for (BuyerEntity b : buyerList) {
                             if (b == null) continue;
@@ -456,47 +457,47 @@
             </div>
 
             <div class="sfg-field">
-                <label for="saleQty">Quantity *</label>
+                <label for="saleQty"><%= msg.getString("sale.label_quantity") %></label>
                 <input type="text" name="quantity" id="saleQty" required
                        pattern="[0-9]+(\.[0-9]*)?" oninput="computeTotal()">
             </div>
 
             <div class="sfg-field">
-                <label for="saleUnit">Unit *</label>
+                <label for="saleUnit"><%= msg.getString("sale.label_unit") %></label>
                 <select name="unit" id="saleUnit" required>
-                    <option value="">-- Select --</option>
-                    <option value="Kg">Kg</option>
-                    <option value="Quintal">Quintal</option>
-                    <option value="Ton">Ton</option>
+                    <option value=""><%= msg.getString("sale.select_unit") %></option>
+                    <option value="Kg"><%= msg.getString("sale.unit_kg") %></option>
+                    <option value="Quintal"><%= msg.getString("sale.unit_quintal") %></option>
+                    <option value="Ton"><%= msg.getString("sale.unit_ton") %></option>
                 </select>
             </div>
 
             <div class="sfg-field">
-                <label for="salePrice">Price / Unit *</label>
+                <label for="salePrice"><%= msg.getString("sale.label_price_per_unit") %></label>
                 <input type="text" name="pricePerUnit" id="salePrice" required
                        pattern="[0-9]+(\.[0-9]*)?" oninput="computeTotal()">
             </div>
 
             <div class="sfg-field">
-                <label for="saleTotalAmt">Total Amount</label>
+                <label for="saleTotalAmt"><%= msg.getString("sale.label_total_amount") %></label>
                 <input type="text" name="totalAmount" id="saleTotalAmt" readonly>
             </div>
 
             <div class="sfg-field">
-                <label for="saleDate">Sale Date *</label>
+                <label for="saleDate"><%= msg.getString("sale.label_sale_date") %></label>
                 <input type="text" name="saleDate" id="saleDate" required placeholder="dd/mm/yyyy">
             </div>
 
             <div class="sfg-field">
-                <label for="saleComment">Comment</label>
+                <label for="saleComment"><%= msg.getString("sale.label_comment") %></label>
                 <input type="text" name="comment" id="saleComment" placeholder="Optional">
             </div>
 
             <div class="sfg-btns">
-                <input type="submit" class="btn-add"    id="btnRecordSale" name="add"  value="Record Sale">
-                <input type="submit" class="btn-update" id="btnUpdateSale" name="edit" value="Update Sale"
+                <input type="submit" class="btn-add"    id="btnRecordSale" name="add"  value="<%= msg.getString("sale.btn_record_sale") %>">
+                <input type="submit" class="btn-update" id="btnUpdateSale" name="edit" value="<%= msg.getString("sale.btn_update_sale") %>"
                        style="display:none">
-                <input type="button" class="btn-cancel" id="btnCancelSale" value="Cancel"
+                <input type="button" class="btn-cancel" id="btnCancelSale" value="<%= msg.getString("btn.cancel") %>"
                        style="display:none" onclick="hideSaleForm()">
             </div>
         </div>
@@ -506,7 +507,7 @@
 <!-- ② Ready to Dispatch bar (compact chips — only when items exist) -->
 <% if (!readyToDispatchList.isEmpty()) { %>
 <div class="dispatch-bar">
-    <span class="dispatch-bar-lbl">&#128666; Ready to Dispatch:</span>
+    <span class="dispatch-bar-lbl">&#128666; <%= msg.getString("sale.ready_to_dispatch_label") %></span>
     <%
         for (AssignCropToSiteEntity rd : readyToDispatchList) {
             if (rd == null) continue;
@@ -535,55 +536,55 @@
 <div class="detail-card">
     <div class="detail-card-hdr">
         <div>
-            <span class="detail-card-title">Sale Detail</span>
+            <span class="detail-card-title"><%= msg.getString("sale.detail_title") %></span>
             <span class="detail-card-sub"><%=siteName%> &bull; <%=cropName%> &bull; <%=saleDateDisp%></span>
         </div>
         <div class="detail-card-actions">
             <button type="button" class="btn-cancel"
-                    onclick="window.location='cropSaleProcess.jsp'">&#8592; All Sales</button>
+                    onclick="window.location='cropSaleProcess.jsp'">&#8592; <%= msg.getString("btn.all_sales") %></button>
             <button type="button" class="btn-update"
-                    onclick="editSale()">&#9998; Edit Sale</button>
+                    onclick="editSale()">&#9998; <%= msg.getString("btn.edit_sale") %></button>
             <button type="button" class="btn-add"
-                    onclick="resetSaleForm(); showSaleForm()">+ New Sale</button>
+                    onclick="resetSaleForm(); showSaleForm()"><%= msg.getString("btn.new_sale") %></button>
         </div>
     </div>
     <div class="detail-card-body">
 
         <!-- Info strip -->
         <div class="info-strip">
-            <span class="info-chip"><span class="lbl">Site</span><%=siteName%></span>
-            <span class="info-chip"><span class="lbl">Crop</span><%=cropName%></span>
-            <span class="info-chip"><span class="lbl">Buyer</span><%=buyerName%>
+            <span class="info-chip"><span class="lbl"><%= msg.getString("sale.info_label_site") %></span><%=siteName%></span>
+            <span class="info-chip"><span class="lbl"><%= msg.getString("sale.info_label_crop") %></span><%=cropName%></span>
+            <span class="info-chip"><span class="lbl"><%= msg.getString("sale.info_label_buyer") %></span><%=buyerName%>
                 <% if (!buyerType.isEmpty()) { %>&nbsp;<em style="font-size:10px;color:var(--text-muted);">[<%=buyerType%>]</em><% } %>
             </span>
-            <span class="info-chip"><span class="lbl">Date</span><%=saleDateDisp%></span>
-            <span class="info-chip"><span class="lbl">Qty</span><%=saleQty%> <%=saleUnit%></span>
-            <span class="info-chip"><span class="lbl">Price/Unit</span><%=salePrice%></span>
+            <span class="info-chip"><span class="lbl"><%= msg.getString("sale.info_label_date") %></span><%=saleDateDisp%></span>
+            <span class="info-chip"><span class="lbl"><%= msg.getString("sale.info_label_qty") %></span><%=saleQty%> <%=saleUnit%></span>
+            <span class="info-chip"><span class="lbl"><%= msg.getString("sale.info_label_price_per_unit") %></span><%=salePrice%></span>
             <% if (saleComment != null && !saleComment.isEmpty()) { %>
-            <span class="info-chip"><span class="lbl">Note</span><%=saleComment%></span>
+            <span class="info-chip"><span class="lbl"><%= msg.getString("sale.info_label_note") %></span><%=saleComment%></span>
             <% } %>
         </div>
 
         <!-- Amount summary -->
         <div class="amt-bar">
             <div class="amt-card">
-                <div class="ac-lbl">Total Sale</div>
+                <div class="ac-lbl"><%= msg.getString("sale.amt_total_sale") %></div>
                 <div class="ac-val"><%=String.format("%.2f", totalSale)%></div>
             </div>
             <div class="amt-card received">
-                <div class="ac-lbl">Received</div>
+                <div class="ac-lbl"><%= msg.getString("sale.amt_received") %></div>
                 <div class="ac-val"><%=String.format("%.2f", totalReceived)%></div>
             </div>
             <div class="amt-card balance">
-                <div class="ac-lbl">Balance</div>
+                <div class="ac-lbl"><%= msg.getString("sale.amt_balance") %></div>
                 <div class="ac-val"><%=String.format("%.2f", balance)%></div>
             </div>
         </div>
 
         <!-- Payment form -->
         <div class="pay-section-hdr">
-            <span>Payments</span>
-            <span class="pay-mode-badge" id="payModeBadge" style="display:none;">Editing Payment</span>
+            <span><%= msg.getString("sale.payments_section_title") %></span>
+            <span class="pay-mode-badge" id="payModeBadge" style="display:none;"><%= msg.getString("sale.editing_payment_badge") %></span>
         </div>
         <div class="pay-form" id="payFormPanel">
             <form method="post">
@@ -591,39 +592,39 @@
                 <input type="hidden" name="salePaymentId" id="salePaymentId">
                 <div class="pay-row">
                     <div class="pay-field">
-                        <label>Mode *</label>
+                        <label><%= msg.getString("sale.pay_label_mode") %></label>
                         <select name="paymentMode" id="paymentMode" required style="width:110px;">
-                            <option value="">Select</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Check">Check</option>
-                            <option value="Transfer">Transfer</option>
-                            <option value="Other">Other</option>
+                            <option value=""><%= msg.getString("sale.pay_select_mode") %></option>
+                            <option value="Cash"><%= msg.getString("sale.pay_mode_cash") %></option>
+                            <option value="Check"><%= msg.getString("sale.pay_mode_check") %></option>
+                            <option value="Transfer"><%= msg.getString("sale.pay_mode_transfer") %></option>
+                            <option value="Other"><%= msg.getString("sale.pay_mode_other") %></option>
                         </select>
                     </div>
                     <div class="pay-field">
-                        <label>Amount *</label>
+                        <label><%= msg.getString("sale.pay_label_amount") %></label>
                         <input type="text" name="amountReceived" id="amountReceived" required
                                pattern="[0-9]+(\.[0-9]+)?" style="width:90px;">
                     </div>
                     <div class="pay-field">
-                        <label>Date *</label>
+                        <label><%= msg.getString("sale.pay_label_date") %></label>
                         <input type="text" name="paymentDate" id="paymentDate" required
                                placeholder="dd/mm/yyyy" style="width:105px;">
                     </div>
                     <div class="pay-field">
-                        <label>Reference No</label>
+                        <label><%= msg.getString("sale.pay_label_reference") %></label>
                         <input type="text" name="referenceNo" id="referenceNo" style="width:110px;">
                     </div>
                     <div class="pay-field">
-                        <label>Comment</label>
+                        <label><%= msg.getString("sale.label_comment") %></label>
                         <input type="text" name="comment" id="payComment" placeholder="Optional" style="width:130px;">
                     </div>
                     <div class="pay-btns">
-                        <input type="submit" class="btn-add"    id="sbtAddPayment"    name="sbtAddPayment"    value="Add"
+                        <input type="submit" class="btn-add"    id="sbtAddPayment"    name="sbtAddPayment"    value="<%= msg.getString("sale.btn_add_payment") %>"
                                onclick="this.form.action='../../SalePaymentController'">
-                        <input type="submit" class="btn-update" id="sbtUpdatePayment" name="sbtUpdatePayment" value="Update" hidden
+                        <input type="submit" class="btn-update" id="sbtUpdatePayment" name="sbtUpdatePayment" value="<%= msg.getString("sale.btn_update_payment") %>" hidden
                                onclick="this.form.action='../../SalePaymentController'">
-                        <input type="button" class="btn-cancel" value="Reset" onclick="resetPayForm()">
+                        <input type="button" class="btn-cancel" value="<%= msg.getString("sale.btn_reset") %>" onclick="resetPayForm()">
                     </div>
                 </div>
             </form>
@@ -634,13 +635,13 @@
         <table border="1" cellspacing="0" class="tbl-data" width="100%">
             <thead>
                 <tr>
-                    <th width="4%">#</th>
-                    <th>Mode</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Reference</th>
-                    <th>Comment</th>
-                    <th width="12%">Action</th>
+                    <th width="4%"><%= msg.getString("tbl.col_number") %></th>
+                    <th><%= msg.getString("sale.pay_history_col_mode") %></th>
+                    <th><%= msg.getString("tbl.col_date") %></th>
+                    <th><%= msg.getString("sale.pay_history_col_amount") %></th>
+                    <th><%= msg.getString("sale.pay_history_col_reference") %></th>
+                    <th><%= msg.getString("tbl.col_comment") %></th>
+                    <th width="12%"><%= msg.getString("tbl.col_actions") %></th>
                 </tr>
             </thead>
             <tbody>
@@ -661,12 +662,12 @@
                     <td><%=sp.getComment()     != null ? sp.getComment()     : ""%></td>
                     <td style="text-align:center; white-space:nowrap;">
                         <button type="button" class="btn-row-edit"
-                            onclick="editPayment(<%=sp.getSalePaymentId()%>)">Edit</button>
+                            onclick="editPayment(<%=sp.getSalePaymentId()%>)"><%= msg.getString("btn.edit") %></button>
                         <form method="post" action="../../SalePaymentController" style="display:inline;"
-                              onsubmit="return confirm('Delete this payment record?');">
+                              onsubmit="return confirm('<%= msg.getString("sale.confirm_delete_payment") %>');">
                             <input type="hidden" name="salePaymentId" value="<%=sp.getSalePaymentId()%>">
                             <input type="hidden" name="saleId"        value="<%=saleId%>">
-                            <input type="submit" class="btn-row-del"  name="sbtDeletePayment" value="Del">
+                            <input type="submit" class="btn-row-del"  name="sbtDeletePayment" value="<%= msg.getString("btn.delete") %>">
                         </form>
                     </td>
                 </tr>
@@ -674,7 +675,7 @@
             </tbody>
         </table>
         <% } else { %>
-        <p style="font-size:12px; color:var(--text-muted); margin:4px 0;">No payments recorded yet.</p>
+        <p style="font-size:12px; color:var(--text-muted); margin:4px 0;"><%= msg.getString("sale.no_payments") %></p>
         <% } %>
 
     </div>
@@ -684,19 +685,19 @@
 <!-- ④ Sales List -->
 <div>
     <div class="list-hdr">
-        <span class="list-hdr-title">All Sales</span>
-        <button type="button" class="btn-add" onclick="resetSaleForm(); showSaleForm()">+ New Sale</button>
+        <span class="list-hdr-title"><%= msg.getString("sale.all_sales_title") %></span>
+        <button type="button" class="btn-add" onclick="resetSaleForm(); showSaleForm()"><%= msg.getString("btn.new_sale") %></button>
     </div>
 
     <div class="filter-bar">
         <div class="filter-field">
-            <label>Date</label>
+            <label><%= msg.getString("sale.filter_label_date") %></label>
             <input type="text" id="txtDate" placeholder="dd/mm/yyyy" onchange="loadSaleTable()">
         </div>
         <div class="filter-field">
-            <label>Site</label>
+            <label><%= msg.getString("sale.filter_label_site") %></label>
             <select id="selSiteId" onchange="loadSaleTable()">
-                <option value="-1">All Sites</option>
+                <option value="-1"><%= msg.getString("sale.filter_all_sites") %></option>
                 <%
                     for (ConfigSiteInformationEntity si : siteInfoList) {
                         if (si == null) continue;
@@ -706,9 +707,9 @@
             </select>
         </div>
         <div class="filter-field">
-            <label>Crop</label>
+            <label><%= msg.getString("sale.filter_label_crop") %></label>
             <select id="selCropId" onchange="loadSaleTable()">
-                <option value="-1">All Crops</option>
+                <option value="-1"><%= msg.getString("sale.filter_all_crops") %></option>
                 <%
                     for (ConfigCropEntity cr : cropList) {
                         if (cr == null) continue;
@@ -718,9 +719,9 @@
             </select>
         </div>
         <div class="filter-field">
-            <label>Buyer</label>
+            <label><%= msg.getString("sale.filter_label_buyer") %></label>
             <select id="selBuyerId" onchange="loadSaleTable()">
-                <option value="-1">All Buyers</option>
+                <option value="-1"><%= msg.getString("sale.filter_all_buyers") %></option>
                 <%
                     for (BuyerEntity b : buyerList) {
                         if (b == null) continue;
@@ -730,7 +731,7 @@
             </select>
         </div>
         <div style="margin-left:auto; display:flex; align-items:flex-end;">
-            <button type="button" class="btn-cancel" onclick="clearAllFilters()">Clear Filters</button>
+            <button type="button" class="btn-cancel" onclick="clearAllFilters()"><%= msg.getString("btn.clear_filters") %></button>
         </div>
     </div>
 

@@ -1,15 +1,16 @@
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigSiteInformationEntity"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script src="../../js/jquery-1.9.1.js"></script>
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
-<title>Site Information</title>
+<title><%= msg.getString("site.page_title") %></title>
 <style>
 	#formPanel {
 		background:#f0f6ff; border:1px solid #b0c8f0;
@@ -118,7 +119,7 @@
 	}
 </script>
 <body>
-<fieldset><legend>Site Information</legend>
+<fieldset><legend><%= msg.getString("site.fieldset_title") %></legend>
 
 	<form method="post" id="frmSite" action="../../ConfigSiteInformationController">
 		<input type="hidden" name="siteInfoId" id="siteInfoId">
@@ -126,22 +127,22 @@
 			<div id="editBanner"></div>
 			<table>
 				<tr>
-					<td><label>Site Name:</label></td>
+					<td><label><%= msg.getString("site.label_site_name") %>:</label></td>
 					<td><input type="text" name="siteName" id="siteName" required placeholder="Site name"></td>
 				</tr>
 				<tr>
-					<td><label>Site Area:</label></td>
+					<td><label><%= msg.getString("site.label_site_area") %>:</label></td>
 					<td><input type="text" name="siteArea" id="siteArea" required placeholder="in acres" pattern="[0-9]+|[0-9]+\.[0-9]+"></td>
 				</tr>
 				<tr>
-					<td><label>Site Location:</label></td>
+					<td><label><%= msg.getString("site.label_site_location") %>:</label></td>
 					<td><input type="text" name="siteLocation" id="siteLocation" required placeholder="Location"></td>
 				</tr>
 				<tr>
 					<td colspan="2" style="padding-top:6px;">
-						<input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="Add">
-						<input type="submit" class="btn-update" id="btnUpdate" name="edit" value="Update" style="display:none">
-						<input type="button" class="btn-cancel" id="btnCancel"              value="Cancel" style="display:none" onclick="resetForm()">
+						<input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="<%= msg.getString("btn.add") %>">
+						<input type="submit" class="btn-update" id="btnUpdate" name="edit" value="<%= msg.getString("btn.update") %>" style="display:none">
+						<input type="button" class="btn-cancel" id="btnCancel"              value="<%= msg.getString("btn.cancel") %>" style="display:none" onclick="resetForm()">
 					</td>
 				</tr>
 			</table>
@@ -150,9 +151,9 @@
 
 	<div id="bulkBar">
 		<span id="selCount">0</span> record(s) selected &nbsp;
-		<button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+		<button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %> Selected</button>
 		&nbsp;
-		<button type="button" class="btn-cancel" onclick="clearSelection()">Clear Selection</button>
+		<button type="button" class="btn-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear") %> Selection</button>
 	</div>
 
 	<form method="post" id="frmBulkDelete" action="../../ConfigSiteInformationController"></form>
@@ -160,12 +161,12 @@
 	<table border="1" width="100%" class="tbl-data" cellspacing="0">
 		<thead>
 			<tr>
-				<th width="4%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)" title="Select All"></th>
+				<th width="4%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)" title="<%= msg.getString("tbl.col_select_all") %>"></th>
 				<th width="5%">Id</th>
-				<th>Site Name</th>
-				<th width="12%">Area (acres)</th>
-				<th>Location</th>
-				<th width="8%">Actions</th>
+				<th><%= msg.getString("site.tbl_col_site_name") %></th>
+				<th width="12%"><%= msg.getString("site.tbl_col_area") %></th>
+				<th><%= msg.getString("site.tbl_col_location") %></th>
+				<th width="8%"><%= msg.getString("tbl.col_actions") %></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -184,7 +185,7 @@
 				<td><%=s.getSiteLocation() != null ? s.getSiteLocation() : ""%></td>
 				<td style="text-align:center;">
 					<button type="button" class="btn-row-edit"
-						onclick="editRow(<%=s.getSiteInfoId()%>,'<%=eName%>','<%=s.getSiteArea()%>','<%=eLocation%>')">Edit</button>
+						onclick="editRow(<%=s.getSiteInfoId()%>,'<%=eName%>','<%=s.getSiteArea()%>','<%=eLocation%>')"><%= msg.getString("btn.edit") %></button>
 				</td>
 			</tr>
 			<%} %>

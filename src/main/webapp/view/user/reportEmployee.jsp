@@ -9,6 +9,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +18,7 @@
 <link rel="stylesheet" href="../../css/jquery-ui.css"/>
 <script src="../../js/jquery-1.9.1.js"></script>
 <script src="../../js/datatables.min.js"></script>
-<title>Employee Payment Report</title>
+<title><%= msg.getString("report.employee.page_title") %></title>
 </head>
 <style>
     .tbl-export-btns { display:flex; gap:6px; }
@@ -99,14 +100,14 @@ function exportCSV(dt, filename) {
 %>
 
 <fieldset>
-<legend>Employee Task &amp; Payment Report</legend>
+<legend><%= msg.getString("report.employee.fieldset_title") %></legend>
 
 <!-- Employee filter -->
 <form method="get" action="reportEmployee.jsp">
     <div class="rpt-filter-bar">
-        <label>Employee:</label>
+        <label><%= msg.getString("report.employee.filter_label_employee") %></label>
         <select name="empId" onchange="this.form.submit()">
-            <option value="">-- All Employees --</option>
+            <option value=""><%= msg.getString("report.employee.filter_all_employees") %></option>
             <% for (EmployeeInfoEntity emp : employees) {
                 String fn = (emp.getFirstName() != null ? emp.getFirstName() + " " : "")
                           + (emp.getMiddleName() != null ? emp.getMiddleName() + " " : "")
@@ -167,37 +168,37 @@ if (selectedEmpId > 0) {
 <!-- Summary cards -->
 <div class="report-summary-bar">
     <div class="rpt-card">
-        <div class="rpt-label">Total Assigned</div>
+        <div class="rpt-label"><%= msg.getString("report.employee.card_total_assigned") %></div>
         <div class="rpt-val">Rs <%=String.format("%.2f", ttlAssigned)%></div>
     </div>
     <div class="rpt-card">
-        <div class="rpt-label">Advance Paid</div>
+        <div class="rpt-label"><%= msg.getString("report.employee.card_advance_paid") %></div>
         <div class="rpt-val" style="color:var(--text-muted);">Rs <%=String.format("%.2f", ttlAdv)%></div>
     </div>
     <div class="rpt-card">
-        <div class="rpt-label">Salary Paid</div>
+        <div class="rpt-label"><%= msg.getString("report.employee.card_salary_paid") %></div>
         <div class="rpt-val">Rs <%=String.format("%.2f", ttlSalary)%></div>
     </div>
     <div class="rpt-card">
-        <div class="rpt-label">Total Paid</div>
+        <div class="rpt-label"><%= msg.getString("report.employee.card_total_paid") %></div>
         <div class="rpt-val">Rs <%=String.format("%.2f", ttlPaid)%></div>
     </div>
     <div class="rpt-card <%=ttlBalance > 0 ? "rpt-danger" : ""%>">
-        <div class="rpt-label">Balance Due</div>
+        <div class="rpt-label"><%= msg.getString("report.employee.card_balance_due") %></div>
         <div class="rpt-val">Rs <%=String.format("%.2f", ttlBalance)%></div>
     </div>
     <% if (ttlExcess > 0) { %>
     <div class="rpt-card rpt-warn">
-        <div class="rpt-label">Excess Paid</div>
+        <div class="rpt-label"><%= msg.getString("report.employee.card_excess_paid") %></div>
         <div class="rpt-val">Rs <%=String.format("%.2f", ttlExcess)%></div>
     </div>
     <% } %>
     <div class="rpt-card rpt-ok">
-        <div class="rpt-label">Tasks Done</div>
+        <div class="rpt-label"><%= msg.getString("report.employee.card_tasks_done") %></div>
         <div class="rpt-val"><%=doneCount%></div>
     </div>
     <div class="rpt-card <%=pendingCount > 0 ? "rpt-warn" : ""%>">
-        <div class="rpt-label">Tasks Pending</div>
+        <div class="rpt-label"><%= msg.getString("report.employee.card_tasks_pending") %></div>
         <div class="rpt-val"><%=pendingCount%></div>
     </div>
 </div>
@@ -206,18 +207,18 @@ if (selectedEmpId > 0) {
 <table id="empDetailTable" border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
-        <th>Sr.</th>
-        <th>Date</th>
-        <th>Site</th>
-        <th>Crop</th>
-        <th>Work Type</th>
-        <th>Work Status</th>
-        <th>Tasks Assigned</th>
-        <th>Amount (Rs)</th>
-        <th>Adv Paid (Rs)</th>
-        <th>Salary Paid (Rs)</th>
-        <th>Balance (Rs)</th>
-        <th>Excess (Rs)</th>
+        <th><%= msg.getString("tbl.col_number") %></th>
+        <th><%= msg.getString("tbl.col_date") %></th>
+        <th><%= msg.getString("tbl.col_site") %></th>
+        <th><%= msg.getString("tbl.col_crop") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_work_type") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_work_status") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_tasks_assigned") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_amount_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_adv_paid_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_salary_paid_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_balance_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_excess_rs") %></th>
     </tr>
     </thead>
     <tbody>
@@ -282,24 +283,24 @@ if (selectedEmpId > 0) {
 
 <!-- ===== ALL EMPLOYEES SUMMARY TABLE ===== -->
 <div class="section-hdr">
-    <h3>All Employees Summary <small>(click employee name for details)</small></h3>
+    <h3><%= msg.getString("report.employee.all_summary_title") %> <small>(click employee name for details)</small></h3>
     <div class="tbl-export-btns">
-        <button class="btn-tbl-csv" onclick="exportCSV(summaryDt,'EmployeePayments_Summary')">&#8595; Download CSV</button>
+        <button class="btn-tbl-csv" onclick="exportCSV(summaryDt,'EmployeePayments_Summary')">&#8595; <%= msg.getString("btn.download_csv") %></button>
     </div>
 </div>
 <table id="empSummaryTable" border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
-        <th>Sr.</th>
-        <th>Employee</th>
-        <th>Total Assigned (Rs)</th>
-        <th>Advance Paid (Rs)</th>
-        <th>Salary Paid (Rs)</th>
-        <th>Total Paid (Rs)</th>
-        <th>Balance (Rs)</th>
-        <th>Excess Paid (Rs)</th>
-        <th>Done</th>
-        <th>Pending</th>
+        <th><%= msg.getString("tbl.col_number") %></th>
+        <th><%= msg.getString("tbl.col_name") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_total_assigned_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_adv_paid_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_salary_paid_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_total_paid_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_balance_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_excess_paid_rs") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_done") %></th>
+        <th><%= msg.getString("report.employee.tbl_col_pending") %></th>
     </tr>
     </thead>
     <tbody>
@@ -344,7 +345,7 @@ if (selectedEmpId > 0) {
     </tbody>
     <tfoot>
     <tr style="font-weight:bold;">
-        <td colspan="2" style="text-align:right;">Grand Total</td>
+        <td colspan="2" style="text-align:right;"><%= msg.getString("report.employee.grand_total") %></td>
         <td><%=String.format("%.2f", gAssigned)%></td>
         <td><%=String.format("%.2f", gAdv)%></td>
         <td><%=String.format("%.2f", gSalary)%></td>

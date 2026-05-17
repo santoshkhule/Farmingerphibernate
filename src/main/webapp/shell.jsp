@@ -10,6 +10,7 @@
         return;
     }
 %>
+<%@ include file="lang.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -74,59 +75,59 @@
 		<div id="sidebar-brand">
 			<span class="brand-icon">&#127807;</span>
 			<div class="brand-text">
-				<span class="brand-name">Santosh Farming</span>
-				<span class="brand-sub">Farm ERP</span>
+				<span class="brand-name"><%= msg.getString("nav.brand_name") %></span>
+				<span class="brand-sub"><%= msg.getString("nav.brand_sub") %></span>
 			</div>
 		</div>
 
 		<nav id="sideNav">
 
 			<div class="nav-group">
-				<a class="nav-link nav-link-dash" href="view/user/dashboard.jsp" target="contentFrame">&#128202; Dashboard</a>
+				<a class="nav-link nav-link-dash" href="view/user/dashboard.jsp" target="contentFrame">&#128202; <%= msg.getString("nav.dashboard") %></a>
 			</div>
 
 			<div class="nav-group">
-				<div class="nav-group-title">&#9881; Master Data</div>
-				<a class="nav-link" href="view/user/configuration.jsp" target="contentFrame">Configuration</a>
-				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame">Register User</a>
+				<div class="nav-group-title">&#9881; <%= msg.getString("nav.group_master_data") %></div>
+				<a class="nav-link" href="view/user/configuration.jsp" target="contentFrame"><%= msg.getString("nav.master_configuration") %></a>
+				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame"><%= msg.getString("nav.master_register_user") %></a>
 			</div>
 
 			<div class="nav-group">
-				<div class="nav-group-title">&#128100; Employee</div>
-				<a class="nav-link" href="view/user/employeeInfo.jsp" target="contentFrame">Add Employee</a>
-				<a class="nav-link" href="view/user/employeeViewAll.jsp" target="contentFrame">View All Employee</a>
+				<div class="nav-group-title">&#128100; <%= msg.getString("nav.group_employee") %></div>
+				<a class="nav-link" href="view/user/employeeInfo.jsp" target="contentFrame"><%= msg.getString("nav.employee_add") %></a>
+				<a class="nav-link" href="view/user/employeeViewAll.jsp" target="contentFrame"><%= msg.getString("nav.employee_view_all") %></a>
 			</div>
 
 			<div class="nav-group">
-				<div class="nav-group-title">&#128203; Farm Setup</div>
-				<a class="nav-link" href="view/user/assignCropToSite.jsp" target="contentFrame">Site Resource Allocation</a>
-				<a class="nav-link" href="view/user/01assignTaskToEmployeeViewAll.jsp" target="contentFrame">View Assign Tasks</a>
+				<div class="nav-group-title">&#128203; <%= msg.getString("nav.group_farm_setup") %></div>
+				<a class="nav-link" href="view/user/assignCropToSite.jsp" target="contentFrame"><%= msg.getString("nav.farm_site_resource_allocation") %></a>
+				<a class="nav-link" href="view/user/01assignTaskToEmployeeViewAll.jsp" target="contentFrame"><%= msg.getString("nav.farm_view_assign_tasks") %></a>
 			</div>
 
 			<div class="nav-group">
-				<div class="nav-group-title">&#128176; Account</div>
-				<a class="nav-link" href="view/user/02employeePaymentProcess.jsp" target="contentFrame">Process Payment</a>
+				<div class="nav-group-title">&#128176; <%= msg.getString("nav.group_account") %></div>
+				<a class="nav-link" href="view/user/02employeePaymentProcess.jsp" target="contentFrame"><%= msg.getString("nav.account_process_payment") %></a>
 			</div>
 
 			<div class="nav-group">
-				<div class="nav-group-title">&#127978; Vendor</div>
-				<a class="nav-link" href="view/user/addVendor.jsp" target="contentFrame">Add Vendor</a>
-				<a class="nav-link" href="view/user/assignVendorToProduct.jsp" target="contentFrame">Assign Products</a>
-				<a class="nav-link" href="view/user/assignVendorToProductView.jsp" target="contentFrame">View Products</a>
+				<div class="nav-group-title">&#127978; <%= msg.getString("nav.group_vendor") %></div>
+				<a class="nav-link" href="view/user/addVendor.jsp" target="contentFrame"><%= msg.getString("nav.vendor_add") %></a>
+				<a class="nav-link" href="view/user/assignVendorToProduct.jsp" target="contentFrame"><%= msg.getString("nav.vendor_assign_products") %></a>
+				<a class="nav-link" href="view/user/assignVendorToProductView.jsp" target="contentFrame"><%= msg.getString("nav.vendor_view_products") %></a>
 			</div>
 
 			<div class="nav-group">
-				<div class="nav-group-title">&#128176; Sales</div>
-				<a class="nav-link" href="view/user/addBuyer.jsp" target="contentFrame">Manage Buyers</a>
-				<a class="nav-link" href="view/user/cropSaleProcess.jsp" target="contentFrame">Crop Sales</a>
+				<div class="nav-group-title">&#128176; <%= msg.getString("nav.group_sales") %></div>
+				<a class="nav-link" href="view/user/addBuyer.jsp" target="contentFrame"><%= msg.getString("nav.sales_manage_buyers") %></a>
+				<a class="nav-link" href="view/user/cropSaleProcess.jsp" target="contentFrame"><%= msg.getString("nav.sales_crop_sales") %></a>
 			</div>
 
 			<div class="nav-group">
-				<div class="nav-group-title">&#128202; Reports</div>
-				<a class="nav-link" href="view/user/reportSite.jsp" target="contentFrame">Site Expenditure</a>
-				<a class="nav-link" href="view/user/reportEmployee.jsp" target="contentFrame">Employee Payments</a>
-				<a class="nav-link" href="view/user/reportIncome.jsp" target="contentFrame">Income Report</a>
-				<a class="nav-link" href="view/user/reportProfitLoss.jsp" target="contentFrame">Profit &amp; Loss</a>
+				<div class="nav-group-title">&#128202; <%= msg.getString("nav.group_reports") %></div>
+				<a class="nav-link" href="view/user/reportSite.jsp" target="contentFrame"><%= msg.getString("nav.report_site_expenditure") %></a>
+				<a class="nav-link" href="view/user/reportEmployee.jsp" target="contentFrame"><%= msg.getString("nav.report_employee_payments") %></a>
+				<a class="nav-link" href="view/user/reportIncome.jsp" target="contentFrame"><%= msg.getString("nav.report_income") %></a>
+				<a class="nav-link" href="view/user/reportProfitLoss.jsp" target="contentFrame"><%= msg.getString("nav.report_profit_loss") %></a>
 			</div>
 
 		</nav>
@@ -144,7 +145,7 @@
 				<a class="lang-btn <%="mr".equals(_activeLang) ? "active" : ""%>"
 				   href="LanguageController?lang=mr">मराठी</a>
 			</div>
-			<a class="nav-logout" href="logout.jsp" target="_top">&#128682; Logout</a>
+			<a class="nav-logout" href="logout.jsp" target="_top">&#128682; <%= msg.getString("nav.logout") %></a>
 		</div>
 
 	</aside>

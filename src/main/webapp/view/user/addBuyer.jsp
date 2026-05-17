@@ -2,16 +2,17 @@
 <%@page import="com.san.farm.adminuser.entity.BuyerEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     String msgParam = request.getParameter("msg");
     String errParam = request.getParameter("err");
     String bannerMsg   = null;
     String bannerClass = null;
-    if ("saved".equals(msgParam))        { bannerMsg = "Buyer saved successfully.";   bannerClass = "banner-ok"; }
-    else if ("updated".equals(msgParam)) { bannerMsg = "Buyer updated successfully."; bannerClass = "banner-ok"; }
-    else if ("deleted".equals(msgParam)) { bannerMsg = "Buyer deleted successfully."; bannerClass = "banner-ok"; }
-    else if ("failed".equals(errParam))  { bannerMsg = "Operation failed. Please try again."; bannerClass = "banner-err"; }
+    if ("saved".equals(msgParam))        { bannerMsg = msg.getString("buyer.banner_saved");   bannerClass = "banner-ok"; }
+    else if ("updated".equals(msgParam)) { bannerMsg = msg.getString("buyer.banner_updated"); bannerClass = "banner-ok"; }
+    else if ("deleted".equals(msgParam)) { bannerMsg = msg.getString("buyer.banner_deleted"); bannerClass = "banner-ok"; }
+    else if ("failed".equals(errParam))  { bannerMsg = msg.getString("buyer.banner_failed");  bannerClass = "banner-err"; }
 
     List<BuyerEntity> buyerList = new ArrayList<BuyerEntity>();
     try {
@@ -21,9 +22,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Manage Buyers</title>
+<title><%= msg.getString("buyer.page_title") %></title>
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/datatables.min.css">
 <script src="../../js/jquery-1.9.1.js"></script>
@@ -152,61 +153,61 @@
 <div class="<%=bannerClass%>"><%=bannerMsg%></div>
 <% } %>
 
-<fieldset><legend>Manage Buyers</legend>
+<fieldset><legend><%= msg.getString("buyer.fieldset_title") %></legend>
 
     <!-- ── Add / Edit form ── -->
     <div class="form-card" id="formCard">
-        <div class="form-card-title" id="formTitle">Add New Buyer</div>
+        <div class="form-card-title" id="formTitle"><%= msg.getString("buyer.form_title_add") %></div>
         <div class="edit-notice" id="editNotice"></div>
         <form method="post" action="../../BuyerController" id="frmBuyer">
             <input type="hidden" name="buyerId" id="buyerId">
             <div class="field-grid">
                 <div class="field-group">
-                    <label for="buyerName">Buyer Name *</label>
+                    <label for="buyerName"><%= msg.getString("buyer.label_buyer_name") %></label>
                     <input type="text" name="buyerName" id="buyerName" required maxlength="100">
                 </div>
                 <div class="field-group">
-                    <label for="buyerType">Buyer Type *</label>
+                    <label for="buyerType"><%= msg.getString("buyer.label_buyer_type") %></label>
                     <select name="buyerType" id="buyerType" required onchange="toggleB2BFields(this.value)">
-                        <option value="">--- Select ---</option>
-                        <option value="Local">Local</option>
-                        <option value="B2B">B2B</option>
+                        <option value=""><%= msg.getString("buyer.select_type") %></option>
+                        <option value="Local"><%= msg.getString("buyer.type_local") %></option>
+                        <option value="B2B"><%= msg.getString("buyer.type_b2b") %></option>
                     </select>
                 </div>
 
                 <!-- B2B-only fields (hidden unless B2B selected) -->
                 <div class="b2b-fields" id="b2bFields">
                     <div class="field-group">
-                        <label for="companyName">Company Name</label>
+                        <label for="companyName"><%= msg.getString("buyer.label_company_name") %></label>
                         <input type="text" name="companyName" id="companyName" maxlength="150">
                     </div>
                     <div class="field-group">
-                        <label for="gstNumber">GST Number</label>
+                        <label for="gstNumber"><%= msg.getString("buyer.label_gst_number") %></label>
                         <input type="text" name="gstNumber" id="gstNumber" maxlength="20" placeholder="e.g. 27AAPFU0939F1ZV">
                     </div>
                 </div>
 
                 <div class="field-group">
-                    <label for="contactNo">Contact No</label>
+                    <label for="contactNo"><%= msg.getString("buyer.label_contact_no") %></label>
                     <input type="text" name="contactNo" id="contactNo" maxlength="20">
                 </div>
                 <div class="field-group">
-                    <label for="email">Email</label>
+                    <label for="email"><%= msg.getString("buyer.label_email") %></label>
                     <input type="text" name="email" id="email" maxlength="100">
                 </div>
                 <div class="field-group">
-                    <label for="address">Address</label>
+                    <label for="address"><%= msg.getString("buyer.label_address") %></label>
                     <input type="text" name="address" id="address" maxlength="255">
                 </div>
                 <div class="field-group">
-                    <label for="comment">Comment</label>
+                    <label for="comment"><%= msg.getString("buyer.label_comment") %></label>
                     <input type="text" name="comment" id="comment" maxlength="255" placeholder="Optional">
                 </div>
 
                 <div class="form-btns">
-                    <input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="Add Buyer">
-                    <input type="submit" class="btn-update" id="btnUpdate" name="edit" value="Update" style="display:none">
-                    <input type="button" class="btn-cancel" id="btnCancel" value="Cancel" style="display:none" onclick="resetForm()">
+                    <input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="<%= msg.getString("buyer.btn_add") %>">
+                    <input type="submit" class="btn-update" id="btnUpdate" name="edit" value="<%= msg.getString("btn.update") %>" style="display:none">
+                    <input type="button" class="btn-cancel" id="btnCancel" value="<%= msg.getString("btn.cancel") %>" style="display:none" onclick="resetForm()">
                 </div>
             </div>
         </form>
@@ -221,16 +222,16 @@
     <table id="buyerTable" border="1" width="100%" class="tbl-data" cellspacing="0">
         <thead>
             <tr>
-                <th width="4%">#</th>
-                <th>Buyer Name</th>
-                <th width="8%">Type</th>
-                <th>Company</th>
-                <th width="13%">GST No.</th>
-                <th width="11%">Contact</th>
-                <th>Address</th>
-                <th>Email</th>
-                <th>Comment</th>
-                <th width="11%">Actions</th>
+                <th width="4%"><%= msg.getString("tbl.col_number") %></th>
+                <th><%= msg.getString("buyer.tbl_col_buyer_name") %></th>
+                <th width="8%"><%= msg.getString("buyer.tbl_col_type") %></th>
+                <th><%= msg.getString("buyer.tbl_col_company") %></th>
+                <th width="13%"><%= msg.getString("buyer.tbl_col_gst_no") %></th>
+                <th width="11%"><%= msg.getString("buyer.tbl_col_contact") %></th>
+                <th><%= msg.getString("tbl.col_address") %></th>
+                <th><%= msg.getString("buyer.label_email") %></th>
+                <th><%= msg.getString("tbl.col_comment") %></th>
+                <th width="11%"><%= msg.getString("tbl.col_actions") %></th>
             </tr>
         </thead>
         <tbody>
@@ -263,9 +264,9 @@
                 <td class="cell-trunc" title="<%=safeComment%>"><%=b.getComment()  != null ? b.getComment()  : ""%></td>
                 <td style="text-align:center; white-space:nowrap;">
                     <button type="button" class="btn-row-edit"
-                        onclick="editRow(<%=b.getBuyerId()%>,'<%=safeName%>','<%=safeType%>','<%=safeCompany%>','<%=safeGst%>','<%=safeContact%>','<%=safeAddr%>','<%=safeEmail%>','<%=safeComment%>')">Edit</button>
+                        onclick="editRow(<%=b.getBuyerId()%>,'<%=safeName%>','<%=safeType%>','<%=safeCompany%>','<%=safeGst%>','<%=safeContact%>','<%=safeAddr%>','<%=safeEmail%>','<%=safeComment%>')"><%= msg.getString("btn.edit") %></button>
                     <button type="button" class="btn-row-del"
-                        onclick="confirmDelete(<%=b.getBuyerId()%>,'<%=safeName%>')">Delete</button>
+                        onclick="confirmDelete(<%=b.getBuyerId()%>,'<%=safeName%>')"><%= msg.getString("btn.delete") %></button>
                 </td>
             </tr>
         <%  } %>

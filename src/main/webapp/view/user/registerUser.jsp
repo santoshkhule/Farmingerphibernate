@@ -4,7 +4,8 @@
 <%@page import="com.san.farm.adminuser.dao.UserTypeService"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%!
     /* Returns inline-style background/border/color for a given role name. */
     private String[] roleColors(String typeName) {
@@ -24,11 +25,11 @@
     String errParam = request.getParameter("err");
     String bannerMsg   = null;
     String bannerClass = null;
-    if ("registered".equals(msgParam))         { bannerMsg = "User registered successfully.";                                       bannerClass = "banner-ok"; }
-    else if ("updated".equals(msgParam))        { bannerMsg = "User updated successfully.";                                          bannerClass = "banner-ok"; }
-    else if ("deleted".equals(msgParam))        { bannerMsg = "User deleted successfully.";                                          bannerClass = "banner-ok"; }
-    else if ("username_exists".equals(errParam)){ bannerMsg = "Username already exists. Please choose a different username.";        bannerClass = "banner-err"; }
-    else if ("admin_protected".equals(errParam)){ bannerMsg = "Admin user cannot be deleted.";                                      bannerClass = "banner-err"; }
+    if ("registered".equals(msgParam))         { bannerMsg = msg.getString("user_mgmt.banner_registered");      bannerClass = "banner-ok"; }
+    else if ("updated".equals(msgParam))        { bannerMsg = msg.getString("user_mgmt.banner_updated");         bannerClass = "banner-ok"; }
+    else if ("deleted".equals(msgParam))        { bannerMsg = msg.getString("user_mgmt.banner_deleted");         bannerClass = "banner-ok"; }
+    else if ("username_exists".equals(errParam)){ bannerMsg = msg.getString("user_mgmt.error_username_exists");  bannerClass = "banner-err"; }
+    else if ("admin_protected".equals(errParam)){ bannerMsg = msg.getString("user_mgmt.error_admin_protected");  bannerClass = "banner-err"; }
 
     List<UserTypeEntity> utList = new ArrayList<UserTypeEntity>();
     try { utList = new UserTypeService().fetch(); } catch (Exception ex) { ex.printStackTrace(); }
@@ -39,9 +40,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Register User</title>
+<title><%= msg.getString("user_mgmt.page_title") %></title>
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
 <script src="../../js/jquery-1.9.1.js"></script>
 <style>
@@ -274,11 +275,11 @@
 <% } %>
 
 <fieldset>
-<legend>Register User</legend>
+<legend><%= msg.getString("user_mgmt.page_title") %></legend>
 
 <!-- ── Add / Edit form ── -->
 <div class="form-card" id="formCard">
-    <div class="form-card-title" id="formCardTitle">Add New User</div>
+    <div class="form-card-title" id="formCardTitle"><%= msg.getString("user_mgmt.form_title_add") %></div>
     <div class="edit-notice" id="editNotice"></div>
 
     <form method="post" id="frmRegUser" onsubmit="return validateForm()">
@@ -287,7 +288,7 @@
 
             <!-- Username -->
             <div class="field-group">
-                <label for="username">Username *</label>
+                <label for="username"><%= msg.getString("user_mgmt.label_username") %></label>
                 <input type="text" name="username" id="username" required maxlength="100">
             </div>
 
@@ -296,7 +297,7 @@
 
             <!-- Roles: full-width checkbox pills -->
             <div class="roles-section field-full">
-                <span class="roles-label">Roles *</span>
+                <span class="roles-label"><%= msg.getString("user_mgmt.label_roles") %></span>
                 <div class="roles-row">
                 <%
                     for (UserTypeEntity ute : utList) {
@@ -322,28 +323,28 @@
 
             <!-- Admin notice (shown only when editing admin) -->
             <div id="adminNotice" class="field-full">
-                Admin account: username and roles are locked &mdash; only password can be changed.
+                <%= msg.getString("user_mgmt.admin_notice") %>
             </div>
 
             <!-- New Password -->
             <div class="field-group">
-                <label for="passwrd">New Password *</label>
+                <label for="passwrd"><%= msg.getString("user_mgmt.label_new_password") %></label>
                 <input type="password" name="passwrd" id="passwrd" required>
             </div>
 
             <!-- Confirm Password -->
             <div class="field-group">
-                <label for="confirmPasswrd">Confirm Password *</label>
+                <label for="confirmPasswrd"><%= msg.getString("user_mgmt.label_confirm_password") %></label>
                 <input type="password" name="confirmPasswrd" id="confirmPasswrd" required>
             </div>
 
             <!-- Buttons -->
             <div class="form-btns">
-                <input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="Register"
+                <input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="<%= msg.getString("user_mgmt.btn_register") %>"
                        onclick="this.form.action='../../RegisterUserController'">
-                <input type="submit" class="btn-update" id="btnUpdate" name="edit" value="Update"
+                <input type="submit" class="btn-update" id="btnUpdate" name="edit" value="<%= msg.getString("user_mgmt.btn_update") %>"
                        style="display:none" onclick="this.form.action='../../RegisterUserController'">
-                <input type="button" class="btn-cancel" id="btnCancel" value="Cancel"
+                <input type="button" class="btn-cancel" id="btnCancel" value="<%= msg.getString("user_mgmt.btn_cancel") %>"
                        style="display:none" onclick="resetForm()">
             </div>
 
@@ -361,10 +362,10 @@
 <table border="1" width="100%" class="tbl-data" cellspacing="0" style="margin-top:8px;">
     <thead>
         <tr>
-            <th width="4%">#</th>
-            <th width="22%">Username</th>
-            <th>Roles</th>
-            <th width="14%">Actions</th>
+            <th width="4%"><%= msg.getString("tbl.col_number") %></th>
+            <th width="22%"><%= msg.getString("tbl.col_username") %></th>
+            <th><%= msg.getString("tbl.col_roles") %></th>
+            <th width="14%"><%= msg.getString("tbl.col_actions") %></th>
         </tr>
     </thead>
     <tbody>
@@ -407,10 +408,10 @@
             <td><%=rolesHtml.toString()%></td>
             <td class="action-cell">
                 <button type="button" class="btn-row-edit"
-                    onclick="editRow(<%=luId%>, '<%=safeUname%>', '<%=typeIdsSb.toString()%>', <%=isAdm%>)">Edit</button>
+                    onclick="editRow(<%=luId%>, '<%=safeUname%>', '<%=typeIdsSb.toString()%>', <%=isAdm%>)"><%= msg.getString("btn.edit") %></button>
                 <% if (!isAdm) { %>
                 <button type="button" class="btn-row-del"
-                    onclick="confirmDelete(<%=luId%>, '<%=safeUname%>')">Delete</button>
+                    onclick="confirmDelete(<%=luId%>, '<%=safeUname%>')"><%= msg.getString("btn.delete") %></button>
                 <% } %>
             </td>
         </tr>

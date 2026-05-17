@@ -3,6 +3,7 @@
 <%@page import="com.san.farm.util.FarmUtility"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     /* ── cropToSiteId ── */
     int cropToSiteId = 0;
@@ -65,7 +66,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
-<title>Allocate Employees — <%=siteName%></title>
+<title><%= msg.getString("emp_alloc.page_title") %> — <%=siteName%></title>
 <style>
     .site-banner { background:#e8f5e9; border:1px solid var(--green-bd); border-radius:var(--r-md);
                    padding:8px 16px; margin-bottom:12px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
@@ -134,7 +135,7 @@
 <script src="../../js/jquery-ui.js"></script>
 <script>
 /* ─── Employee options HTML ─── */
-var empOptions = '<option value="">-- Select Employee --</option>';
+var empOptions = '<option value=""><%= msg.getString("emp_alloc.select_employee") %></option>';
 <%
     for (EmployeeInfoEntity e : employees) {
         String fn = e.getFirstName()  != null ? e.getFirstName().trim()  : "";
@@ -319,15 +320,15 @@ function addRow() {
         '<td><input type="text" name="workDate" class="inp-sm inp-date date-inp-dyn" value="' + todayDate + '" placeholder="dd/mm/yyyy" readonly></td>' +
         '<td>' + buildTaskDropHtml() + '</td>' +
         '<td><select name="typeOfWork" class="inp-sm sel-typework">' +
-            '<option value="Contract">Contract</option>' +
-            '<option value="Per Day Payment">Per Day Payment</option>' +
+            '<option value="Contract"><%= msg.getString("emp_alloc.work_type_contract") %></option>' +
+            '<option value="Per Day Payment"><%= msg.getString("emp_alloc.work_type_per_day") %></option>' +
         '</select></td>' +
         '<td><input type="number" name="amount"     class="inp-sm inp-num" value="0" step="0.01" min="0"></td>' +
         '<td><input type="number" name="advPayment" class="inp-sm inp-num" value="0" step="0.01" min="0"></td>' +
         '<td><select name="workStatus" class="inp-sm sel-status">' +
-            '<option value="Pending">Pending</option>' +
-            '<option value="Completed">Completed</option>' +
-            '<option value="Rejected">Rejected</option>' +
+            '<option value="Pending"><%= msg.getString("emp_alloc.status_pending") %></option>' +
+            '<option value="Completed"><%= msg.getString("emp_alloc.status_completed") %></option>' +
+            '<option value="Rejected"><%= msg.getString("emp_alloc.status_rejected") %></option>' +
         '</select></td>' +
         '<td><input type="text" name="remark" class="inp-sm inp-rem"></td>' +
         '<td style="text-align:center;"><button type="button" class="btn-remove-row" onclick="removeRow(this)">&#10005;</button></td>'
@@ -338,7 +339,7 @@ function addRow() {
 
 function removeRow(btn) {
     if (document.getElementById('empTableBody').rows.length <= 1) {
-        alert('At least one row is required.'); return;
+        alert('<%= msg.getString("emp_alloc.validation_min_row") %>'); return;
     }
     $(btn).closest('tr').remove();
 }
@@ -394,18 +395,18 @@ function saveAllocRow(id) {
 </script>
 
 <fieldset>
-<legend>Allocate Employees to Site</legend>
+<legend><%= msg.getString("emp_alloc.fieldset_title") %></legend>
 
-<a class="back-link" href="assignCropToSite.jsp">&#8592; Back to Site Resource Allocation</a>
+<a class="back-link" href="assignCropToSite.jsp">&#8592; <%= msg.getString("btn.back") %></a>
 
 <!-- Site banner -->
 <div class="site-banner" style="margin-top:8px;">
-    <div><div class="sb-label">Site</div><div class="sb-val"><%=siteName%></div></div>
+    <div><div class="sb-label"><%= msg.getString("site_alloc.tbl_col_site") %></div><div class="sb-val"><%=siteName%></div></div>
     <% if (!siteDate.isEmpty()) { %>
-    <div><div class="sb-label">Assignment Date</div><div class="sb-val"><%=siteDate%></div></div>
+    <div><div class="sb-label"><%= msg.getString("site_alloc.tbl_col_date") %></div><div class="sb-val"><%=siteDate%></div></div>
     <% } %>
     <% if (!cropNamesStr.isEmpty()) { %>
-    <div><div class="sb-label">Crops</div><div class="sb-val"><%=cropNamesStr%></div></div>
+    <div><div class="sb-label"><%= msg.getString("site_alloc.tbl_col_crop") %></div><div class="sb-val"><%=cropNamesStr%></div></div>
     <% } %>
 </div>
 
@@ -413,15 +414,15 @@ function saveAllocRow(id) {
 <div class="stats-bar">
     <div class="stat-card highlight">
         <div class="sc-val"><%=allocations.size()%></div>
-        <div class="sc-label">Assignments</div>
+        <div class="sc-label"><%= msg.getString("dashboard.kpi_work_orders") %></div>
     </div>
     <div class="stat-card highlight">
         <div class="sc-val">&#8377; <%=String.format("%.2f", totalAmount)%></div>
-        <div class="sc-label">Total Amount</div>
+        <div class="sc-label"><%= msg.getString("tbl.col_total_amount") %></div>
     </div>
     <div class="stat-card highlight">
         <div class="sc-val">&#8377; <%=String.format("%.2f", totalAdv)%></div>
-        <div class="sc-label">Total Advance</div>
+        <div class="sc-label"><%= msg.getString("payment.amt_adv_paid") %></div>
     </div>
 </div>
 
@@ -432,22 +433,22 @@ function saveAllocRow(id) {
     <input type="hidden" name="cropToSiteId" value="<%=cropToSiteId%>">
 
     <div class="section-title">
-        New Employee Assignment
-        <button type="button" class="btn-add-row" onclick="addRow()">+ Add Row</button>
+        <%= msg.getString("emp_alloc.section_new_assignment") %>
+        <button type="button" class="btn-add-row" onclick="addRow()">+ <%= msg.getString("btn.add") %></button>
     </div>
 
     <div style="overflow-x:auto;">
     <table class="tbl-data" cellspacing="0">
         <thead>
         <tr>
-            <th>Employee</th>
-            <th>Date</th>
-            <th>Task</th>
-            <th>Type of Work</th>
-            <th>Amount (Rs)</th>
-            <th>Advance (Rs)</th>
-            <th>Work Status</th>
-            <th>Remark</th>
+            <th><%= msg.getString("emp_alloc.tbl_col_employee") %></th>
+            <th><%= msg.getString("emp_alloc.tbl_col_date") %></th>
+            <th><%= msg.getString("emp_alloc.tbl_col_task") %></th>
+            <th><%= msg.getString("emp_alloc.tbl_col_type_of_work") %></th>
+            <th><%= msg.getString("emp_alloc.tbl_col_amount_rs") %></th>
+            <th><%= msg.getString("emp_alloc.tbl_col_advance_rs") %></th>
+            <th><%= msg.getString("emp_alloc.tbl_col_work_status") %></th>
+            <th><%= msg.getString("emp_alloc.tbl_col_remark") %></th>
             <th></th>
         </tr>
         </thead>
@@ -455,7 +456,7 @@ function saveAllocRow(id) {
         <tr>
             <td>
                 <select name="empId" class="inp-sm sel-emp">
-                    <option value="">-- Select Employee --</option>
+                    <option value=""><%= msg.getString("emp_alloc.select_employee") %></option>
                     <% for (EmployeeInfoEntity e : employees) {
                         String fn = e.getFirstName()  != null ? e.getFirstName().trim()  : "";
                         String mn = e.getMiddleName() != null && !e.getMiddleName().trim().isEmpty()
@@ -489,17 +490,17 @@ function saveAllocRow(id) {
             </td>
             <td>
                 <select name="typeOfWork" class="inp-sm sel-typework">
-                    <option value="Contract">Contract</option>
-                    <option value="Per Day Payment">Per Day Payment</option>
+                    <option value="Contract"><%= msg.getString("emp_alloc.work_type_contract") %></option>
+                    <option value="Per Day Payment"><%= msg.getString("emp_alloc.work_type_per_day") %></option>
                 </select>
             </td>
             <td><input type="number" name="amount"     class="inp-sm inp-num" value="0" step="0.01" min="0"></td>
             <td><input type="number" name="advPayment" class="inp-sm inp-num" value="0" step="0.01" min="0"></td>
             <td>
                 <select name="workStatus" class="inp-sm sel-status">
-                    <option value="Pending">Pending</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Rejected">Rejected</option>
+                    <option value="Pending"><%= msg.getString("emp_alloc.status_pending") %></option>
+                    <option value="Completed"><%= msg.getString("emp_alloc.status_completed") %></option>
+                    <option value="Rejected"><%= msg.getString("emp_alloc.status_rejected") %></option>
                 </select>
             </td>
             <td><input type="text" name="remark" class="inp-sm inp-rem"></td>
@@ -512,32 +513,32 @@ function saveAllocRow(id) {
     </div>
 
     <div style="margin:10px 0;">
-        <button type="submit" class="btn-save-all">Save All</button>
+        <button type="submit" class="btn-save-all"><%= msg.getString("btn.save_all") %></button>
     </div>
 </form>
 
 <!-- ── Already assigned ── -->
 <div class="section-title" style="margin-top:18px;">
-    Already Assigned
+    <%= msg.getString("emp_alloc.section_already_assigned") %>
     <span style="font-size:0.8em; font-weight:normal; color:var(--text-muted);">(<%=allocations.size()%> record(s))</span>
 </div>
 
 <% if (allocations.isEmpty()) { %>
-<p style="color:var(--text-muted); font-size:13px;">No employees assigned yet.</p>
+<p style="color:var(--text-muted); font-size:13px;"><%= msg.getString("emp_alloc.no_employees_assigned") %></p>
 <% } else { %>
 <div style="overflow-x:auto;">
 <table class="tbl-data" cellspacing="0">
     <thead>
     <tr>
-        <th>Date</th>
-        <th>Employee</th>
-        <th>Task(s)</th>
-        <th>Type of Work</th>
-        <th>Amount (Rs)</th>
-        <th>Advance (Rs)</th>
-        <th>Status</th>
-        <th>Remark</th>
-        <th>Action</th>
+        <th><%= msg.getString("emp_alloc.tbl_col_date") %></th>
+        <th><%= msg.getString("emp_alloc.tbl_col_employee") %></th>
+        <th><%= msg.getString("emp_alloc.tbl_col_task") %></th>
+        <th><%= msg.getString("emp_alloc.tbl_col_type_of_work") %></th>
+        <th><%= msg.getString("emp_alloc.tbl_col_amount_rs") %></th>
+        <th><%= msg.getString("emp_alloc.tbl_col_advance_rs") %></th>
+        <th><%= msg.getString("tbl.col_status") %></th>
+        <th><%= msg.getString("emp_alloc.tbl_col_remark") %></th>
+        <th><%= msg.getString("tbl.col_actions") %></th>
     </tr>
     </thead>
     <tbody>
@@ -620,8 +621,8 @@ function saveAllocRow(id) {
         <td style="text-align:center;">
             <span id="viewTypeOfWork_<%=rid%>"><%=curTypeOfWork%></span>
             <select id="editTypeOfWork_<%=rid%>" class="inp-sm sel-typework" style="display:none;">
-                <option value="Contract"        <%="Contract".equals(curTypeOfWork)        ? "selected" : ""%>>Contract</option>
-                <option value="Per Day Payment" <%="Per Day Payment".equals(curTypeOfWork) ? "selected" : ""%>>Per Day Payment</option>
+                <option value="Contract"        <%="Contract".equals(curTypeOfWork)        ? "selected" : ""%>><%= msg.getString("emp_alloc.work_type_contract") %></option>
+                <option value="Per Day Payment" <%="Per Day Payment".equals(curTypeOfWork) ? "selected" : ""%>><%= msg.getString("emp_alloc.work_type_per_day") %></option>
             </select>
         </td>
         <!-- Amount -->
@@ -640,9 +641,9 @@ function saveAllocRow(id) {
         <td style="text-align:center;">
             <span id="viewStatus_<%=rid%>" class="<%=statusCls%>"><%=curStatus%></span>
             <select id="editStatus_<%=rid%>" class="inp-sm sel-status" style="display:none;">
-                <option value="Pending"   <%="Pending".equals(curStatus)   ? "selected" : ""%>>Pending</option>
-                <option value="Completed" <%="Completed".equals(curStatus) ? "selected" : ""%>>Completed</option>
-                <option value="Rejected"  <%="Rejected".equals(curStatus)  ? "selected" : ""%>>Rejected</option>
+                <option value="Pending"   <%="Pending".equals(curStatus)   ? "selected" : ""%>><%= msg.getString("emp_alloc.status_pending") %></option>
+                <option value="Completed" <%="Completed".equals(curStatus) ? "selected" : ""%>><%= msg.getString("emp_alloc.status_completed") %></option>
+                <option value="Rejected"  <%="Rejected".equals(curStatus)  ? "selected" : ""%>><%= msg.getString("emp_alloc.status_rejected") %></option>
             </select>
         </td>
         <!-- Remark -->
@@ -654,7 +655,7 @@ function saveAllocRow(id) {
         <!-- Action -->
         <td style="text-align:center; white-space:nowrap;">
             <button type="button" class="btn-row-edit" id="btnEdit_<%=rid%>"
-                    onclick="editAllocRow(<%=rid%>)">Edit</button>
+                    onclick="editAllocRow(<%=rid%>)"><%= msg.getString("btn.edit") %></button>
 
             <span id="btnRemove_<%=rid%>">
             <form method="post" action="<%=request.getContextPath()%>/AllocateEmployeeController" style="display:inline;">
@@ -662,7 +663,7 @@ function saveAllocRow(id) {
                 <input type="hidden" name="assignResourceId" value="<%=rid%>">
                 <input type="hidden" name="cropToSiteId"     value="<%=cropToSiteId%>">
                 <button type="submit" class="btn-delete"
-                    onclick="return (window.top||window).confirm('Remove this assignment?')">Remove</button>
+                    onclick="return (window.top||window).confirm('Remove this assignment?')"><%= msg.getString("btn.remove") %></button>
             </form>
             </span>
 
@@ -683,16 +684,16 @@ function saveAllocRow(id) {
             </form>
 
             <button type="button" class="btn-row-save" id="btnSave_<%=rid%>"
-                    style="display:none;" onclick="saveAllocRow(<%=rid%>)">Save</button>
+                    style="display:none;" onclick="saveAllocRow(<%=rid%>)"><%= msg.getString("btn.save") %></button>
             <button type="button" class="btn-row-cancel" id="btnCancel_<%=rid%>"
-                    style="display:none;" onclick="cancelAllocRow(<%=rid%>)">Cancel</button>
+                    style="display:none;" onclick="cancelAllocRow(<%=rid%>)"><%= msg.getString("btn.cancel") %></button>
         </td>
     </tr>
     <% } %>
     </tbody>
     <tfoot>
     <tr style="font-weight:bold;">
-        <td colspan="4" style="text-align:right;">Total</td>
+        <td colspan="4" style="text-align:right;"><%= msg.getString("fert_alloc.tbl_footer_grand_total") %></td>
         <td style="text-align:right;"><%=String.format("%.2f", totalAmount)%></td>
         <td style="text-align:right;"><%=String.format("%.2f", totalAdv)%></td>
         <td colspan="3"></td>

@@ -1,14 +1,15 @@
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
 <%@page import="java.util.List"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
 <link rel="stylesheet" href="../../css/style.css">
-<title>Assignment Detail</title>
+<title><%= msg.getString("task.single_view.page_title") %></title>
 <style>
     /* ── layout ── */
     .detail-wrap        { max-width:820px; margin:0 auto; padding:10px 0 30px; }
@@ -101,13 +102,13 @@
 <%@include file="../../header.jsp"%>
 
 <fieldset>
-<legend>Assignment Detail</legend>
+<legend><%= msg.getString("task.single_view.fieldset_title") %></legend>
 
 <%
 AssignEmployeeToFarmEntity assignment = (AssignEmployeeToFarmEntity) request.getAttribute("assignment");
 if (assignment == null) {
 %>
-    <p style="color:var(--text-muted); padding:20px;">No record found. Please select an assignment to view.</p>
+    <p style="color:var(--text-muted); padding:20px;"><%= msg.getString("task.single_view.no_record") %></p>
 <%
 } else {
     String formattedDate      = (String) request.getAttribute("formattedDate");
@@ -146,17 +147,17 @@ if (assignment == null) {
     <div class="page-header">
         <div class="page-header-left">
             <a class="back-link no-print"
-               href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">&#8592; Back to All Assignments</a>
+               href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">&#8592; <%= msg.getString("task.single_view.back_link") %></a>
             <span style="color:#ccc;" class="no-print">|</span>
             <span class="page-title">Assignment Detail
                 <span class="record-id">&nbsp;#<%=assignment.getAssignResourceId()%></span>
             </span>
         </div>
         <div class="no-print" style="display:flex; gap:8px;">
-            <button class="btn-print" onclick="window.print()">&#128438; Print</button>
+            <button class="btn-print" onclick="window.print()">&#128438; <%= msg.getString("btn.print") %></button>
             <a class="btn-edit"
                href="<%=request.getContextPath()%>/AssignResourcesController?action=edit&assignResourceId=<%=assignment.getAssignResourceId()%>">
-               Edit
+               <%= msg.getString("btn.edit") %>
             </a>
         </div>
     </div>
@@ -164,21 +165,21 @@ if (assignment == null) {
     <!-- Info chips -->
     <div class="info-bar">
         <span class="info-chip">
-            <span class="chip-lbl">Employee:</span>
+            <span class="chip-lbl"><%= msg.getString("task.single_view.chip_employee") %></span>
             <span class="chip-val"><%=empName.isEmpty() ? "—" : empName%></span>
         </span>
         <% if (formattedDate != null && !formattedDate.isEmpty()) { %>
         <span class="info-chip">
-            <span class="chip-lbl">Work Date:</span>
+            <span class="chip-lbl"><%= msg.getString("task.single_view.chip_work_date") %></span>
             <span class="chip-val"><%=formattedDate%></span>
         </span>
         <% } %>
         <span class="info-chip">
-            <span class="chip-lbl">Site:</span>
+            <span class="chip-lbl"><%= msg.getString("task.single_view.chip_site") %></span>
             <span class="chip-val"><%=siteName%></span>
         </span>
         <span class="info-chip">
-            <span class="chip-lbl">Status:</span>
+            <span class="chip-lbl"><%= msg.getString("task.single_view.chip_status") %></span>
             <span class="status-pill pill-<%=curStatus%>"><%=curStatus.isEmpty() ? "—" : curStatus%></span>
         </span>
     </div>
@@ -187,48 +188,48 @@ if (assignment == null) {
     <div class="fin-grid">
         <div class="fin-card">
             <div class="fc-val">&#8377; <%=String.format("%.2f", amount)%></div>
-            <div class="fc-lbl">Amount Due</div>
+            <div class="fc-lbl"><%= msg.getString("task.single_view.card_amount_due") %></div>
         </div>
         <div class="fin-card">
             <div class="fc-val">&#8377; <%=String.format("%.2f", advPayment)%></div>
-            <div class="fc-lbl">Advance Paid</div>
+            <div class="fc-lbl"><%= msg.getString("task.single_view.card_adv_paid") %></div>
         </div>
         <div class="fin-card">
             <div class="fc-val">&#8377; <%=String.format("%.2f", ttlTransactionPaid)%></div>
-            <div class="fc-lbl">Transactions Paid</div>
+            <div class="fc-lbl"><%= msg.getString("task.single_view.card_transactions_paid") %></div>
         </div>
         <div class="fin-card">
             <div class="fc-val">&#8377; <%=String.format("%.2f", totalPaid)%></div>
-            <div class="fc-lbl">Total Paid</div>
+            <div class="fc-lbl"><%= msg.getString("task.single_view.card_total_paid") %></div>
         </div>
         <% if (hasBalance) { %>
         <div class="fin-card <%=hasBalance ? "warning" : "balance"%>">
             <div class="fc-val">&#8377; <%=String.format("%.2f", balanceAmount)%></div>
-            <div class="fc-lbl">Balance Due</div>
+            <div class="fc-lbl"><%= msg.getString("task.single_view.card_balance_due") %></div>
         </div>
         <% } %>
         <% if (hasExcess) { %>
         <div class="fin-card excess">
             <div class="fc-val">&#8377; <%=String.format("%.2f", excessAmount)%></div>
-            <div class="fc-lbl">Excess Paid</div>
+            <div class="fc-lbl"><%= msg.getString("task.single_view.card_excess_paid") %></div>
         </div>
         <% } %>
     </div>
 
     <!-- Work details card -->
     <div class="detail-card">
-        <div class="card-title">Work Details</div>
+        <div class="card-title"><%= msg.getString("task.single_view.card_title_work_details") %></div>
         <div class="detail-grid">
             <div class="detail-field">
-                <span class="df-label">Type of Work</span>
+                <span class="df-label"><%= msg.getString("task.single_view.field_type_of_work") %></span>
                 <span class="df-value"><%=curTypeWork%></span>
             </div>
             <div class="detail-field">
-                <span class="df-label">Crop</span>
+                <span class="df-label"><%= msg.getString("task.single_view.field_crop") %></span>
                 <span class="df-value"><%=cropName%></span>
             </div>
             <div class="detail-field" style="grid-column:span 2;">
-                <span class="df-label">Task(s)</span>
+                <span class="df-label"><%= msg.getString("task.assign.label_tasks") %></span>
                 <% if (taskList != null && !taskList.isEmpty()) { %>
                 <div class="task-pills">
                     <% for (ConfigFarmTaskEntity t : taskList) { %>
@@ -236,7 +237,7 @@ if (assignment == null) {
                     <% } %>
                 </div>
                 <% } else { %>
-                <span class="df-value muted">No tasks assigned</span>
+                <span class="df-value muted"><%= msg.getString("task.single_view.no_tasks") %></span>
                 <% } %>
             </div>
         </div>
@@ -244,22 +245,22 @@ if (assignment == null) {
 
     <!-- Site & assignment card -->
     <div class="detail-card">
-        <div class="card-title">Site &amp; Assignment</div>
+        <div class="card-title"><%= msg.getString("task.single_view.card_title_site") %></div>
         <div class="detail-grid">
             <div class="detail-field">
-                <span class="df-label">Site</span>
+                <span class="df-label"><%= msg.getString("tbl.col_site") %></span>
                 <span class="df-value"><%=siteName%></span>
             </div>
             <div class="detail-field">
-                <span class="df-label">Work Date</span>
+                <span class="df-label"><%= msg.getString("task.single_view.field_work_date") %></span>
                 <span class="df-value"><%=formattedDate != null ? formattedDate : "—"%></span>
             </div>
             <div class="detail-field">
-                <span class="df-label">Work Status</span>
+                <span class="df-label"><%= msg.getString("task.single_view.field_work_status") %></span>
                 <span class="status-pill pill-<%=curStatus%>" style="font-size:13px;"><%=curStatus.isEmpty() ? "—" : curStatus%></span>
             </div>
             <div class="detail-field">
-                <span class="df-label">Assignment ID</span>
+                <span class="df-label"><%= msg.getString("task.single_view.field_assignment_id") %></span>
                 <span class="df-value">#<%=assignment.getAssignResourceId()%></span>
             </div>
         </div>
@@ -268,7 +269,7 @@ if (assignment == null) {
     <!-- Comment card (only if present) -->
     <% if (!curComment.isEmpty()) { %>
     <div class="detail-card">
-        <div class="card-title">Remarks</div>
+        <div class="card-title"><%= msg.getString("task.single_view.card_title_remarks") %></div>
         <div class="comment-box"><%=curComment%></div>
     </div>
     <% } %>
@@ -276,10 +277,10 @@ if (assignment == null) {
     <!-- Bottom action bar -->
     <div class="no-print" style="display:flex; justify-content:flex-end; gap:10px; margin-top:6px;">
         <a class="back-link" style="align-self:center;"
-           href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">&#8592; Back to All Assignments</a>
+           href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">&#8592; <%= msg.getString("task.single_view.back_link") %></a>
         <a class="btn-edit"
            href="<%=request.getContextPath()%>/AssignResourcesController?action=edit&assignResourceId=<%=assignment.getAssignResourceId()%>">
-           Edit Assignment
+           <%= msg.getString("task.single_view.btn_edit_assignment") %>
         </a>
     </div>
 

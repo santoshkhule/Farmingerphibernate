@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../../css/style.css">
-<title>Dashboard</title>
+<title><%= msg.getString("dashboard.page_title") %></title>
 <style>
 .dash-wrap   { padding: 14px; }
 .dash-header { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
@@ -57,9 +58,9 @@
 
     <div class="dash-header">
         <span style="font-size:1.5em;">&#128202;</span>
-        <h2>Farm Dashboard</h2>
+        <h2><%= msg.getString("dashboard.page_title") %></h2>
         <span class="dash-ts" id="dashTs"></span>
-        <button class="btn-refresh" onclick="loadDashboard()">&#8635; Refresh</button>
+        <button class="btn-refresh" onclick="loadDashboard()">&#8635; <%= msg.getString("btn.refresh") %></button>
     </div>
 
     <div id="dashContent">

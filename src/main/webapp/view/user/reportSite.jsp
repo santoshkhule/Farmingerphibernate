@@ -7,6 +7,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     AssignResourceEmployeeToFarmService farmService = new AssignResourceEmployeeToFarmService();
     PaymentProcessingDao salaryDao = new PaymentProcessingDao();
@@ -50,7 +51,7 @@
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
 <link rel="stylesheet" href="../../css/datatables.min.css">
-<title>Site Expenditure &amp; Dispatch Status Report</title>
+<title><%= msg.getString("report.site.page_title") %></title>
 <style>
     /* ── filter bar ── */
     .filter-bar         { display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap;
@@ -280,9 +281,9 @@ function updateStats() {
     var tPaid = tAdv + tSal;
     var bal   = Math.max(0, tAmt - tPaid);
     $('#statRecords').text(rows.length);
-    $('#statAssigned').text('\u20B9 '+tAmt.toFixed(2));
-    $('#statPaid').text('\u20B9 '+tPaid.toFixed(2));
-    $('#statBalance').text('\u20B9 '+bal.toFixed(2));
+    $('#statAssigned').text('₹ '+tAmt.toFixed(2));
+    $('#statPaid').text('₹ '+tPaid.toFixed(2));
+    $('#statBalance').text('₹ '+bal.toFixed(2));
 }
 
 function updateChips() {
@@ -380,27 +381,27 @@ function printReport() {
 </script>
 
 <fieldset>
-<legend>Site Expenditure &amp; Dispatch Status Report</legend>
+<legend><%= msg.getString("report.site.fieldset_title") %></legend>
 
 <!-- ── Filter bar ── -->
 <div class="filter-bar no-print">
     <div class="filter-group">
-        <label for="filterSite">Site</label>
-        <select id="filterSite"><option value="">-- All Sites --</option></select>
+        <label for="filterSite"><%= msg.getString("report.site.filter_label_site") %></label>
+        <select id="filterSite"><option value=""><%= msg.getString("report.site.filter_all_sites") %></option></select>
     </div>
     <div class="filter-group">
-        <label for="filterDate">Date</label>
+        <label for="filterDate"><%= msg.getString("report.site.filter_label_date") %></label>
         <select id="filterDate"><option value="">-- All Dates --</option></select>
     </div>
     <div class="filter-group">
-        <label for="filterCrop">Crop</label>
-        <select id="filterCrop"><option value="">-- All Crops --</option></select>
+        <label for="filterCrop"><%= msg.getString("report.site.filter_label_crop") %></label>
+        <select id="filterCrop"><option value=""><%= msg.getString("report.site.filter_all_crops") %></option></select>
     </div>
     <div class="filter-actions">
-        <button id="btnReset" class="btn-reset">&#10005; Reset</button>
-        <button class="btn-export" onclick="exportCSV(summaryDt,'SiteSummary')">&#8595; Summary CSV</button>
-        <button class="btn-export" onclick="exportCSV(detailDt,'SiteDetail')">&#8595; Detail CSV</button>
-        <button class="btn-pdf"   onclick="printReport()">&#128438; Print / PDF</button>
+        <button id="btnReset" class="btn-reset">&#10005; <%= msg.getString("btn.reset") %></button>
+        <button class="btn-export" onclick="exportCSV(summaryDt,'SiteSummary')">&#8595; <%= msg.getString("btn.summary_csv") %></button>
+        <button class="btn-export" onclick="exportCSV(detailDt,'SiteDetail')">&#8595; <%= msg.getString("btn.detail_csv") %></button>
+        <button class="btn-pdf"   onclick="printReport()">&#128438; <%= msg.getString("btn.print_pdf") %></button>
     </div>
 </div>
 
@@ -415,21 +416,21 @@ function printReport() {
     </div>
     <div class="stat-card highlight">
         <div class="sc-val" id="statAssigned">—</div>
-        <div class="sc-lbl">Total Assigned</div>
+        <div class="sc-lbl"><%= msg.getString("report.site.summary_col_total_assigned_rs") %></div>
     </div>
     <div class="stat-card">
         <div class="sc-val" id="statPaid">—</div>
-        <div class="sc-lbl">Total Paid</div>
+        <div class="sc-lbl"><%= msg.getString("report.site.summary_col_total_paid_rs") %></div>
     </div>
     <div class="stat-card warn">
         <div class="sc-val red" id="statBalance">—</div>
-        <div class="sc-lbl">Balance Due</div>
+        <div class="sc-lbl"><%= msg.getString("report.site.summary_col_balance_rs") %></div>
     </div>
 </div>
 
 <!-- ── Summary table ── -->
 <div class="section-title">
-    <span>Site Summary <small>&mdash; grouped by Site, Date &amp; Crop</small></span>
+    <span><%= msg.getString("report.site.section_summary") %> <small>&mdash; grouped by Site, Date &amp; Crop</small></span>
     <div class="tbl-export-btns no-print">
         <button class="btn-tbl-xls" onclick="exportCSV(summaryDt,'SiteSummary')">&#8595; CSV</button>
     </div>
@@ -439,14 +440,14 @@ function printReport() {
     <thead>
     <tr>
         <th>Sr.</th>
-        <th>Site</th>
-        <th>Date</th>
-        <th>Crop</th>
-        <th>Total Assigned (Rs)</th>
-        <th>Total Paid (Rs)</th>
-        <th>Balance (Rs)</th>
-        <th>Done / Pending</th>
-        <th>Status</th>
+        <th><%= msg.getString("report.site.summary_col_site") %></th>
+        <th><%= msg.getString("report.site.summary_col_date") %></th>
+        <th><%= msg.getString("report.site.summary_col_crop") %></th>
+        <th><%= msg.getString("report.site.summary_col_total_assigned_rs") %></th>
+        <th><%= msg.getString("report.site.summary_col_total_paid_rs") %></th>
+        <th><%= msg.getString("report.site.summary_col_balance_rs") %></th>
+        <th><%= msg.getString("report.site.summary_col_done_pending") %></th>
+        <th><%= msg.getString("tbl.col_status") %></th>
     </tr>
     </thead>
     <tbody>
@@ -481,7 +482,7 @@ function printReport() {
     </tbody>
     <tfoot>
     <tr style="font-weight:bold;">
-        <td colspan="4" style="text-align:right;">Grand Total</td>
+        <td colspan="4" style="text-align:right;"><%= msg.getString("report.site.grand_total") %></td>
         <td style="text-align:right;"><%=String.format("%.2f",grandAssigned)%></td>
         <td style="text-align:right;"><%=String.format("%.2f",grandPaid)%></td>
         <td style="text-align:right;"><%=String.format("%.2f",Math.max(0,grandAssigned-grandPaid))%></td>
@@ -495,7 +496,7 @@ function printReport() {
 
 <!-- ── Detail table ── -->
 <div class="section-title">
-    <span>Assignment Details <small>&mdash; all individual records</small></span>
+    <span><%= msg.getString("report.site.section_detail") %> <small>&mdash; all individual records</small></span>
     <div class="tbl-export-btns no-print">
         <button class="btn-tbl-xls" onclick="exportCSV(detailDt,'SiteDetail')">&#8595; CSV</button>
     </div>
@@ -505,17 +506,17 @@ function printReport() {
     <thead>
     <tr>
         <th>Sr.</th>
-        <th>Date</th>
-        <th>Site</th>
-        <th>Crop</th>
-        <th>Employee</th>
-        <th>Work Type</th>
-        <th>Work Status</th>
-        <th>Tasks Assigned</th>
-        <th>Amount (Rs)</th>
-        <th>Adv Paid (Rs)</th>
-        <th>Salary Paid (Rs)</th>
-        <th>Balance (Rs)</th>
+        <th><%= msg.getString("report.site.summary_col_date") %></th>
+        <th><%= msg.getString("report.site.summary_col_site") %></th>
+        <th><%= msg.getString("report.site.summary_col_crop") %></th>
+        <th><%= msg.getString("report.site.detail_col_employee") %></th>
+        <th><%= msg.getString("report.site.detail_col_work_type") %></th>
+        <th><%= msg.getString("report.site.detail_col_work_status") %></th>
+        <th><%= msg.getString("report.site.detail_col_tasks_assigned") %></th>
+        <th><%= msg.getString("report.site.detail_col_amount_rs") %></th>
+        <th><%= msg.getString("report.site.detail_col_adv_paid_rs") %></th>
+        <th><%= msg.getString("report.site.detail_col_salary_paid_rs") %></th>
+        <th><%= msg.getString("report.site.detail_col_balance_rs") %></th>
     </tr>
     </thead>
     <tbody>
@@ -565,7 +566,7 @@ function printReport() {
     </tbody>
     <tfoot>
     <tr style="font-weight:bold;">
-        <td colspan="8" style="text-align:right;">Total</td>
+        <td colspan="8" style="text-align:right;"><%= msg.getString("report.site.grand_total") %></td>
         <td style="text-align:right;"><%=String.format("%.2f",ttlAmt)%></td>
         <td style="text-align:right;"><%=String.format("%.2f",ttlAdv)%></td>
         <td style="text-align:right;"><%=String.format("%.2f",ttlSal)%></td>

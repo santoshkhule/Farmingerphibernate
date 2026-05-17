@@ -6,14 +6,15 @@
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
 <%@page import="com.san.farm.adminuser.entity.AssignEmployeeToFarmEntity"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>View All Assign Task</title>
+<title><%= msg.getString("task.view_all.fieldset_title") %></title>
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
 <script src="../../js/jquery-1.9.1.js"></script>
@@ -191,12 +192,12 @@
 </script>
 <body>
 	<fieldset>
-		<legend>View All Employee Assign Task</legend>
+		<legend><%= msg.getString("task.view_all.fieldset_title") %></legend>
 
 		<!-- ── filter bar ── -->
 		<div class="filter-bar">
 			<div class="filter-item">
-				<label for="txtDate">Date</label>
+				<label for="txtDate"><%= msg.getString("task.view_all.filter_label_date") %></label>
 				<input type="text" name="txtDate" id="txtDate"
 					pattern="(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}"
 					oninvalid="setCustomValidity('Enter Date: Select From Calender')"
@@ -204,12 +205,12 @@
 					onchange="showAllEmployeeByFilterId()">
 			</div>
 			<div class="filter-item">
-				<label for="txtName">Name</label>
+				<label for="txtName"><%= msg.getString("task.view_all.filter_label_name") %></label>
 				<input type="text" name="txtName" id="txtName"
 					placeholder="Search name…" oninput="showAllEmployeeByFilterId()">
 			</div>
 			<div class="filter-item">
-				<label for="selWorkId">Work</label>
+				<label for="selWorkId"><%= msg.getString("task.view_all.filter_label_work") %></label>
 				<select name="selWorkId" id="selWorkId" onchange="showAllEmployeeByFilterId()">
 					<option value="-1">All</option>
 					<%
@@ -222,16 +223,16 @@
 				</select>
 			</div>
 			<div class="filter-item">
-				<label for="work_status">Status</label>
+				<label for="work_status"><%= msg.getString("task.view_all.filter_label_status") %></label>
 				<select name="work_status" id="work_status" onchange="showAllEmployeeByFilterId()">
 					<option value="-1">All</option>
-					<option value="Completed">Completed</option>
-					<option value="Pending">Pending</option>
-					<option value="Reject">Reject</option>
+					<option value="Completed"><%= msg.getString("task.view_all.filter_status_completed") %></option>
+					<option value="Pending"><%= msg.getString("task.view_all.filter_status_pending") %></option>
+					<option value="Reject"><%= msg.getString("task.view_all.filter_status_rejected") %></option>
 				</select>
 			</div>
 			<div class="filter-item" style="align-self:flex-end;">
-				<button type="button" class="btn-cancel" onclick="clearAllFilters()">Clear All</button>
+				<button type="button" class="btn-cancel" onclick="clearAllFilters()"><%= msg.getString("btn.clear_filters") %></button>
 			</div>
 		</div>
 		<hr>
@@ -239,9 +240,9 @@
 		<!-- ── bulk-delete bar ── -->
 		<div id="bulkBar" style="display:none; background:#fdecea; border:1px solid #e06060; padding:6px 12px; border-radius:3px; margin-bottom:8px;">
 			<span id="selCount">0</span> record(s) selected &nbsp;
-			<button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+			<button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %> Selected</button>
 			&nbsp;
-			<button type="button" class="btn-cancel" onclick="clearSelection()">Clear Selection</button>
+			<button type="button" class="btn-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear") %> Selection</button>
 		</div>
 		<form method="post" id="frmBulkDelete" action="../../AssignResourcesController"></form>
 
@@ -251,18 +252,18 @@
 				<thead>
 				<tr>
 					<th><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)"></th>
-					<th>#</th>
-					<th>Name</th>
-					<th>Date</th>
-					<th>Site</th>
-					<th>Crop</th>
-					<th>Work Type</th>
-					<th>Status</th>
-					<th>Tasks</th>
-					<th>Amount</th>
-					<th>Paid</th>
-					<th>Balance</th>
-					<th>Action</th>
+					<th><%= msg.getString("tbl.col_number") %></th>
+					<th><%= msg.getString("tbl.col_name") %></th>
+					<th><%= msg.getString("tbl.col_date") %></th>
+					<th><%= msg.getString("tbl.col_site") %></th>
+					<th><%= msg.getString("tbl.col_crop") %></th>
+					<th><%= msg.getString("task.view_all.tbl_col_work_type") %></th>
+					<th><%= msg.getString("tbl.col_status") %></th>
+					<th><%= msg.getString("task.view_all.tbl_col_tasks") %></th>
+					<th><%= msg.getString("tbl.col_amount") %></th>
+					<th><%= msg.getString("task.view_all.tbl_col_paid") %></th>
+					<th><%= msg.getString("task.view_all.tbl_col_balance") %></th>
+					<th><%= msg.getString("tbl.col_actions") %></th>
 				</tr>
 				</thead>
 				<tbody>
@@ -331,7 +332,7 @@
 					<td><%=totalSalaryPaid%></td>
 					<td><%=balanceAmount%></td>
 					<td>
-						<button type="button" class="btn-row-edit" onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'edit')">Edit</button>
+						<button type="button" class="btn-row-edit" onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'edit')"><%= msg.getString("btn.edit") %></button>
 						<button type="button" class="btn-update"   onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'view')">View</button>
 					</td>
 				</tr>
