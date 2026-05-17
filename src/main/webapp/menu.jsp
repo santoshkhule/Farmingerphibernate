@@ -1,7 +1,7 @@
 <div id="sidebar-brand">
 	<span class="brand-icon">&#127807;</span>
 	<div class="brand-text">
-		<span class="brand-name">Santosh Farming</span>
+		<span class="brand-name">Sevak</span>
 		<span class="brand-sub">Farm ERP</span>
 	</div>
 </div>

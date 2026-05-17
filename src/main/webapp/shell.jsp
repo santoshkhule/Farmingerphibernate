@@ -18,7 +18,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 <link rel="stylesheet" href="css/style.css">
-<title>Santosh Farming ERP</title>
+<title>Sevak ERP</title>
 <style>
 	html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 
