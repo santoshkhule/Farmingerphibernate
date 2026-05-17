@@ -5,7 +5,8 @@
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
 <%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     String fromDateParam   = request.getParameter("fromDate");
     String empNameParam    = request.getParameter("empName");
@@ -84,15 +85,15 @@
 <table border="1" cellspacing="0" width="100%" class="tbl-data">
     <thead>
     <tr>
-        <th width="6%">Select</th>
-        <th width="4%">#</th>
-        <th>Name</th>
-        <th width="9%">Date</th>
-        <th>Site Name</th>
-        <th width="10%">Work Type</th>
-        <th width="9%">Status</th>
-        <th width="9%">Amount</th>
-        <th width="9%">Balance</th>
+        <th width="6%"><%= msg.getString("btn.select") %></th>
+        <th width="4%"><%= msg.getString("tbl.col_number") %></th>
+        <th><%= msg.getString("tbl.col_name") %></th>
+        <th width="9%"><%= msg.getString("tbl.col_date") %></th>
+        <th><%= msg.getString("tbl.col_site_name") %></th>
+        <th width="10%"><%= msg.getString("task.view_all.tbl_col_work_type") %></th>
+        <th width="9%"><%= msg.getString("tbl.col_status") %></th>
+        <th width="9%"><%= msg.getString("tbl.col_amount") %></th>
+        <th width="9%"><%= msg.getString("task.view_all.tbl_col_balance") %></th>
     </tr>
     </thead>
     <tbody>
@@ -128,7 +129,7 @@
 %>
     <tr>
         <td style="text-align:center;">
-            <button type="button" class="btn-select" onclick="processSalary(<%=assignResourceId%>)">Select</button>
+            <button type="button" class="btn-select" onclick="processSalary(<%=assignResourceId%>)"><%= msg.getString("btn.select") %></button>
         </td>
         <td><%=cnt%></td>
         <td><%=empFullName%></td>
@@ -146,7 +147,7 @@
     </tbody>
     <tfoot>
     <tr>
-        <td style="font-weight:bold; text-align:right;" colspan="7">Total</td>
+        <td style="font-weight:bold; text-align:right;" colspan="7"><%= msg.getString("tbl.total") %></td>
         <td style="text-align:right;"><b><%=ttlAmountToPay%></b></td>
         <td style="text-align:right;"><b><%=ttlBalance%></b></td>
     </tr>

@@ -271,7 +271,7 @@
     <!-- ══ Panel 1: Select Assignment ══ -->
     <div class="cpanel">
         <div class="cpanel-head clickable" onclick="toggleSelectPanel()">
-            <h3>Select Assignment
+            <h3><%= msg.getString("payment.panel_select") %>
                 <% if (hasSelection) { %>
                 <span class="cpanel-sub">&#8212; <%=empName%> &bull; <%=workDate%> &bull; <%=siteName%></span>
                 <% } %>
@@ -293,7 +293,7 @@
                 <div class="filter-field">
                     <label><%= msg.getString("payment.filter_label_work") %></label>
                     <select id="selWorkId" onchange="showAllEmployeeByFilterId()">
-                        <option value="-1">All</option>
+                        <option value="-1"><%= msg.getString("filter.option_all") %></option>
                         <%
                             try {
                                 ConfigFarmTaskService taskSvc = new ConfigFarmTaskService();
@@ -309,10 +309,10 @@
                 <div class="filter-field">
                     <label><%= msg.getString("payment.filter_label_status") %></label>
                     <select id="work_status" onchange="showAllEmployeeByFilterId()">
-                        <option value="-1">All</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Reject">Reject</option>
+                        <option value="-1"><%= msg.getString("filter.option_all") %></option>
+                        <option value="Completed"><%= msg.getString("work.status.completed") %></option>
+                        <option value="Pending"><%= msg.getString("work.status.pending") %></option>
+                        <option value="Reject"><%= msg.getString("work.status.reject") %></option>
                     </select>
                 </div>
                 <div class="filter-field" style="justify-content:flex-end;">
@@ -329,7 +329,7 @@
     <div class="cpanel">
         <div class="cpanel-head" style="cursor:default;">
             <h3><%= msg.getString("payment.fieldset_title") %></h3>
-            <button type="button" class="btn-cancel" onclick="openSelectPanel()">&#8645; Change Assignment</button>
+            <button type="button" class="btn-cancel" onclick="openSelectPanel()">&#8645; <%= msg.getString("btn.change_assignment") %></button>
         </div>
         <div class="cpanel-body">
 
@@ -375,7 +375,7 @@
                         <div class="pay-field">
                             <label><%= msg.getString("payment.form_label_payment_type") %></label>
                             <select name="paymentType" id="paymentType" required style="width:120px;">
-                                <option value="">Select</option>
+                                <option value=""><%= msg.getString("form.option_select") %></option>
                                 <option value="Cash"><%= msg.getString("payment.form_cash") %></option>
                                 <option value="Check"><%= msg.getString("payment.form_check") %></option>
                                 <option value="Other"><%= msg.getString("payment.form_other") %></option>
@@ -406,7 +406,7 @@
                         <div class="pay-field">
                             <label><%= msg.getString("payment.form_label_comment") %></label>
                             <input type="text" name="comment" id="comment"
-                                   placeholder="Optional" style="width:140px;">
+                                   placeholder="<%= msg.getString("form.placeholder_optional") %>" style="width:140px;">
                         </div>
                         <div class="pay-btns">
                             <input type="submit" class="btn-add" id="sbtPayAmount" name="sbtPayAmount"
