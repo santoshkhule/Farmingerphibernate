@@ -67,12 +67,12 @@
     });
 </script>
 <script>
-    var MAX_PHOTO_BYTES = 261120; // 255 KB
+    var MAX_PHOTO_BYTES = 204800; // 200 KB
     function previewPhoto(input) {
         if (input.files && input.files[0]) {
             var file = input.files[0];
             if (file.size > MAX_PHOTO_BYTES) {
-                alert('Photo must be 255 KB or smaller. Selected file is ' + Math.round(file.size / 1024) + ' KB.');
+                alert('Photo must be 200 KB or smaller. Selected file is ' + Math.round(file.size / 1024) + ' KB.');
                 input.value = '';
                 return;
             }
@@ -114,7 +114,7 @@
                 <input type="file" name="fileEmpPhoto" id="fileEmpPhoto" accept="image/*"
                        style="width:140px; font-size:11px; margin-top:4px;"
                        onchange="previewPhoto(this)">
-                <div style="font-size:10px; color:var(--text-muted); margin-top:3px;">Max 255 KB</div>
+                <div style="font-size:10px; color:var(--text-muted); margin-top:3px;">Max 200 KB</div>
                 <%}%>
             </div>
 

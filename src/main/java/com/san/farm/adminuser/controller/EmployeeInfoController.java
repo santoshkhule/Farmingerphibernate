@@ -22,11 +22,11 @@ import org.slf4j.LoggerFactory;
  * Handles employee CRUD. Photos are stored as base64 CLOB values in the DB
  * (max 255 KB source file; enforced both client-side and server-side).
  */
-@MultipartConfig(maxFileSize = 261120, maxRequestSize = 786432)
+@MultipartConfig(maxFileSize = 204800, maxRequestSize = 729088)
 public class EmployeeInfoController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeInfoController.class);
-	private static final int MAX_PHOTO_BYTES = 261120; // 255 KB
+	private static final int MAX_PHOTO_BYTES = 204800; // 200 KB
 
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
