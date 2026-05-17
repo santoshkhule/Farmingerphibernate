@@ -9,6 +9,7 @@
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     ConfigSiteInformationService informationService = new ConfigSiteInformationService();
     List<ConfigSiteInformationEntity> listOfSite = informationService.fetch();
@@ -25,7 +26,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
-<title>Site Resource Allocation</title>
+<title><%= msg.getString("site_alloc.page_title") %></title>
 <style>
     .page-header  { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
     .page-title   { font-size:1.1em; font-weight:700; color:var(--green-dk); margin:0; }
@@ -72,21 +73,27 @@
     .edit-sel     { width:120px; font-size:11px; }
     .edit-date-inp{ width:88px;  font-size:11px; padding:2px; }
 
-    .btn-row-save  { background:#28a745; color:#fff; border:none; padding:3px 9px;
-                     cursor:pointer; border-radius:var(--r-sm); font-size:11px; }
-    .btn-row-cancel{ background:#6c757d; color:#fff; border:none; padding:3px 9px;
-                     cursor:pointer; border-radius:var(--r-sm); font-size:11px; }
-
-    /* icon nav buttons — always visible */
+    /* unified icon button — all action buttons share this base */
     .btn-icon-nav  { width:26px; height:26px; border-radius:var(--r-sm); cursor:pointer;
                      font-size:13px; display:inline-flex; align-items:center;
-                     justify-content:center; vertical-align:middle; line-height:1; }
-    .btn-fert      { background:#e3f2fd; border:1px solid #90caf9; }
-    .btn-fert:hover{ background:#bbdefb; }
-    .btn-emp       { background:#e8f5e9; border:1px solid var(--green-bd); }
-    .btn-emp:hover { background:var(--green-row); }
+                     justify-content:center; vertical-align:middle; line-height:1;
+                     padding:0; border:1px solid transparent; }
+    .btn-fert           { background:#e3f2fd; border-color:#90caf9; }
+    .btn-fert:hover     { background:#bbdefb; }
+    .btn-emp            { background:#e8f5e9; border-color:var(--green-bd); }
+    .btn-emp:hover      { background:var(--green-row); }
+    .btn-edit-ic        { background:#f5f5f5; border-color:#bdbdbd; color:#424242; }
+    .btn-edit-ic:hover  { background:#eeeeee; }
+    .btn-save-ic        { background:#e8f5e9; border-color:var(--green-bd); color:#1b5e20; }
+    .btn-save-ic:hover  { background:#c8e6c9; }
+    .btn-cancel-ic      { background:#fdecea; border-color:#ef9a9a; color:#b71c1c; }
+    .btn-cancel-ic:hover{ background:#ffcdd2; }
+    .btn-dispatch-mark  { background:#fff8e1; border-color:#ffe082; color:#e65100; }
+    .btn-dispatch-mark:hover { background:#fff3e0; border-color:#ffb300; }
+    .btn-dispatch-ready { background:#e8f5e9; border-color:var(--green-bd); color:#1b5e20; }
+    .btn-dispatch-ready:hover { background:#c8e6c9; }
     .actions-cell  { text-align:center; white-space:nowrap; }
-    .actions-cell > * { vertical-align:middle; }
+    .actions-cell > * { vertical-align:middle; margin:1px; }
 </style>
 </head>
 <body>
@@ -109,7 +116,7 @@ $(function() {
     $('#addCropForm').on('submit', function(e) {
         if ($('#addCropPanel input:checked').length === 0) {
             e.preventDefault();
-            alert('Please select at least one crop.');
+            alert('<%= msg.getString("site_alloc.validation_select_crop") %>');
             $('#addCropPanel').show();
         }
     });
@@ -161,9 +168,9 @@ function cancelEdit(id) {
 
 function saveRow(id) {
     var dateVal = $('#inpDate' + id).val();
-    if (!dateVal) { alert('Please enter a date.'); return; }
+    if (!dateVal) { alert('<%= msg.getString("site_alloc.validation_enter_date") %>'); return; }
     var $checked = $('#cropDropPanel' + id + ' input[type=checkbox]:checked');
-    if ($checked.length === 0) { alert('Please select at least one crop.'); return; }
+    if ($checked.length === 0) { alert('<%= msg.getString("site_alloc.validation_select_crop") %>'); return; }
     var $frm = $('#frmEdit' + id);
     $('#hidSite' + id).val($('#inpSite' + id).val());
     $('#hidDate' + id).val(dateVal);
@@ -204,13 +211,18 @@ function clearSelection() {
     $('input.rowChk, #chkAll').prop('checked', false);
     $('#bulkBar').hide();
 }
+
+function doToggleDispatch(id) {
+    document.getElementById('toggleDispatchId').value = id;
+    document.getElementById('frmToggleDispatch').submit();
+}
 </script>
 
 <fieldset>
-<legend>Site Resource Allocation</legend>
+<legend><%= msg.getString("site_alloc.fieldset_title") %></legend>
 
     <div class="page-header">
-        <span class="page-title">Allocations</span>
+        <span class="page-title"><%= msg.getString("site_alloc.tbl_col_site") %></span>
         <span class="count-chip"><%=totalRecords%></span>
     </div>
 
@@ -219,9 +231,9 @@ function clearSelection() {
         <form id="addCropForm" action="../../AssignCropToSiteController" method="post">
             <div class="form-grid">
                 <div class="fg-field">
-                    <label for="siteInfoId">Site</label>
+                    <label for="siteInfoId"><%= msg.getString("site_alloc.label_site") %></label>
                     <select name="siteInfoId" id="siteInfoId" required>
-                        <option value="">-- Select Site --</option>
+                        <option value=""><%= msg.getString("site_alloc.select_site") %></option>
                         <% for(ConfigSiteInformationEntity s : listOfSite) { %>
                         <option value="<%=s.getSiteInfoId()%>"><%=s.getSiteName()%></option>
                         <% } %>
@@ -229,7 +241,7 @@ function clearSelection() {
                 </div>
 
                 <div class="fg-field">
-                    <label>Crop</label>
+                    <label><%= msg.getString("site_alloc.label_crop") %></label>
                     <div class="chk-drop">
                         <button type="button" class="chk-drop-btn" id="addCropBtn"
                             onclick="toggleDrop('addCropPanel','addCropBtn',event)">Select crops...</button>
@@ -246,7 +258,7 @@ function clearSelection() {
                 </div>
 
                 <div class="fg-field">
-                    <label for="cropAssignDate">Date</label>
+                    <label for="cropAssignDate"><%= msg.getString("site_alloc.label_date") %></label>
                     <input type="text" name="cropAssignDate" id="cropAssignDate"
                         pattern="(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}"
                         oninvalid="setCustomValidity('Enter Date: Select From Calendar')"
@@ -256,7 +268,7 @@ function clearSelection() {
 
                 <div class="fg-field">
                     <label>&nbsp;</label>
-                    <input type="submit" name="add" value="Add" class="btn-add">
+                    <input type="submit" name="add" value="<%= msg.getString("btn.add") %>" class="btn-add">
                 </div>
             </div>
         </form>
@@ -268,18 +280,18 @@ function clearSelection() {
     <!-- Bulk action bar -->
     <div id="bulkBar" class="bulk-bar">
         <span><strong id="selCount">0</strong> record(s) selected</span>
-        <button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
-        <button type="button" class="btn-row-cancel" onclick="clearSelection()">Clear</button>
+        <button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %> Selected</button>
+        <button type="button" class="btn-row-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear") %></button>
     </div>
 
     <table id="assignCropTable" class="tbl-data" cellspacing="0">
         <thead>
         <tr>
             <th width="3%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)"></th>
-            <th>Site</th>
-            <th>Crop</th>
-            <th>Date</th>
-            <th width="14%">Actions</th>
+            <th><%= msg.getString("site_alloc.tbl_col_site") %></th>
+            <th><%= msg.getString("site_alloc.tbl_col_crop") %></th>
+            <th><%= msg.getString("site_alloc.tbl_col_date") %></th>
+            <th width="160px"><%= msg.getString("site_alloc.tbl_col_actions") %></th>
         </tr>
         </thead>
         <tbody>
@@ -353,10 +365,10 @@ function clearSelection() {
                     value="<%=assignDate%>" style="display:none;" placeholder="dd/mm/yyyy">
             </td>
 
-            <!-- Actions: single row -->
+            <!-- Actions: compact icon row -->
             <td class="actions-cell">
-                <button type="button" class="btn-row-edit" id="btnEdit<%=rowId%>"
-                    onclick="editRow(<%=rowId%>)">Edit</button>
+                <button type="button" class="btn-icon-nav btn-edit-ic" id="btnEdit<%=rowId%>"
+                    title="<%= msg.getString("site_alloc.tooltip_edit") %>" onclick="editRow(<%=rowId%>)">&#9998;</button>
 
                 <form method="post" action="../../AssignCropToSiteController"
                     id="frmEdit<%=rowId%>" style="display:inline;">
@@ -364,25 +376,38 @@ function clearSelection() {
                     <input type="hidden" name="cropToSiteId"   value="<%=rowId%>">
                     <input type="hidden" name="siteInfoId"     id="hidSite<%=rowId%>">
                     <input type="hidden" name="cropAssignDate" id="hidDate<%=rowId%>">
-                    <button type="button" class="btn-row-save" id="btnSave<%=rowId%>"
-                        style="display:none;" onclick="saveRow(<%=rowId%>)">Save</button>
+                    <button type="button" class="btn-icon-nav btn-save-ic" id="btnSave<%=rowId%>"
+                        style="display:none;" title="<%= msg.getString("site_alloc.tooltip_save") %>" onclick="saveRow(<%=rowId%>)">&#10004;</button>
                 </form>
 
-                <button type="button" class="btn-row-cancel" id="btnCancel<%=rowId%>"
-                    style="display:none;" onclick="cancelEdit(<%=rowId%>)">Cancel</button>
+                <button type="button" class="btn-icon-nav btn-cancel-ic" id="btnCancel<%=rowId%>"
+                    style="display:none;" title="<%= msg.getString("site_alloc.tooltip_cancel") %>" onclick="cancelEdit(<%=rowId%>)">&#10005;</button>
 
-                &nbsp;
                 <button type="button" class="btn-icon-nav btn-fert"
-                    title="Allocate Fertilizers"
+                    title="<%= msg.getString("site_alloc.tooltip_allocate_fertilizers") %>"
                     onclick="window.location.href='allocateFertilizersToSite.jsp?cropToSiteId=<%=rowId%>'">&#127807;</button>
                 <button type="button" class="btn-icon-nav btn-emp"
-                    title="Allocate Employees"
+                    title="<%= msg.getString("site_alloc.tooltip_allocate_employees") %>"
                     onclick="window.location.href='allocateEmployeeToSite.jsp?cropToSiteId=<%=rowId%>'">&#128100;</button>
+                <% if (cropToSiteEntity.isReadyToDispatch()) { %>
+                <button type="button" class="btn-icon-nav btn-dispatch-ready"
+                    title="<%= msg.getString("site_alloc.tooltip_ready_to_dispatch") %>"
+                    onclick="doToggleDispatch(<%=rowId%>)">&#10003;</button>
+                <% } else { %>
+                <button type="button" class="btn-icon-nav btn-dispatch-mark"
+                    title="<%= msg.getString("site_alloc.tooltip_mark_ready") %>"
+                    onclick="doToggleDispatch(<%=rowId%>)">&#128666;</button>
+                <% } %>
             </td>
         </tr>
         <% } %>
         </tbody>
     </table>
+
+    <form id="frmToggleDispatch" method="post" action="../../AssignCropToSiteController" style="display:none;">
+        <input type="hidden" name="toggleDispatch" value="1">
+        <input type="hidden" name="cropToSiteId"   id="toggleDispatchId" value="">
+    </form>
 
 </fieldset>
 <%@include file="../../footer.jsp" %>

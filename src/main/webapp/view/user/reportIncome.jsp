@@ -7,7 +7,8 @@
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     // Determine current FY start year
     Calendar cal = Calendar.getInstance();
@@ -70,9 +71,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Income Report</title>
+<title><%= msg.getString("report.income.page_title") %></title>
 <link rel="stylesheet" href="../../css/style.css">
 <script src="../../js/jquery-1.9.1.js"></script>
 <style>
@@ -138,13 +139,13 @@
 <body>
 
 <fieldset>
-<legend>Income Report by Site &amp; Financial Year</legend>
+<legend><%= msg.getString("report.income.fieldset_title") %></legend>
 
 <!-- Filter bar -->
 <form method="get" id="frmFilter">
 <div class="filter-bar">
     <div class="filter-group">
-        <label for="fyYear">Financial Year</label>
+        <label for="fyYear"><%= msg.getString("report.income.filter_label_fy") %></label>
         <select name="fyYear" id="fyYear" onchange="this.form.submit()">
             <%
                 for (int y = currentFyStart; y >= currentFyStart - 3; y--) {
@@ -155,7 +156,7 @@
         </select>
     </div>
     <div class="filter-actions">
-        <button type="button" class="btn-add" onclick="exportCSV()">&#8595; CSV</button>
+        <button type="button" class="btn-add" onclick="exportCSV()">&#8595; <%= msg.getString("btn.download_csv") %></button>
     </div>
 </div>
 </form>
@@ -173,18 +174,18 @@
     <thead>
     <tr>
         <th width="4%">#</th>
-        <th>Site</th>
-        <th>Crop</th>
-        <th width="9%">Sale Date</th>
-        <th>Buyer</th>
-        <th width="8%">Buyer Type</th>
-        <th width="7%">Qty</th>
-        <th width="6%">Unit</th>
-        <th width="8%">Price/Unit</th>
-        <th width="9%">Total Sale</th>
-        <th width="9%">Received</th>
-        <th width="9%">Balance</th>
-        <th width="8%">Status</th>
+        <th><%= msg.getString("report.income.tbl_col_site") %></th>
+        <th><%= msg.getString("report.income.tbl_col_crop") %></th>
+        <th width="9%"><%= msg.getString("report.income.tbl_col_sale_date") %></th>
+        <th><%= msg.getString("report.income.tbl_col_buyer") %></th>
+        <th width="8%"><%= msg.getString("report.income.tbl_col_buyer_type") %></th>
+        <th width="7%"><%= msg.getString("report.income.tbl_col_qty") %></th>
+        <th width="6%"><%= msg.getString("tbl.col_unit") %></th>
+        <th width="8%"><%= msg.getString("report.income.tbl_col_price_per_unit") %></th>
+        <th width="9%"><%= msg.getString("report.income.tbl_col_total_sale") %></th>
+        <th width="9%"><%= msg.getString("report.income.tbl_col_received") %></th>
+        <th width="9%"><%= msg.getString("report.income.tbl_col_balance") %></th>
+        <th width="8%"><%= msg.getString("tbl.col_status") %></th>
     </tr>
     </thead>
     <tbody>
@@ -218,11 +219,11 @@
 
             String statusClass, statusLabel;
             if (received <= 0) {
-                statusClass = "sp-unpaid"; statusLabel = "Unpaid";
+                statusClass = "sp-unpaid"; statusLabel = msg.getString("report.income.status_unpaid");
             } else if (received >= cs.getTotalAmount()) {
-                statusClass = "sp-paid"; statusLabel = "Paid";
+                statusClass = "sp-paid"; statusLabel = msg.getString("report.income.status_paid");
             } else {
-                statusClass = "sp-partial"; statusLabel = "Partial";
+                statusClass = "sp-partial"; statusLabel = msg.getString("report.income.status_partial");
             }
 %>
     <tr>
@@ -259,7 +260,7 @@
     </tbody>
     <tfoot>
     <tr class="grand-total-row">
-        <td colspan="9" style="text-align:right;">Grand Total</td>
+        <td colspan="9" style="text-align:right;"><%= msg.getString("report.income.grand_total") %></td>
         <td style="text-align:right;"><%=String.format("%.2f", grandTotal)%></td>
         <td style="text-align:right; color:#2e7d32;"><%=String.format("%.2f", grandReceived)%></td>
         <td style="text-align:right; color:#c62828;"><%=String.format("%.2f", grandBalance)%></td>

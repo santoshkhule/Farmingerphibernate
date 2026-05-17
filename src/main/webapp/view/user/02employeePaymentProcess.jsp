@@ -8,7 +8,8 @@
 <%@page import="com.san.farm.util.FarmUtility"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     int assignResourceId = 0;
     String arparam = request.getParameter("assignResourceId");
@@ -65,9 +66,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Process Payment</title>
+<title><%= msg.getString("payment.page_title") %></title>
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
 <script src="../../js/jquery-1.9.1.js"></script>
@@ -265,12 +266,12 @@
         showAllEmployeeByFilterId();
     });
 </script>
-<fieldset><legend>Process Payment</legend>
+<fieldset><legend><%= msg.getString("payment.fieldset_title") %></legend>
 
     <!-- ══ Panel 1: Select Assignment ══ -->
     <div class="cpanel">
         <div class="cpanel-head clickable" onclick="toggleSelectPanel()">
-            <h3>Select Assignment
+            <h3><%= msg.getString("payment.panel_select") %>
                 <% if (hasSelection) { %>
                 <span class="cpanel-sub">&#8212; <%=empName%> &bull; <%=workDate%> &bull; <%=siteName%></span>
                 <% } %>
@@ -281,18 +282,18 @@
 
             <div class="filter-bar">
                 <div class="filter-field">
-                    <label>Date</label>
+                    <label><%= msg.getString("payment.filter_label_date") %></label>
                     <input type="text" id="txtDate" placeholder="dd/mm/yyyy"
                            onchange="showAllEmployeeByFilterId()">
                 </div>
                 <div class="filter-field">
-                    <label>Name</label>
+                    <label><%= msg.getString("payment.filter_label_name") %></label>
                     <input type="text" id="txtName" oninput="showAllEmployeeByFilterId()">
                 </div>
                 <div class="filter-field">
-                    <label>Work</label>
+                    <label><%= msg.getString("payment.filter_label_work") %></label>
                     <select id="selWorkId" onchange="showAllEmployeeByFilterId()">
-                        <option value="-1">All</option>
+                        <option value="-1"><%= msg.getString("filter.option_all") %></option>
                         <%
                             try {
                                 ConfigFarmTaskService taskSvc = new ConfigFarmTaskService();
@@ -306,16 +307,16 @@
                     </select>
                 </div>
                 <div class="filter-field">
-                    <label>Status</label>
+                    <label><%= msg.getString("payment.filter_label_status") %></label>
                     <select id="work_status" onchange="showAllEmployeeByFilterId()">
-                        <option value="-1">All</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Reject">Reject</option>
+                        <option value="-1"><%= msg.getString("filter.option_all") %></option>
+                        <option value="Completed"><%= msg.getString("work.status.completed") %></option>
+                        <option value="Pending"><%= msg.getString("work.status.pending") %></option>
+                        <option value="Reject"><%= msg.getString("work.status.reject") %></option>
                     </select>
                 </div>
                 <div class="filter-field" style="justify-content:flex-end;">
-                    <button type="button" class="btn-cancel" onclick="clearAllFilters()">Clear</button>
+                    <button type="button" class="btn-cancel" onclick="clearAllFilters()"><%= msg.getString("btn.clear") %></button>
                 </div>
             </div>
 
@@ -327,19 +328,19 @@
     <% if (hasSelection) { %>
     <div class="cpanel">
         <div class="cpanel-head" style="cursor:default;">
-            <h3>Process Payment</h3>
-            <button type="button" class="btn-cancel" onclick="openSelectPanel()">&#8645; Change Assignment</button>
+            <h3><%= msg.getString("payment.fieldset_title") %></h3>
+            <button type="button" class="btn-cancel" onclick="openSelectPanel()">&#8645; <%= msg.getString("btn.change_assignment") %></button>
         </div>
         <div class="cpanel-body">
 
             <!-- Assignment summary strip -->
             <div class="info-strip">
-                <span class="info-chip"><span class="lbl">Employee</span><%=empName%></span>
-                <span class="info-chip"><span class="lbl">Date</span><%=workDate%></span>
-                <span class="info-chip"><span class="lbl">Site</span><%=siteName%></span>
-                <span class="info-chip"><span class="lbl">Work Type</span><%=workType%></span>
+                <span class="info-chip"><span class="lbl"><%= msg.getString("payment.info_label_employee") %></span><%=empName%></span>
+                <span class="info-chip"><span class="lbl"><%= msg.getString("tbl.col_date") %></span><%=workDate%></span>
+                <span class="info-chip"><span class="lbl"><%= msg.getString("tbl.col_site") %></span><%=siteName%></span>
+                <span class="info-chip"><span class="lbl"><%= msg.getString("payment.info_label_work_type") %></span><%=workType%></span>
                 <% if (!workStatus.isEmpty()) { %>
-                <span class="info-chip"><span class="lbl">Status</span>
+                <span class="info-chip"><span class="lbl"><%= msg.getString("tbl.col_status") %></span>
                     <span class="ws-pill ws-<%=workStatus%>"><%=workStatus%></span>
                 </span>
                 <% } %>
@@ -348,19 +349,19 @@
             <!-- Amount summary -->
             <div class="amt-bar">
                 <div class="amt-card">
-                    <div class="ac-lbl">To Pay</div>
+                    <div class="ac-lbl"><%= msg.getString("payment.amt_to_pay") %></div>
                     <div class="ac-val"><%=amountToPay%></div>
                 </div>
                 <div class="amt-card">
-                    <div class="ac-lbl">Adv Paid</div>
+                    <div class="ac-lbl"><%= msg.getString("payment.amt_adv_paid") %></div>
                     <div class="ac-val"><%=advPayment%></div>
                 </div>
                 <div class="amt-card">
-                    <div class="ac-lbl">Salary Paid</div>
+                    <div class="ac-lbl"><%= msg.getString("payment.amt_salary_paid") %></div>
                     <div class="ac-val"><%=ttlPaid%></div>
                 </div>
                 <div class="amt-card balance">
-                    <div class="ac-lbl">Balance Due</div>
+                    <div class="ac-lbl"><%= msg.getString("payment.amt_balance_due") %></div>
                     <div class="ac-val"><%=balance%></div>
                 </div>
             </div>
@@ -372,47 +373,47 @@
                     <input type="hidden" name="salaryProcessId"  id="salaryProcessId">
                     <div class="pay-row">
                         <div class="pay-field">
-                            <label>Payment Type *</label>
+                            <label><%= msg.getString("payment.form_label_payment_type") %></label>
                             <select name="paymentType" id="paymentType" required style="width:120px;">
-                                <option value="">Select</option>
-                                <option value="Cash">Cash</option>
-                                <option value="Check">Check</option>
-                                <option value="Other">Other</option>
+                                <option value=""><%= msg.getString("form.option_select") %></option>
+                                <option value="Cash"><%= msg.getString("payment.form_cash") %></option>
+                                <option value="Check"><%= msg.getString("payment.form_check") %></option>
+                                <option value="Other"><%= msg.getString("payment.form_other") %></option>
                             </select>
                         </div>
                         <div class="pay-field">
-                            <label>Amount *</label>
+                            <label><%= msg.getString("payment.form_label_amount") %></label>
                             <input type="text" name="txtAmount" id="amount" required
                                    pattern="[0-9]+(\.[0-9]+)?" style="width:100px;">
                         </div>
                         <div class="pay-field">
-                            <label>Date *</label>
+                            <label><%= msg.getString("payment.form_label_date") %></label>
                             <input type="text" name="txtDate" id="payDate" required
                                    placeholder="dd/mm/yyyy" style="width:110px;"
                                    oninvalid="setCustomValidity('Select Date')"
                                    onchange="setCustomValidity('')">
                         </div>
                         <div class="pay-field">
-                            <label>Bank Name</label>
+                            <label><%= msg.getString("payment.form_label_bank_name") %></label>
                             <input type="text" name="bankName" id="bankName"
                                    value="<%=defaultBankName%>" style="width:130px;">
                         </div>
                         <div class="pay-field">
-                            <label>Account No</label>
+                            <label><%= msg.getString("payment.form_label_account_no") %></label>
                             <input type="text" name="accountNO" id="accountNO"
                                    value="<%=defaultAccountNo%>" style="width:130px;">
                         </div>
                         <div class="pay-field">
-                            <label>Comment</label>
+                            <label><%= msg.getString("payment.form_label_comment") %></label>
                             <input type="text" name="comment" id="comment"
-                                   placeholder="Optional" style="width:140px;">
+                                   placeholder="<%= msg.getString("form.placeholder_optional") %>" style="width:140px;">
                         </div>
                         <div class="pay-btns">
                             <input type="submit" class="btn-add" id="sbtPayAmount" name="sbtPayAmount"
-                                   value="Pay Amount" onclick="this.form.action='../../PaymentProcessingServlet'">
+                                   value="<%= msg.getString("btn.pay_amount") %>" onclick="this.form.action='../../PaymentProcessingServlet'">
                             <input type="submit" class="btn-update" id="sbtUpdateAmount" name="sbtUpdateAmount"
-                                   value="Update" hidden onclick="this.form.action='../../PaymentProcessingServlet'">
-                            <input type="button" class="btn-cancel" value="Reset" onclick="resetPayForm()">
+                                   value="<%= msg.getString("btn.update") %>" hidden onclick="this.form.action='../../PaymentProcessingServlet'">
+                            <input type="button" class="btn-cancel" value="<%= msg.getString("btn.reset") %>" onclick="resetPayForm()">
                         </div>
                     </div>
                 </form>
@@ -421,18 +422,18 @@
             <!-- Payment history -->
             <% if (!processingEntities.isEmpty()) { %>
             <div class="hist-section">
-                <h4>Payment History</h4>
+                <h4><%= msg.getString("payment.history_title") %></h4>
                 <table border="1" cellspacing="0" class="tbl-data" width="100%">
                     <thead>
                         <tr>
-                            <th width="4%">#</th>
-                            <th>Type</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Bank</th>
-                            <th>Account No</th>
-                            <th>Comment</th>
-                            <th width="10%">Action</th>
+                            <th width="4%"><%= msg.getString("tbl.col_number") %></th>
+                            <th><%= msg.getString("payment.history_col_type") %></th>
+                            <th><%= msg.getString("tbl.col_date") %></th>
+                            <th><%= msg.getString("tbl.col_amount") %></th>
+                            <th><%= msg.getString("payment.history_col_bank") %></th>
+                            <th><%= msg.getString("payment.history_col_account_no") %></th>
+                            <th><%= msg.getString("tbl.col_comment") %></th>
+                            <th width="10%"><%= msg.getString("tbl.col_actions") %></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -453,12 +454,12 @@
                             <td><%=pe.getComment()       != null ? pe.getComment()       : ""%></td>
                             <td style="text-align:center; white-space:nowrap;">
                                 <button type="button" class="btn-row-edit"
-                                    onclick="editTransaction(<%=pe.getSalaryProcessId()%>)">Edit</button>
+                                    onclick="editTransaction(<%=pe.getSalaryProcessId()%>)"><%= msg.getString("btn.edit") %></button>
                                 <form method="post" action="../../PaymentProcessingServlet" style="display:inline;"
                                       onsubmit="return confirm('Delete this payment record?');">
                                     <input type="hidden" name="salaryProcessId"  value="<%=pe.getSalaryProcessId()%>">
                                     <input type="hidden" name="assignResourceId" value="<%=assignResourceId%>">
-                                    <input type="submit"  class="btn-row-del"    name="sbtDelete" value="Del">
+                                    <input type="submit"  class="btn-row-del"    name="sbtDelete" value="<%= msg.getString("btn.delete") %>">
                                 </form>
                             </td>
                         </tr>

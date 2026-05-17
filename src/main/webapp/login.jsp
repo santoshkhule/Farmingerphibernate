@@ -2,6 +2,7 @@
 <%@ page import="com.san.farm.login.dao.LoginUserService"%>
 <%@ page import="com.san.farm.login.entity.LoginUser"%>
 <%@ page import="javax.servlet.http.HttpSession"%>
+<%@ include file="lang.jsp" %>
 <%
     /* No caching — prevents stale authenticated pages being served from bfcache */
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -23,7 +24,7 @@
         lastUname    = (uname != null) ? uname.trim() : "";
 
         if (lastUname.isEmpty() || pwd == null || pwd.trim().isEmpty()) {
-            errorMsg = "Username and password are required.";
+            errorMsg = msg.getString("login.error_required");
         } else {
             LoginUser user = new LoginUserService().authenticate(lastUname, pwd.trim());
             if (user != null) {
@@ -34,7 +35,7 @@
                 response.sendRedirect(".");
                 return;
             } else {
-                errorMsg = "Invalid username or password. Please try again.";
+                errorMsg = msg.getString("login.error_invalid");
             }
         }
     }
@@ -46,14 +47,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 <link rel="stylesheet" href="css/style.css">
-<title>Santosh Farming ERP - Login</title>
+<title><%= msg.getString("login.page_title") %></title>
 </head>
 <body class="login-page">
 
 <div class="login-card">
     <div class="login-icon">&#127807;</div>
-    <h1>Santosh Farming</h1>
-    <p class="subtitle">Farm Management System</p>
+    <h1><%= msg.getString("login.app_name") %></h1>
+    <p class="subtitle"><%= msg.getString("login.subtitle") %></p>
 
     <%if (!errorMsg.isEmpty()) {%>
     <div class="err-msg"><%=errorMsg%></div>
@@ -61,17 +62,17 @@
 
     <form method="post" action="login.jsp">
         <div class="field">
-            <label for="txtUname">Username</label>
+            <label for="txtUname"><%= msg.getString("login.label_username") %></label>
             <input type="text" name="txtUname" id="txtUname"
                 value="<%=lastUname.replace("\"","&quot;")%>"
-                placeholder="Enter username" autocomplete="username" required autofocus>
+                placeholder="<%= msg.getString("login.placeholder_username") %>" autocomplete="username" required autofocus>
         </div>
         <div class="field">
-            <label for="txtPwd">Password</label>
+            <label for="txtPwd"><%= msg.getString("login.label_password") %></label>
             <input type="password" name="txtPwd" id="txtPwd"
-                placeholder="Enter password" autocomplete="current-password" required>
+                placeholder="<%= msg.getString("login.placeholder_password") %>" autocomplete="current-password" required>
         </div>
-        <input type="submit" class="btn-login" value="Sign In">
+        <input type="submit" class="btn-login" value="<%= msg.getString("login.btn_sign_in") %>">
     </form>
 </div>
 

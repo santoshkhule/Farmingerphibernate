@@ -1,6 +1,4 @@
-package com.oreilly.servlet;
-
-import com.oreilly.servlet.multipart.FileRenamePolicy;
+package com.san.farm.util;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;

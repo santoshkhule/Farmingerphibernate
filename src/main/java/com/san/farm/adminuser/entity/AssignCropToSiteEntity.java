@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -28,7 +29,13 @@ public class AssignCropToSiteEntity {
 
 	@OneToMany(mappedBy="cropToSiteEntity",targetEntity=AssignCropToSiteRefEntity.class,cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	private List<AssignCropToSiteRefEntity> cropToSiteRefEntity;
-	
+
+	@Column(nullable = false, columnDefinition = "boolean default false")
+	private boolean readyToDispatch;
+
+	public boolean isReadyToDispatch() { return readyToDispatch; }
+	public void setReadyToDispatch(boolean readyToDispatch) { this.readyToDispatch = readyToDispatch; }
+
 	/**
 	 * @return the cropToSiteRefEntity
 	 */

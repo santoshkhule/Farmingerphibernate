@@ -4,14 +4,15 @@
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
 <%@page import="com.san.farm.adminuser.entity.AssignCropToSiteEntity"%>
 <%@page import="java.util.List"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/jquery-ui.css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/style.css">
-<title>Edit Assignment</title>
+<title><%= msg.getString("task.assign.fieldset_title") %></title>
 <style>
     /* ── page layout ── */
     .edit-wrap       { max-width:860px; margin:0 auto; padding:10px 0 30px; }
@@ -175,7 +176,7 @@ $(function() {
 </script>
 
 <fieldset>
-<legend>Edit Assignment</legend>
+<legend><%= msg.getString("task.assign.fieldset_title") %></legend>
 <%
 AssignEmployeeToFarmEntity assignment = (AssignEmployeeToFarmEntity) request.getAttribute("assignment");
 if (assignment == null) {
@@ -216,24 +217,24 @@ if (assignment == null) {
 
     <!-- page header -->
     <div class="page-header">
-        <a class="back-link" href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">&#8592; Back to All Assignments</a>
+        <a class="back-link" href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">&#8592; <%= msg.getString("btn.back") %></a>
         <span style="color:#ccc;">|</span>
-        <span class="page-title">Edit Assignment &nbsp;<span style="font-weight:normal;font-size:0.85em;color:var(--text-muted);">#<%=assignment.getAssignResourceId()%></span></span>
+        <span class="page-title"><%= msg.getString("task.assign.fieldset_title") %> &nbsp;<span style="font-weight:normal;font-size:0.85em;color:var(--text-muted);">#<%=assignment.getAssignResourceId()%></span></span>
     </div>
 
     <!-- info chips — read-only summary at a glance -->
     <div class="info-bar">
         <% if (!curEmpName.isEmpty()) { %>
-        <span class="info-chip"><span class="chip-lbl">Employee:</span><span class="chip-val"><%=curEmpName%></span></span>
+        <span class="info-chip"><span class="chip-lbl"><%= msg.getString("task.assign.label_employee_name") %>:</span><span class="chip-val"><%=curEmpName%></span></span>
         <% } %>
         <% if (formattedDate != null && !formattedDate.isEmpty()) { %>
-        <span class="info-chip"><span class="chip-lbl">Work Date:</span><span class="chip-val"><%=formattedDate%></span></span>
+        <span class="info-chip"><span class="chip-lbl"><%= msg.getString("task.assign.label_work_date") %>:</span><span class="chip-val"><%=formattedDate%></span></span>
         <% } %>
         <% if (!curSiteName.isEmpty()) { %>
-        <span class="info-chip"><span class="chip-lbl">Site:</span><span class="chip-val"><%=curSiteName%></span></span>
+        <span class="info-chip"><span class="chip-lbl"><%= msg.getString("tbl.col_site") %>:</span><span class="chip-val"><%=curSiteName%></span></span>
         <% } %>
         <% if (!curStatus.isEmpty()) { %>
-        <span class="info-chip"><span class="chip-lbl">Status:</span>
+        <span class="info-chip"><span class="chip-lbl"><%= msg.getString("task.assign.label_work_status") %>:</span>
             <span class="status-pill pill-<%=curStatus%>"><%=curStatus%></span>
         </span>
         <% } %>
@@ -244,10 +245,10 @@ if (assignment == null) {
 
         <!-- Section 1: Employee & Date -->
         <div class="form-card">
-            <div class="card-title">Employee &amp; Date</div>
+            <div class="card-title"><%= msg.getString("task.assign.label_employee_name") %> &amp; <%= msg.getString("task.assign.label_work_date") %></div>
             <div class="form-grid col2">
                 <div class="field">
-                    <label for="selEmpId">Employee Name <span class="req">*</span></label>
+                    <label for="selEmpId"><%= msg.getString("task.assign.label_employee_name") %></label>
                     <select name="selEmpId" id="selEmpId" required>
                         <option value="-1">-- Select Employee --</option>
                         <% if (employees != null) { for (EmployeeInfoEntity emp : employees) {
@@ -262,7 +263,7 @@ if (assignment == null) {
                     <span class="err-msg" id="err_selEmpId"></span>
                 </div>
                 <div class="field">
-                    <label for="txtDate">Work Date <span class="req">*</span></label>
+                    <label for="txtDate"><%= msg.getString("task.assign.label_work_date") %></label>
                     <input type="text" name="txtDate" id="txtDate"
                         value="<%=formattedDate != null ? formattedDate : ""%>"
                         placeholder="dd/mm/yyyy" required
@@ -275,10 +276,10 @@ if (assignment == null) {
 
         <!-- Section 2: Site & Crop -->
         <div class="form-card">
-            <div class="card-title">Site &amp; Crop Assignment</div>
+            <div class="card-title"><%= msg.getString("tbl.col_site") %> &amp; <%= msg.getString("tbl.col_crop") %></div>
             <div class="form-grid col2">
                 <div class="field">
-                    <label for="selCropToSiteId">Crop-Site Assignment</label>
+                    <label for="selCropToSiteId"><%= msg.getString("tbl.col_site") %>-<%= msg.getString("tbl.col_crop") %></label>
                     <select name="selCropToSiteId" id="selCropToSiteId">
                         <option value="-1">-- Select --</option>
                         <% if (cropToSites != null) { for (AssignCropToSiteEntity cts : cropToSites) {
@@ -294,7 +295,7 @@ if (assignment == null) {
                     </select>
                 </div>
                 <div class="field">
-                    <label for="selCropId">Crop</label>
+                    <label for="selCropId"><%= msg.getString("tbl.col_crop") %></label>
                     <select name="selCropId" id="selCropId">
                         <option value="-1">-- Select Crop --</option>
                         <% if (crops != null) { for (ConfigCropEntity crop : crops) { %>
@@ -308,29 +309,29 @@ if (assignment == null) {
 
         <!-- Section 3: Work Details -->
         <div class="form-card">
-            <div class="card-title">Work Details</div>
+            <div class="card-title"><%= msg.getString("task.assign.label_type_of_work") %></div>
             <div class="form-grid col3">
                 <div class="field">
-                    <label for="selWorkType">Type of Work <span class="req">*</span></label>
+                    <label for="selWorkType"><%= msg.getString("task.assign.label_type_of_work") %> <span class="req">*</span></label>
                     <select name="selWorkType" id="selWorkType" required>
                         <option value="-1">-- Select --</option>
-                        <option value="Contract"        <%="Contract".equals(curTypeOfWork)        ? "selected" : ""%>>Contract</option>
-                        <option value="Per Day Payment" <%="Per Day Payment".equals(curTypeOfWork) ? "selected" : ""%>>Per Day Payment</option>
+                        <option value="Contract"        <%="Contract".equals(curTypeOfWork)        ? "selected" : ""%>><%= msg.getString("task.assign.work_contract") %></option>
+                        <option value="Per Day Payment" <%="Per Day Payment".equals(curTypeOfWork) ? "selected" : ""%>><%= msg.getString("task.assign.work_per_day") %></option>
                     </select>
                     <span class="err-msg" id="err_selWorkType"></span>
                 </div>
                 <div class="field">
-                    <label for="selWorkStatus">Work Status <span class="req">*</span></label>
+                    <label for="selWorkStatus"><%= msg.getString("task.assign.label_work_status") %> <span class="req">*</span></label>
                     <select name="selWorkStatus" id="selWorkStatus" required>
                         <option value="-1">-- Select --</option>
-                        <option value="Completed" <%="Completed".equals(curStatus) ? "selected" : ""%>>Completed</option>
-                        <option value="Pending"   <%="Pending".equals(curStatus)   ? "selected" : ""%>>Pending</option>
-                        <option value="Reject"    <%="Reject".equals(curStatus)    ? "selected" : ""%>>Reject</option>
+                        <option value="Completed" <%="Completed".equals(curStatus) ? "selected" : ""%>><%= msg.getString("task.assign.status_completed") %></option>
+                        <option value="Pending"   <%="Pending".equals(curStatus)   ? "selected" : ""%>><%= msg.getString("task.assign.status_pending") %></option>
+                        <option value="Reject"    <%="Reject".equals(curStatus)    ? "selected" : ""%>><%= msg.getString("task.assign.status_rejected") %></option>
                     </select>
                     <span class="err-msg" id="err_selWorkStatus"></span>
                 </div>
                 <div class="field">
-                    <label>Task(s)</label>
+                    <label><%= msg.getString("task.assign.label_tasks") %></label>
                     <div class="chk-drop" id="taskDrop">
                         <button type="button" class="chk-drop-btn" id="taskDropBtn"
                             onclick="toggleDrop('taskDropPanel','taskDropBtn',event)">Select tasks…</button>
@@ -365,15 +366,15 @@ if (assignment == null) {
 
         <!-- Section 4: Payment -->
         <div class="form-card">
-            <div class="card-title">Payment</div>
+            <div class="card-title"><%= msg.getString("task.assign.label_amount_rs") %></div>
             <div class="form-grid col2">
                 <div class="field">
-                    <label for="txtAmount">Amount (Rs)</label>
+                    <label for="txtAmount"><%= msg.getString("task.assign.label_amount_rs") %></label>
                     <input type="number" name="txtAmount" id="txtAmount"
                            value="<%=assignment.getAmount()%>" step="0.01" min="0" placeholder="0.00">
                 </div>
                 <div class="field">
-                    <label for="txtAdvPayment">Advance Payment (Rs)</label>
+                    <label for="txtAdvPayment"><%= msg.getString("task.assign.label_advance_rs") %></label>
                     <input type="number" name="txtAdvPayment" id="txtAdvPayment"
                            value="<%=assignment.getAdvPayment()%>" step="0.01" min="0" placeholder="0.00">
                 </div>
@@ -382,19 +383,19 @@ if (assignment == null) {
 
         <!-- Section 5: Remarks -->
         <div class="form-card">
-            <div class="card-title">Remarks</div>
+            <div class="card-title"><%= msg.getString("task.assign.label_comment") %></div>
             <div class="field">
-                <label for="txtComment">Comment</label>
+                <label for="txtComment"><%= msg.getString("task.assign.label_comment") %></label>
                 <textarea name="txtComment" id="txtComment" rows="3"
-                          placeholder="Add any notes or remarks here…"><%=assignment.getComment() != null ? assignment.getComment() : ""%></textarea>
+                          placeholder="<%= msg.getString("task.assign.placeholder_comment") %>"><%=assignment.getComment() != null ? assignment.getComment() : ""%></textarea>
             </div>
         </div>
 
         <!-- Action bar -->
         <div class="action-bar">
             <a class="btn-cancel"
-               href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp">Cancel</a>
-            <button type="submit" class="btn-save" name="sbtSave">Save Changes</button>
+               href="<%=request.getContextPath()%>/view/user/01assignTaskToEmployeeViewAll.jsp"><%= msg.getString("btn.cancel") %></a>
+            <button type="submit" class="btn-save" name="sbtSave"><%= msg.getString("btn.save") %></button>
         </div>
 
     </form>

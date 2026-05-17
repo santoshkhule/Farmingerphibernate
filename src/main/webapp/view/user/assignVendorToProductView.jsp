@@ -1,13 +1,14 @@
 <%@page import="com.san.farm.adminuser.entity.VendorEntity"%>
 <%@page import="com.san.farm.adminuser.dao.VendorService"%>
 <%@page import="java.util.List"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
-<title>View Vendor Products</title>
+<title><%= msg.getString("vendor.view_products.page_title") %></title>
 <style>
 	.filter-bar { padding:10px; background:#f0f6ff; border:1px solid #b0c8f0; border-radius:4px; margin-bottom:10px; display:inline-block; }
 	.filter-bar label { font-weight:bold; margin-right:6px; }
@@ -27,7 +28,7 @@
 </head>
 <body>
 <%@include file="../../header.jsp"%>
-<fieldset><legend>View Vendor Products</legend>
+<fieldset><legend><%= msg.getString("vendor.view_products.fieldset_title") %></legend>
 
 	<%
 		VendorService vendorService = new VendorService();
@@ -37,9 +38,9 @@
 	%>
 
 	<div class="filter-bar">
-		<label for="selVendor">Vendor:</label>
+		<label for="selVendor"><%= msg.getString("vendor.view_products.label_vendor") %>:</label>
 		<select id="selVendor" onchange="loadVendorProducts()">
-			<option value="">--- Select Vendor ---</option>
+			<option value=""><%= msg.getString("vendor.view_products.select_vendor") %></option>
 			<% for (VendorEntity v : vendorList) {
 				boolean selected = String.valueOf(v.getVendorId()).equals(selectedVendorId);
 			%>

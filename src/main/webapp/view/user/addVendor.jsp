@@ -1,15 +1,16 @@
 <%@page import="com.san.farm.adminuser.entity.VendorEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.VendorService"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
 <script src="../../js/jquery-1.9.1.js"></script>
-<title>Vendor</title>
+<title><%= msg.getString("vendor.page_title") %></title>
 <style>
 	#formPanel {
 		background:#f0f6ff; border:1px solid #b0c8f0;
@@ -128,31 +129,31 @@
 </script>
 <body>
 <%@include file="../../header.jsp"%>
-<fieldset><legend>Vendor</legend>
+<fieldset><legend><%= msg.getString("vendor.fieldset_title") %></legend>
 
 	<form method="post" id="frmVendor" action="../../VendorController">
 		<input type="hidden" name="vendorId" id="vendorId">
 		<div id="formPanel">
 			<div id="editBanner"></div>
-			<div class="form-row"><label for="vendorName">Vendor Name:</label><input type="text" name="vendorName" id="vendorName" required placeholder="Enter vendor name"></div>
-			<div class="form-row"><label for="shopName">Shop Name:</label><input type="text" name="shopName" id="shopName" placeholder="Enter shop name"></div>
-			<div class="form-row"><label for="perContactNo">Personal Contact:</label><input type="text" name="perContactNo" id="perContactNo" placeholder="Personal number"></div>
-			<div class="form-row"><label for="ofcContactNo">Shop Contact:</label><input type="text" name="ofcContactNo" id="ofcContactNo" placeholder="Shop number"></div>
-			<div class="form-row"><label for="address">Address:</label><textarea name="address" id="address" placeholder="Enter address"></textarea></div>
-			<div class="form-row"><label for="emailId">Email Id:</label><input type="text" name="emailId" id="emailId" placeholder="Enter email"></div>
+			<div class="form-row"><label for="vendorName"><%= msg.getString("vendor.label_vendor_name") %>:</label><input type="text" name="vendorName" id="vendorName" required placeholder="Enter vendor name"></div>
+			<div class="form-row"><label for="shopName"><%= msg.getString("vendor.label_shop_name") %>:</label><input type="text" name="shopName" id="shopName" placeholder="Enter shop name"></div>
+			<div class="form-row"><label for="perContactNo"><%= msg.getString("vendor.label_personal_contact") %>:</label><input type="text" name="perContactNo" id="perContactNo" placeholder="Personal number"></div>
+			<div class="form-row"><label for="ofcContactNo"><%= msg.getString("vendor.label_shop_contact") %>:</label><input type="text" name="ofcContactNo" id="ofcContactNo" placeholder="Shop number"></div>
+			<div class="form-row"><label for="address"><%= msg.getString("vendor.label_address") %>:</label><textarea name="address" id="address" placeholder="Enter address"></textarea></div>
+			<div class="form-row"><label for="emailId"><%= msg.getString("vendor.label_email") %>:</label><input type="text" name="emailId" id="emailId" placeholder="Enter email"></div>
 			<div class="form-btns">
-				<input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="Add">
-				<input type="submit" class="btn-update" id="btnUpdate" name="edit" value="Update" style="display:none">
-				<input type="button" class="btn-cancel" id="btnCancel"              value="Cancel" style="display:none" onclick="resetForm()">
+				<input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="<%= msg.getString("btn.add") %>">
+				<input type="submit" class="btn-update" id="btnUpdate" name="edit" value="<%= msg.getString("btn.update") %>" style="display:none">
+				<input type="button" class="btn-cancel" id="btnCancel"              value="<%= msg.getString("btn.cancel") %>" style="display:none" onclick="resetForm()">
 			</div>
 		</div>
 	</form>
 
 	<div id="bulkBar">
 		<span id="selCount">0</span> record(s) selected &nbsp;
-		<button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+		<button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %></button>
 		&nbsp;
-		<button type="button" class="btn-cancel" onclick="clearSelection()">Clear Selection</button>
+		<button type="button" class="btn-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear") %></button>
 	</div>
 
 	<form method="post" id="frmBulkDelete" action="../../VendorController"></form>
@@ -160,15 +161,15 @@
 	<table border="1" width="100%" class="tbl-data" cellspacing="0">
 		<thead>
 			<tr>
-				<th width="3%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)" title="Select All"></th>
+				<th width="3%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)" title="<%= msg.getString("tbl.col_select_all") %>"></th>
 				<th width="5%">Id</th>
-				<th>Vendor Name</th>
-				<th>Shop Name</th>
-				<th>Personal No.</th>
-				<th>Shop No.</th>
-				<th>Address</th>
-				<th>Email Id</th>
-				<th width="8%">Actions</th>
+				<th><%= msg.getString("vendor.tbl_col_vendor_name") %></th>
+				<th><%= msg.getString("vendor.tbl_col_shop_name") %></th>
+				<th><%= msg.getString("vendor.tbl_col_personal_no") %></th>
+				<th><%= msg.getString("vendor.tbl_col_shop_no") %></th>
+				<th><%= msg.getString("tbl.col_address") %></th>
+				<th><%= msg.getString("vendor.tbl_col_email") %></th>
+				<th width="8%"><%= msg.getString("tbl.col_actions") %></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -194,7 +195,7 @@
 				<td><%=vendor.getEmailId() != null ? vendor.getEmailId() : ""%></td>
 				<td style="text-align:center;">
 					<button type="button" class="btn-row-edit"
-						onclick="editRow(<%=vendor.getVendorId()%>,'<%=eVendorName%>','<%=eShopName%>','<%=ePerContact%>','<%=eOfcContact%>','<%=eAddress%>','<%=eEmailId%>')">Edit</button>
+						onclick="editRow(<%=vendor.getVendorId()%>,'<%=eVendorName%>','<%=eShopName%>','<%=ePerContact%>','<%=eOfcContact%>','<%=eAddress%>','<%=eEmailId%>')"><%= msg.getString("btn.edit") %></button>
 				</td>
 			</tr>
 			<%} %>

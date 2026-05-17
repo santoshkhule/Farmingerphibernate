@@ -2,9 +2,11 @@ package com.san.farm.adminuser.entity;
 
 import java.sql.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
@@ -26,7 +28,9 @@ public class EmployeeInfoEntity {
 	private String bankName;
 	private String accountNumber;
 	private String panCardNo;
-	private String empPicPath;
+	@Lob
+	@Column(name = "empPic")
+	private String empPic;
 	/*@OneToOne(cascade=CascadeType.ALL,fetch=FetchType.EAGER,mappedBy="authEmployeeInfo",targetEntity=LoginUser.class)
 	@JoinColumn(name="loginUserId")
 	private LoginUser loginUser;*/
@@ -199,17 +203,12 @@ public class EmployeeInfoEntity {
 	public void setPanCardNo(String panCardNo) {
 		this.panCardNo = panCardNo;
 	}
-	/**
-	 * @return the empPicPath
-	 */
-	public String getEmpPicPath() {
-		return empPicPath;
+	public String getEmpPic() {
+		return empPic;
 	}
-	/**
-	 * @param empPicPath the empPicPath to set
-	 */
-	public void setEmpPicPath(String empPicPath) {
-		this.empPicPath = empPicPath;
+
+	public void setEmpPic(String empPic) {
+		this.empPic = empPic;
 	}
 
 }

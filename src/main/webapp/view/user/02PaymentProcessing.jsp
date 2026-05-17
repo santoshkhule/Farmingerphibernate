@@ -6,17 +6,18 @@
 <%@page import="com.san.farm.adminuser.entity.PaymentProcessingEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
 <script src="../../js/jquery-1.9.1.js"></script>
 <script src="../../js/jquery-ui.js"></script>
 <link rel="stylesheet" href="../../css/style.css">
-<title>Process Payment</title>
+<title><%= msg.getString("payment.page_title") %></title>
 </head>
 <script type="text/javascript">
 	var salaryTransactions = {};
@@ -135,75 +136,75 @@
 		%>
 		<table style="width: 70%; background:#f5f5f5;" border="1" cellspacing="0" align="center">
 			<tr>
-				<td colspan="4" style="font-weight:bold; background:#d0e8ff; padding:4px;">Employee Work Details</td>
+				<td colspan="4" style="font-weight:bold; background:#d0e8ff; padding:4px;"><%= msg.getString("payment.fieldset_title") %></td>
 			</tr>
 			<tr>
-				<td style="text-align:right; width:20%;">Employee Name:</td>
+				<td style="text-align:right; width:20%;"><%= msg.getString("payment.info_label_employee") %>:</td>
 				<td style="width:30%;"><b><%=empName.trim()%></b></td>
-				<td style="text-align:right; width:20%;">Work Date:</td>
+				<td style="text-align:right; width:20%;"><%= msg.getString("tbl.col_date") %>:</td>
 				<td style="width:30%;"><%=workDate%></td>
 			</tr>
 			<tr>
-				<td style="text-align:right;">Site:</td>
+				<td style="text-align:right;"><%= msg.getString("tbl.col_site") %>:</td>
 				<td><%=siteName%></td>
-				<td style="text-align:right;">Crop:</td>
+				<td style="text-align:right;"><%= msg.getString("tbl.col_crop") %>:</td>
 				<td><%=cropName%></td>
 			</tr>
 			<tr>
-				<td style="text-align:right;">Work Type:</td>
+				<td style="text-align:right;"><%= msg.getString("payment.info_label_work_type") %>:</td>
 				<td><%=workType%></td>
-				<td style="text-align:right;">Work Status:</td>
+				<td style="text-align:right;"><%= msg.getString("tbl.col_status") %>:</td>
 				<td><%=workStatus%></td>
 			</tr>
 		</table>
 		<br>
 		<table style="width: 70%" border="1" cellspacing="0" align="center">
 			<tr>
-				<td style="text-align: right;">Amount To Pay:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.amt_to_pay") %>:</td>
 				<td style="text-align: left;"><input type="text" name="amountToPay" value="<%=amountToPay%>" readonly="readonly"></td>
-				<td style="text-align: right;">Advance Paid:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.amt_adv_paid") %>:</td>
 				<td style="text-align: left;"><input type="text" value="<%=advPayment%>" readonly="readonly"></td>
-				<td style="text-align: right;">Amount Paid:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.amt_salary_paid") %>:</td>
 				<td style="text-align: left;"><input type="text" name="amountTopaid" value="<%=ttlPaid%>" readonly="readonly"></td>
 			</tr>
 			<tr>
 				<td style="text-align: right;">Total Paid:</td>
 				<td style="text-align: left;"><input type="text" value="<%=totalPaid%>" readonly="readonly"></td>
-				<td style="text-align: right;">Balance:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.amt_balance_due") %>:</td>
 				<td style="text-align: left;"><input type="text" value="<%=balance%>" readonly="readonly"></td>
 				<td style="text-align: right;">Excess:</td>
 				<td style="text-align: left;"><input type="text" value="<%=excess%>" readonly="readonly"></td>
 			</tr>
 			<tr>
-				<td style="text-align: right;">Payment type:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.form_label_payment_type") %>:</td>
 				<td style="text-align: left;">
 					<select name="paymentType" id="paymentType" required=required>
 						<option value="">Select</option>
-						<option value="Cash">Cash</option>
-						<option value="Check">Check</option>
-						<option value="Other">Other</option>
+						<option value="Cash"><%= msg.getString("payment.form_cash") %></option>
+						<option value="Check"><%= msg.getString("payment.form_check") %></option>
+						<option value="Other"><%= msg.getString("payment.form_other") %></option>
 					</select>
 				</td>
-				<td style="text-align: right;">Amount:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.form_label_amount") %>:</td>
 				<td style="text-align: left;">
 					<input type="text" name="txtAmount" id="amount" value="" required="required" pattern="[0-9]+|[0-9]+\.[0-9]+">
 				</td>
-				<td style="text-align: right;">Date:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.form_label_date") %>:</td>
 				<td style="text-align: left;">
 					<input type="text" name="txtDate" id="txtDate" pattern="(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}"
 					oninvalid="setCustomValidity('Enter Date: Select From Calender')" onchange="setCustomValidity('')" title="Enter Date"
 					placeholder="dd/mm/yyyy" required="required" value=""></td>
 			</tr>
 			<tr>
-				<td style="text-align: right;">Bank Name:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.form_label_bank_name") %>:</td>
 				<td style="text-align: left;">
 					<input type="text" name="bankName" id="bankName" value="<%=defaultBankName%>">
 				</td>
-				<td style="text-align: right;">Account Number:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.form_label_account_no") %>:</td>
 				<td style="text-align: left;">
 					<input type="text" name="accountNO" id="accountNO" value="<%=defaultAccountNo%>">
 				</td>
-				<td style="text-align: right;">Comment:</td>
+				<td style="text-align: right;"><%= msg.getString("payment.form_label_comment") %>:</td>
 				<td style="text-align: left;">
 					<textarea rows="1" cols="20" name="comment" id="comment" placeholder="Comment If Any"></textarea>
 				</td>
@@ -212,9 +213,9 @@
 				<td colspan="6" style="text-align: center;">
 					<input type="hidden" name="assignResourceId" id="assignResourceId" value="<%=assignResourceId%>">
 					<input type="hidden" name="salaryProcessId" id="salaryProcessId">
-					<input type="submit" name="sbtUpdateAmount" hidden="true" id="sbtUpdateAmount" value="Update Paid Amount" style="width: 12em" onclick="this.form.action='../../PaymentProcessingServlet'">
-					<input type="submit" name="sbtPayAmount" id="sbtPayAmount" value="Pay Amount" style="width: 10em" onclick="this.form.action='../../PaymentProcessingServlet'">
-					<input type="button" value="Reset" style="width: 6em" onclick="resetPayForm()">
+					<input type="submit" name="sbtUpdateAmount" hidden="true" id="sbtUpdateAmount" value="<%= msg.getString("btn.update") %>" style="width: 12em" onclick="this.form.action='../../PaymentProcessingServlet'">
+					<input type="submit" name="sbtPayAmount" id="sbtPayAmount" value="<%= msg.getString("btn.pay_amount") %>" style="width: 10em" onclick="this.form.action='../../PaymentProcessingServlet'">
+					<input type="button" value="<%= msg.getString("btn.reset") %>" style="width: 6em" onclick="resetPayForm()">
 				</td>
 			</tr>
 		</table>
@@ -224,20 +225,20 @@
 	<form>
 		<table>
 			<tr>
-				<td><input type="button" value="Edit" onclick="populateEditForm()"></td>
-				<td><input type="submit" name="sbtDelete" value="Delete" onclick="this.form.action='action/SalaryProcessingAction.jsp'"></td>
+				<td><input type="button" value="<%= msg.getString("btn.edit") %>" onclick="populateEditForm()"></td>
+				<td><input type="submit" name="sbtDelete" value="<%= msg.getString("btn.delete") %>" onclick="this.form.action='action/SalaryProcessingAction.jsp'"></td>
 			</tr>
 		</table>
 		<table border="1" cellspacing="0" style="width: 100%">
 			<tr>
 				<th>Select</th>
-				<th>Sr. No.</th>
-				<th>Payment Type</th>
-				<th>Date</th>
-				<th>Amount</th>
-				<th>Bank Name</th>
-				<th>Account Number</th>
-				<th>Comment</th>
+				<th><%= msg.getString("tbl.col_number") %></th>
+				<th><%= msg.getString("payment.history_col_type") %></th>
+				<th><%= msg.getString("tbl.col_date") %></th>
+				<th><%= msg.getString("tbl.col_amount") %></th>
+				<th><%= msg.getString("payment.history_col_bank") %></th>
+				<th><%= msg.getString("payment.history_col_account_no") %></th>
+				<th><%= msg.getString("tbl.col_comment") %></th>
 			</tr>
 			<%
 				int cnt = 0;

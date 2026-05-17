@@ -1,13 +1,29 @@
 <%@page import="com.san.farm.adminuser.entity.*"%>
 <%@page import="com.san.farm.adminuser.dao.*"%>
 <%@page import="java.util.List"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
+<%
+	VendorService     vendorService     = new VendorService();
+	CategoryService   categoryService   = new CategoryService();
+	FertilizerService fertilizerService = new FertilizerService();
+	BrandService      brandService      = new BrandService();
+	UnitService       unitService       = new UnitService();
+	AssignVendorToProductService avpService = new AssignVendorToProductService();
+
+	List<VendorEntity>     vendorList     = vendorService.fetch();
+	List<CategoryEntity>   categoryList   = categoryService.fetch();
+	List<FertilizerEntity> fertilizerList = fertilizerService.fetch();
+	List<BrandEntity>      brandList      = brandService.fetch();
+	List<UnitEntity>       unitList       = unitService.fetch();
+	List<AssignVendorToProductEntity> assignList = avpService.fetch();
+%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
-<title>Assign Vendor To Product</title>
+<title><%= msg.getString("vendor.assign_product.fieldset_title") %></title>
 <style>
 	#formPanel { background:#f0f6ff; border:1px solid #b0c8f0; padding:12px 16px; margin-bottom:10px; border-radius:4px; display:inline-block; min-width:480px; }
 	#formPanel label { font-weight:bold; display:inline-block; width:130px; text-align:right; margin-right:6px; }
@@ -30,21 +46,6 @@
 	.form-btns { text-align:center; margin-top:10px; }
 </style>
 </head>
-<%
-	VendorService     vendorService     = new VendorService();
-	CategoryService   categoryService   = new CategoryService();
-	FertilizerService fertilizerService = new FertilizerService();
-	BrandService      brandService      = new BrandService();
-	UnitService       unitService       = new UnitService();
-	AssignVendorToProductService avpService = new AssignVendorToProductService();
-
-	List<VendorEntity>     vendorList     = vendorService.fetch();
-	List<CategoryEntity>   categoryList   = categoryService.fetch();
-	List<FertilizerEntity> fertilizerList = fertilizerService.fetch();
-	List<BrandEntity>      brandList      = brandService.fetch();
-	List<UnitEntity>       unitList       = unitService.fetch();
-	List<AssignVendorToProductEntity> assignList = avpService.fetch();
-%>
 <script type="text/javascript">
 	var editingRowEl = null;
 
@@ -113,12 +114,12 @@
 </script>
 <body>
 <%@include file="../../header.jsp"%>
-<fieldset><legend>Assign Vendor To Product</legend>
+<fieldset><legend><%= msg.getString("vendor.assign_product.fieldset_title") %></legend>
 
 	<form method="post" action="../../AssignVendorToProductController">
 		<div id="formPanel">
 			<div class="form-row">
-				<label>Vendor:</label>
+				<label><%= msg.getString("vendor.assign_product.label_vendor") %>:</label>
 				<select name="vendorId" required>
 					<option value="">--- Select Vendor ---</option>
 					<% for (VendorEntity v : vendorList) { %>
@@ -127,7 +128,7 @@
 				</select>
 			</div>
 			<div class="form-row">
-				<label>Category:</label>
+				<label><%= msg.getString("vendor.assign_product.label_category") %>:</label>
 				<select name="categoryId">
 					<option value="">--- Select ---</option>
 					<% for (CategoryEntity c : categoryList) { %>
@@ -136,7 +137,7 @@
 				</select>
 			</div>
 			<div class="form-row">
-				<label>Product:</label>
+				<label><%= msg.getString("vendor.assign_product.label_product") %>:</label>
 				<select name="fertilizerId" required>
 					<option value="">--- Select Product ---</option>
 					<% for (FertilizerEntity f : fertilizerList) { %>
@@ -145,7 +146,7 @@
 				</select>
 			</div>
 			<div class="form-row">
-				<label>Brand:</label>
+				<label><%= msg.getString("vendor.assign_product.label_brand") %>:</label>
 				<select name="brandId">
 					<option value="">--- Select ---</option>
 					<% for (BrandEntity b : brandList) { %>
@@ -154,7 +155,7 @@
 				</select>
 			</div>
 			<div class="form-row">
-				<label>Unit:</label>
+				<label><%= msg.getString("vendor.assign_product.label_unit") %>:</label>
 				<select name="unitId">
 					<option value="">--- Select ---</option>
 					<% for (UnitEntity u : unitList) { %>
@@ -163,28 +164,28 @@
 				</select>
 			</div>
 			<div class="form-row">
-				<label>Price:</label>
+				<label><%= msg.getString("vendor.assign_product.label_price") %>:</label>
 				<input type="text" name="price" placeholder="0.00">
 			</div>
 			<div class="form-row">
-				<label>Product Desc:</label>
+				<label><%= msg.getString("vendor.assign_product.label_product_desc") %>:</label>
 				<input type="text" name="prodDesc" placeholder="Description">
 			</div>
 			<div class="form-row">
-				<label>Comment:</label>
+				<label><%= msg.getString("tbl.col_comment") %>:</label>
 				<input type="text" name="comment" placeholder="Comment">
 			</div>
 			<div class="form-btns">
-				<input type="submit" class="btn-add" name="add" value="Assign">
+				<input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.assign") %>">
 			</div>
 		</div>
 	</form>
 
 	<div id="bulkBar">
 		<span id="selCount">0</span> record(s) selected &nbsp;
-		<button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+		<button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %></button>
 		&nbsp;
-		<button type="button" class="btn-cancel" onclick="clearSelection()">Clear Selection</button>
+		<button type="button" class="btn-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear") %></button>
 	</div>
 
 	<form method="post" id="frmBulkDelete" action="../../AssignVendorToProductController"></form>
@@ -193,15 +194,15 @@
 		<thead>
 			<tr>
 				<th width="3%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)"></th>
-				<th>Vendor</th>
-				<th>Category</th>
-				<th>Product</th>
-				<th>Brand</th>
-				<th>Unit</th>
-				<th>Price</th>
-				<th>Description</th>
-				<th>Comment</th>
-				<th>Actions</th>
+				<th><%= msg.getString("tbl.col_vendor") %></th>
+				<th><%= msg.getString("tbl.col_category") %></th>
+				<th><%= msg.getString("tbl.col_product") %></th>
+				<th><%= msg.getString("tbl.col_brand") %></th>
+				<th><%= msg.getString("tbl.col_unit") %></th>
+				<th><%= msg.getString("tbl.col_price") %></th>
+				<th><%= msg.getString("tbl.col_description") %></th>
+				<th><%= msg.getString("tbl.col_comment") %></th>
+				<th><%= msg.getString("tbl.col_actions") %></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -280,7 +281,7 @@
 				<input class="edit-input" type="text" id="inpComment<%=id%>" value="<%=comment%>" style="display:none">
 			</td>
 			<td style="text-align:center; white-space:nowrap;">
-				<button type="button" class="btn-row-edit" id="btnEdit<%=id%>" onclick="editRow(<%=id%>)">Edit</button>
+				<button type="button" class="btn-row-edit" id="btnEdit<%=id%>" onclick="editRow(<%=id%>)"><%= msg.getString("btn.edit") %></button>
 				<form method="post" action="../../AssignVendorToProductController" style="display:inline" id="frmEdit<%=id%>">
 					<input type="hidden" name="edit" value="edit">
 					<input type="hidden" name="assignVendorProductId" value="<%=id%>">
@@ -302,9 +303,9 @@
 							document.getElementById('hidPrice<%=id%>').value   = document.getElementById('inpPrice<%=id%>').value;
 							document.getElementById('hidDesc<%=id%>').value    = document.getElementById('inpDesc<%=id%>').value;
 							document.getElementById('hidComment<%=id%>').value = document.getElementById('inpComment<%=id%>').value;
-							document.getElementById('frmEdit<%=id%>').submit();">Save</button>
+							document.getElementById('frmEdit<%=id%>').submit();"><%= msg.getString("btn.save") %></button>
 				</form>
-				<button type="button" class="btn-cancel" id="btnCancel<%=id%>" style="display:none" onclick="cancelEdit(<%=id%>)">Cancel</button>
+				<button type="button" class="btn-cancel" id="btnCancel<%=id%>" style="display:none" onclick="cancelEdit(<%=id%>)"><%= msg.getString("btn.cancel") %></button>
 			</td>
 		</tr>
 		<% } %>

@@ -1,10 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" isErrorPage="true" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isErrorPage="true" %>
+<%@ page import="org.apache.log4j.Logger" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/style.css" type="text/css">
-<title>Error - Santosh Farming ERP</title>
+<title>Error - Sevak ERP</title>
 <style>
     body { margin: 0; padding: 0; background: #eaf2ea; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
     .err-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 16px rgba(0,0,0,0.12); padding: 40px 48px; max-width: 480px; width: 90%; text-align: center; }
@@ -21,6 +22,14 @@
     Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
     String  errorMsg   = (String)  request.getAttribute("javax.servlet.error.message");
     Throwable cause    = (Throwable) request.getAttribute("javax.servlet.error.exception");
+
+    /* Log the exception via Log4j so it appears in farmingerERP.log */
+    if (cause != null) {
+        Logger.getLogger("com.san.farm.error").error(
+            "HTTP " + (statusCode != null ? statusCode : 500) + " — "
+            + request.getAttribute("javax.servlet.error.request_uri")
+            + " — " + cause.getClass().getName() + ": " + cause.getMessage(), cause);
+    }
 
     String userMsg = "An unexpected error occurred. Please try again or contact your system administrator.";
     String codeStr = statusCode != null ? String.valueOf(statusCode) : "500";

@@ -2,7 +2,8 @@
 <%@page import="com.san.farm.adminuser.dao.*"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
 <%@page import="java.util.List"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     /* ── resolve cropToSiteId ── */
     int cropToSiteId = 0;
@@ -55,10 +56,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
-<title>Allocate Fertilizers — <%=siteName%></title>
+<title><%= msg.getString("fert_alloc.page_title") %> — <%=siteName%></title>
 <style>
     .site-banner { background:#e8f5e9; border:1px solid var(--green-bd); border-radius:var(--r-md);
                    padding:8px 16px; margin-bottom:12px; display:flex; align-items:center; gap:18px; }
@@ -95,14 +96,14 @@ $(function() {
 </script>
 
 <fieldset>
-<legend>Allocate Fertilizers / Products to Site</legend>
+<legend><%= msg.getString("fert_alloc.fieldset_title") %></legend>
 
 <!-- Back link -->
-<a class="back-link" href="assignCropToSite.jsp">&#8592; Back to Assign Crop To Site</a>
+<a class="back-link" href="assignCropToSite.jsp">&#8592; <%= msg.getString("btn.back") %></a>
 
 <!-- Site banner -->
 <div class="site-banner" style="margin-top:8px;">
-    <div><div class="sb-label">Site</div><div class="sb-val"><%=siteName%></div></div>
+    <div><div class="sb-label"><%= msg.getString("tbl.col_site") %></div><div class="sb-val"><%=siteName%></div></div>
     <% if (!siteDate.isEmpty()) { %>
     <div><div class="sb-label">Assignment Date</div><div class="sb-val"><%=siteDate%></div></div>
     <% } %>
@@ -114,7 +115,7 @@ $(function() {
             crops.append(ref.getConfigCropEntity().getCropName());
         }
         if (crops.length() > 0) { %>
-    <div><div class="sb-label">Crops</div><div class="sb-val"><%=crops.toString()%></div></div>
+    <div><div class="sb-label"><%= msg.getString("tbl.col_crop") %></div><div class="sb-val"><%=crops.toString()%></div></div>
     <% } } %>
 </div>
 
@@ -122,15 +123,15 @@ $(function() {
 <div class="stats-bar">
     <div class="stat-card highlight">
         <div class="sc-val"><%=allocations.size()%></div>
-        <div class="sc-label">Allocations</div>
+        <div class="sc-label"><%= msg.getString("fert_alloc.section_already_allocated") %></div>
     </div>
     <div class="stat-card highlight">
         <div class="sc-val">&#8377; <%=String.format("%.2f", summaryTotal)%></div>
-        <div class="sc-label">Total Spent</div>
+        <div class="sc-label"><%= msg.getString("fert_alloc.tbl_col_total_rs") %></div>
     </div>
     <div class="stat-card">
         <div class="sc-val"><%=products.size()%></div>
-        <div class="sc-label">Products Available</div>
+        <div class="sc-label"><%= msg.getString("fert_alloc.section_available_products") %></div>
     </div>
 </div>
 
@@ -138,49 +139,49 @@ $(function() {
 <form method="get" action="allocateFertilizersToSite.jsp">
     <input type="hidden" name="cropToSiteId" value="<%=cropToSiteId%>">
     <div class="filter-bar">
-        <label>Vendor:</label>
+        <label><%= msg.getString("fert_alloc.filter_label_vendor") %>:</label>
         <select name="vendorId" onchange="this.form.submit()">
-            <option value="">-- All Vendors --</option>
+            <option value=""><%= msg.getString("fert_alloc.filter_all_vendors") %></option>
             <% for (VendorEntity v : vendors) { %>
             <option value="<%=v.getVendorId()%>" <%=v.getVendorId()==selVendorId?"selected":""%>><%=v.getVendorName()%></option>
             <% } %>
         </select>
-        <label>Category:</label>
+        <label><%= msg.getString("fert_alloc.filter_label_category") %>:</label>
         <select name="categoryId" onchange="this.form.submit()">
-            <option value="">-- All Categories --</option>
+            <option value=""><%= msg.getString("fert_alloc.filter_all_categories") %></option>
             <% for (CategoryEntity c : categories) { %>
             <option value="<%=c.getCategoryId()%>" <%=c.getCategoryId()==selCategoryId?"selected":""%>><%=c.getCategoryName()%></option>
             <% } %>
         </select>
-        <label>Fertilizer:</label>
+        <label><%= msg.getString("fert_alloc.filter_label_fertilizer") %>:</label>
         <select name="fertilizerId" onchange="this.form.submit()">
-            <option value="">-- All Products --</option>
+            <option value=""><%= msg.getString("fert_alloc.filter_all_products") %></option>
             <% for (FertilizerEntity f : fertilizers) { %>
             <option value="<%=f.getFertilizerId()%>" <%=f.getFertilizerId()==selFertilizerId?"selected":""%>><%=f.getFertilizerName()%></option>
             <% } %>
         </select>
         <% if (selVendorId > 0 || selCategoryId > 0 || selFertilizerId > 0) { %>
         <a href="allocateFertilizersToSite.jsp?cropToSiteId=<%=cropToSiteId%>"
-           style="font-size:12px; color:var(--red-md); text-decoration:none;">&#10005; Clear</a>
+           style="font-size:12px; color:var(--red-md); text-decoration:none;">&#10005; <%= msg.getString("btn.clear") %></a>
         <% } %>
     </div>
 </form>
 
 <!-- Product list -->
-<div class="section-title">Available Products <span style="font-size:0.8em; font-weight:normal; color:var(--text-muted);">(<%=products.size()%> found)</span></div>
+<div class="section-title"><%= msg.getString("fert_alloc.section_available_products") %> <span style="font-size:0.8em; font-weight:normal; color:var(--text-muted);">(<%=products.size()%> found)</span></div>
 <% if (products.isEmpty()) { %>
-<p style="color:var(--text-muted); font-size:13px;">No products match the selected filters.</p>
+<p style="color:var(--text-muted); font-size:13px;"><%= msg.getString("fert_alloc.no_products") %></p>
 <% } else { %>
 <table border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
-        <th>Vendor</th>
-        <th>Category</th>
-        <th>Product</th>
-        <th>Brand</th>
-        <th>Unit</th>
-        <th>Price (Rs)</th>
-        <th>Allocate</th>
+        <th><%= msg.getString("tbl.col_vendor") %></th>
+        <th><%= msg.getString("tbl.col_category") %></th>
+        <th><%= msg.getString("tbl.col_product") %></th>
+        <th><%= msg.getString("tbl.col_brand") %></th>
+        <th><%= msg.getString("tbl.col_unit") %></th>
+        <th><%= msg.getString("fert_alloc.tbl_col_price_rs") %></th>
+        <th><%= msg.getString("fert_alloc.tbl_col_allocate") %></th>
     </tr>
     </thead>
     <tbody>
@@ -203,13 +204,13 @@ $(function() {
                 <input type="hidden" name="action"               value="allocate">
                 <input type="hidden" name="cropToSiteId"         value="<%=cropToSiteId%>">
                 <input type="hidden" name="assignVendorProductId" value="<%=avp.getAssignVendorProductId()%>">
-                <label style="font-size:11px;">Qty:</label>
+                <label style="font-size:11px;"><%= msg.getString("fert_alloc.label_qty") %>:</label>
                 <input type="number" name="quantity" class="qty-inp" value="1" min="0.01" step="0.01" required>
-                <label style="font-size:11px; margin-left:6px;">Date:</label>
+                <label style="font-size:11px; margin-left:6px;"><%= msg.getString("tbl.col_date") %>:</label>
                 <input type="text" name="allocationDate" class="date-inp" value="<%=todayStr%>" placeholder="dd/mm/yyyy">
-                <label style="font-size:11px; margin-left:6px;">Note:</label>
+                <label style="font-size:11px; margin-left:6px;"><%= msg.getString("fert_alloc.label_note") %>:</label>
                 <input type="text" name="comment" style="width:90px;font-size:12px;padding:3px;" placeholder="optional">
-                <button type="submit" class="btn-alloc" style="margin-left:6px;">Allocate</button>
+                <button type="submit" class="btn-alloc" style="margin-left:6px;"><%= msg.getString("fert_alloc.tbl_col_allocate") %></button>
             </form>
         </td>
     </tr>
@@ -220,25 +221,25 @@ $(function() {
 
 <!-- Already allocated section -->
 <div class="section-title" style="margin-top:18px;">
-    Already Allocated to This Site
+    <%= msg.getString("fert_alloc.section_already_allocated") %>
     <span style="font-size:0.8em; font-weight:normal; color:var(--text-muted);">(<%=allocations.size()%> record(s))</span>
 </div>
 <% if (allocations.isEmpty()) { %>
-<p style="color:var(--text-muted); font-size:13px;">No products allocated yet.</p>
+<p style="color:var(--text-muted); font-size:13px;"><%= msg.getString("fert_alloc.no_products_allocated") %></p>
 <% } else { %>
 <table border="1" width="100%" class="tbl-data" cellspacing="0">
     <thead>
     <tr>
-        <th>Date</th>
-        <th>Vendor</th>
-        <th>Product</th>
-        <th>Brand</th>
-        <th>Unit</th>
-        <th>Unit Price (Rs)</th>
-        <th>Qty</th>
-        <th>Total (Rs)</th>
-        <th>Comment</th>
-        <th>Action</th>
+        <th><%= msg.getString("tbl.col_date") %></th>
+        <th><%= msg.getString("tbl.col_vendor") %></th>
+        <th><%= msg.getString("tbl.col_product") %></th>
+        <th><%= msg.getString("tbl.col_brand") %></th>
+        <th><%= msg.getString("tbl.col_unit") %></th>
+        <th><%= msg.getString("fert_alloc.tbl_col_unit_price_rs") %></th>
+        <th><%= msg.getString("fert_alloc.tbl_col_qty") %></th>
+        <th><%= msg.getString("fert_alloc.tbl_col_total_rs") %></th>
+        <th><%= msg.getString("tbl.col_comment") %></th>
+        <th><%= msg.getString("tbl.col_actions") %></th>
     </tr>
     </thead>
     <tbody>
@@ -272,7 +273,7 @@ $(function() {
                 <input type="hidden" name="allocationId" value="<%=spa.getAllocationId()%>">
                 <input type="hidden" name="cropToSiteId" value="<%=cropToSiteId%>">
                 <button type="submit" class="btn-delete"
-                    onclick="return (window.top||window).confirm('Remove this allocation?')">Remove</button>
+                    onclick="return (window.top||window).confirm('Remove this allocation?')"><%= msg.getString("btn.remove") %></button>
             </form>
         </td>
     </tr>
@@ -280,7 +281,7 @@ $(function() {
     </tbody>
     <tfoot>
     <tr style="font-weight:bold;">
-        <td colspan="7" style="text-align:right;">Grand Total</td>
+        <td colspan="7" style="text-align:right;"><%= msg.getString("fert_alloc.tbl_footer_grand_total") %></td>
         <td style="text-align:right;"><%=String.format("%.2f", grandTotal)%></td>
         <td colspan="2"></td>
     </tr>

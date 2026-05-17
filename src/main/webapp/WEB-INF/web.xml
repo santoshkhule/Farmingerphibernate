@@ -236,4 +236,12 @@
     <servlet-name>SalePaymentController</servlet-name>
     <url-pattern>/SalePaymentController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>LanguageController</servlet-name>
+    <servlet-class>com.san.farm.util.LanguageController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LanguageController</servlet-name>
+    <url-pattern>/LanguageController</url-pattern>
+  </servlet-mapping>
 </web-app>

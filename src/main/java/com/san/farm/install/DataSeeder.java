@@ -1,5 +1,8 @@
 package com.san.farm.install;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -17,14 +20,19 @@ import com.san.farm.util.HibernateUtil;
  * Seeds reference / default data into the database if not already present.
  *
  * Seeded data
- *   USERTYPE  : Admin
- *   LOGINUSER : admin / admin  (linked to the Admin user type)
+ *   USERTYPE  : Admin, Owner, Farm Manager, Site Supervisor, Accountant, Field Worker, Viewer
+ *   LOGINUSER : admin / admin  (assigned all 7 user types)
  *
  * Change the admin password immediately after first login.
  */
 public class DataSeeder implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSeeder.class);
+
+    private static final String[] ALL_TYPES = {
+        "Admin", "Owner", "Farm Manager", "Site Supervisor",
+        "Accountant", "Field Worker", "Viewer"
+    };
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -34,8 +42,12 @@ public class DataSeeder implements ServletContextListener {
         try {
             tx = session.beginTransaction();
 
-            UserTypeEntity adminType = seedUserType(session, "Admin");
-            seedLoginUser(session, "admin", "admin", adminType);
+            List<UserTypeEntity> allTypesList = new ArrayList<UserTypeEntity>();
+            for (String typeName : ALL_TYPES) {
+                allTypesList.add(seedUserType(session, typeName));
+            }
+
+            seedAdminUser(session, "admin", "admin", allTypesList);
 
             tx.commit();
             logger.info("DataSeeder: seed checks complete.");
@@ -67,22 +79,29 @@ public class DataSeeder implements ServletContextListener {
         return existing;
     }
 
-    /** Inserts the given login user if it does not already exist. */
-    private void seedLoginUser(Session session, String uname, String password, UserTypeEntity userType) {
-        Long count = (Long) session.createQuery(
-            "SELECT COUNT(u) FROM LoginUser u WHERE u.uname = :uname")
+    /**
+     * Seeds the admin login user.
+     * If the user exists: updates its types to all types.
+     * If the user does not exist: creates it with all types.
+     */
+    @SuppressWarnings("unchecked")
+    private void seedAdminUser(Session session, String uname, String password, List<UserTypeEntity> allTypesList) {
+        LoginUser existing = (LoginUser) session.createQuery(
+            "FROM LoginUser WHERE uname = :uname")
             .setParameter("uname", uname)
             .uniqueResult();
 
-        if (count == null || count == 0) {
+        if (existing == null) {
             LoginUser user = new LoginUser();
             user.setUname(uname);
             user.setPassword(password);
-            user.setUserTypeEntity(userType);
+            user.setUserTypes(allTypesList);
             session.save(user);
-            logger.info("DataSeeder: inserted login user '{}' — CHANGE PASSWORD AFTER FIRST LOGIN.", uname);
+            logger.info("DataSeeder: inserted login user '{}' with all {} types — CHANGE PASSWORD AFTER FIRST LOGIN.", uname, allTypesList.size());
         } else {
-            logger.info("DataSeeder: login user '{}' already exists, skipping.", uname);
+            existing.setUserTypes(allTypesList);
+            session.merge(existing);
+            logger.info("DataSeeder: login user '{}' already exists — updated user types to all {} types.", uname, allTypesList.size());
         }
     }
 

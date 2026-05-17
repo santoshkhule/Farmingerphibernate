@@ -16,6 +16,7 @@
 <%@page import="com.san.farm.adminuser.dao.UnitService"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     String activeTab = request.getParameter("tab");
     if (activeTab == null || activeTab.trim().isEmpty()) activeTab = "userType";
@@ -50,7 +51,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css">
 <link rel="stylesheet" href="../../css/jquery-ui.css">
-<title>Configuration for Farming</title>
+<title><%= msg.getString("config.page_title") %></title>
 <style>
     /* ── tab nav ── */
     .cfg-tabs          { display:flex; flex-wrap:wrap; gap:3px;
@@ -135,58 +136,58 @@
 <body>
 <%@include file="../../header.jsp"%>
 <fieldset>
-<legend>Configuration for Farming</legend>
+<legend><%= msg.getString("config.fieldset_title") %></legend>
 
 <!-- Tab nav -->
 <div class="cfg-tabs">
-    <button class="cfg-tab-btn<%="userType".equals(activeTab)?" active":""%>" onclick="switchTab('userType')">User Type</button>
-    <button class="cfg-tab-btn<%="site".equals(activeTab)?" active":""%>"     onclick="switchTab('site')">Site Information</button>
-    <button class="cfg-tab-btn<%="crop".equals(activeTab)?" active":""%>"     onclick="switchTab('crop')">Crops</button>
-    <button class="cfg-tab-btn<%="task".equals(activeTab)?" active":""%>"     onclick="switchTab('task')">Farming Task</button>
-    <button class="cfg-tab-btn<%="category".equals(activeTab)?" active":""%>" onclick="switchTab('category')">Category</button>
-    <button class="cfg-tab-btn<%="product".equals(activeTab)?" active":""%>"  onclick="switchTab('product')">Product</button>
-    <button class="cfg-tab-btn<%="brand".equals(activeTab)?" active":""%>"    onclick="switchTab('brand')">Brand</button>
-    <button class="cfg-tab-btn<%="unit".equals(activeTab)?" active":""%>"     onclick="switchTab('unit')">Units</button>
+    <button class="cfg-tab-btn<%="userType".equals(activeTab)?" active":""%>" onclick="switchTab('userType')"><%= msg.getString("config.tab_user_type") %></button>
+    <button class="cfg-tab-btn<%="site".equals(activeTab)?" active":""%>"     onclick="switchTab('site')"><%= msg.getString("config.tab_site_info") %></button>
+    <button class="cfg-tab-btn<%="crop".equals(activeTab)?" active":""%>"     onclick="switchTab('crop')"><%= msg.getString("config.tab_crops") %></button>
+    <button class="cfg-tab-btn<%="task".equals(activeTab)?" active":""%>"     onclick="switchTab('task')"><%= msg.getString("config.tab_farming_task") %></button>
+    <button class="cfg-tab-btn<%="category".equals(activeTab)?" active":""%>" onclick="switchTab('category')"><%= msg.getString("config.tab_category") %></button>
+    <button class="cfg-tab-btn<%="product".equals(activeTab)?" active":""%>"  onclick="switchTab('product')"><%= msg.getString("config.tab_product") %></button>
+    <button class="cfg-tab-btn<%="brand".equals(activeTab)?" active":""%>"    onclick="switchTab('brand')"><%= msg.getString("config.tab_brand") %></button>
+    <button class="cfg-tab-btn<%="unit".equals(activeTab)?" active":""%>"     onclick="switchTab('unit')"><%= msg.getString("config.tab_units") %></button>
 </div>
 
 <!-- ══════════════════════════════════════════════════
      TAB 1 : User Type
      ══════════════════════════════════════════════════ -->
 <div id="tab-userType" class="cfg-tab-panel<%="userType".equals(activeTab)?" active":""%>">
-    <span class="cfg-count-chip"><%=utList.size()%> User Types</span>
+    <span class="cfg-count-chip"><%=utList.size()%> <%= msg.getString("config.count.user_types") %></span>
     <form method="post" id="ut_frm" action="../../UserTypeController">
         <div class="cfg-form-card">
-            <div class="cfg-form-card-title">Add New User Type</div>
+            <div class="cfg-form-card-title"><%= msg.getString("config.user_type.form_title_add") %></div>
             <% if (utDupErr) { %>
             <div class="cfg-err-msg">
-                &#9888;&nbsp;User type <strong>"<%=utErrSafe%>"</strong> already exists. Please enter a different name.
+                &#9888;&nbsp;<%= msg.getString("config.user_type.fieldset_title") %> <strong>"<%=utErrSafe%>"</strong> <%= msg.getString("config.user_type.error_duplicate") %>
             </div>
             <% } %>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
-                    <label for="ut_name">User Type Name</label>
+                    <label for="ut_name"><%= msg.getString("config.user_type.label_name") %></label>
                     <input type="text" name="userType" id="ut_name" required placeholder="e.g. Admin, Supervisor"
                         value="<%=utErrSafe%>"
                         <%=utDupErr ? "style=\"border-color:#c62828;\"" : ""%>>
                 </div>
                 <div style="align-self:flex-end;">
-                    <input type="submit" class="btn-add" name="add" value="Add">
+                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
                 </div>
             </div>
         </div>
     </form>
     <div class="cfg-bulk-bar" id="ut_bulkBar">
         <span><strong id="ut_selCount">0</strong> selected</span>
-        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ut','../../UserTypeController')">Delete Selected</button>
-        <button type="button" class="btn-cancel" onclick="cfgClearSelection('ut')">Clear</button>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ut','../../UserTypeController')"><%= msg.getString("btn.delete_selected") %></button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('ut')"><%= msg.getString("btn.clear") %></button>
     </div>
     <form method="post" id="ut_frmBulk" action="../../UserTypeController"></form>
     <table class="cfg-table tbl-data" id="ut_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="ut_chkAll" onclick="cfgToggleAll('ut',this)"></th>
-            <th width="7%">ID</th>
-            <th>User Type</th>
-            <th width="16%" style="text-align:center;">Action</th>
+            <th width="7%"><%= msg.getString("tbl.col_id") %></th>
+            <th><%= msg.getString("tbl.col_user_type") %></th>
+            <th width="16%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
         </tr></thead>
         <tbody>
         <% for (UserTypeEntity u : utList) {
@@ -206,9 +207,9 @@
                 </form>
             </td>
             <td class="center">
-                <button id="ut_btnE_<%=uid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ut',<%=uid%>)">Edit</button>
-                <button id="ut_btnS_<%=uid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ut',<%=uid%>)" style="display:none">Save</button>
-                <button id="ut_btnC_<%=uid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ut',<%=uid%>)" style="display:none">Cancel</button>
+                <button id="ut_btnE_<%=uid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ut',<%=uid%>)"><%= msg.getString("btn.edit") %></button>
+                <button id="ut_btnS_<%=uid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ut',<%=uid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
+                <button id="ut_btnC_<%=uid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ut',<%=uid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
             </td>
         </tr>
         <% } %>
@@ -220,43 +221,43 @@
      TAB 2 : Site Information
      ══════════════════════════════════════════════════ -->
 <div id="tab-site" class="cfg-tab-panel<%="site".equals(activeTab)?" active":""%>">
-    <span class="cfg-count-chip"><%=siList.size()%> Sites</span>
+    <span class="cfg-count-chip"><%=siList.size()%> <%= msg.getString("config.count.sites") %></span>
     <form method="post" id="si_frm" action="../../ConfigSiteInformationController">
         <div class="cfg-form-card">
-            <div class="cfg-form-card-title">Add New Site</div>
+            <div class="cfg-form-card-title"><%= msg.getString("config.site.form_title_add") %></div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:200px;">
-                    <label for="si_siteName">Site Name</label>
+                    <label for="si_siteName"><%= msg.getString("site.label_site_name") %></label>
                     <input type="text" name="siteName" id="si_siteName" required placeholder="Farm / Plot name">
                 </div>
                 <div class="cfg-field" style="min-width:120px;">
-                    <label for="si_siteArea">Area (acres)</label>
+                    <label for="si_siteArea"><%= msg.getString("site.label_site_area") %></label>
                     <input type="text" name="siteArea" id="si_siteArea" required placeholder="e.g. 2.5">
                 </div>
                 <div class="cfg-field" style="min-width:200px;">
-                    <label for="si_siteLocation">Location</label>
+                    <label for="si_siteLocation"><%= msg.getString("site.label_site_location") %></label>
                     <input type="text" name="siteLocation" id="si_siteLocation" required placeholder="Village / District">
                 </div>
                 <div style="align-self:flex-end;">
-                    <input type="submit" class="btn-add" name="add" value="Add">
+                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
                 </div>
             </div>
         </div>
     </form>
     <div class="cfg-bulk-bar" id="si_bulkBar">
         <span><strong id="si_selCount">0</strong> selected</span>
-        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('si','../../ConfigSiteInformationController')">Delete Selected</button>
-        <button type="button" class="btn-cancel" onclick="cfgClearSelection('si')">Clear</button>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('si','../../ConfigSiteInformationController')"><%= msg.getString("btn.delete_selected") %></button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('si')"><%= msg.getString("btn.clear") %></button>
     </div>
     <form method="post" id="si_frmBulk" action="../../ConfigSiteInformationController"></form>
     <table class="cfg-table tbl-data" id="si_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="si_chkAll" onclick="cfgToggleAll('si',this)"></th>
-            <th width="5%">ID</th>
-            <th>Site Name</th>
-            <th width="12%">Area (acres)</th>
-            <th>Location</th>
-            <th width="14%" style="text-align:center;">Action</th>
+            <th width="5%"><%= msg.getString("tbl.col_id") %></th>
+            <th><%= msg.getString("tbl.col_site_name") %></th>
+            <th width="12%"><%= msg.getString("tbl.col_area_acres") %></th>
+            <th><%= msg.getString("tbl.col_location") %></th>
+            <th width="14%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
         </tr></thead>
         <tbody>
         <% for (ConfigSiteInformationEntity s : siList) {
@@ -289,9 +290,9 @@
                 </form>
             </td>
             <td class="center">
-                <button id="si_btnE_<%=sid%>" type="button" class="btn-row-edit"   onclick="siInlineEdit(<%=sid%>)">Edit</button>
-                <button id="si_btnS_<%=sid%>" type="button" class="btn-row-save"   onclick="siInlineSave(<%=sid%>)" style="display:none">Save</button>
-                <button id="si_btnC_<%=sid%>" type="button" class="btn-row-cancel" onclick="siInlineCancel(<%=sid%>)" style="display:none">Cancel</button>
+                <button id="si_btnE_<%=sid%>" type="button" class="btn-row-edit"   onclick="siInlineEdit(<%=sid%>)"><%= msg.getString("btn.edit") %></button>
+                <button id="si_btnS_<%=sid%>" type="button" class="btn-row-save"   onclick="siInlineSave(<%=sid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
+                <button id="si_btnC_<%=sid%>" type="button" class="btn-row-cancel" onclick="siInlineCancel(<%=sid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
             </td>
         </tr>
         <% } %>
@@ -303,33 +304,33 @@
      TAB 3 : Crops
      ══════════════════════════════════════════════════ -->
 <div id="tab-crop" class="cfg-tab-panel<%="crop".equals(activeTab)?" active":""%>">
-    <span class="cfg-count-chip"><%=crList.size()%> Crops</span>
+    <span class="cfg-count-chip"><%=crList.size()%> <%= msg.getString("config.count.crops") %></span>
     <form method="post" id="cr_frm" action="../../ConfigCropController">
         <div class="cfg-form-card">
-            <div class="cfg-form-card-title">Add New Crop</div>
+            <div class="cfg-form-card-title"><%= msg.getString("config.crop.form_title_add") %></div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
-                    <label for="cr_cropName">Crop Name</label>
+                    <label for="cr_cropName"><%= msg.getString("crop.label_crop_name") %></label>
                     <input type="text" name="cropName" id="cr_cropName" required placeholder="e.g. Wheat, Rice, Cotton">
                 </div>
                 <div style="align-self:flex-end;">
-                    <input type="submit" class="btn-add" name="add" value="Add">
+                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
                 </div>
             </div>
         </div>
     </form>
     <div class="cfg-bulk-bar" id="cr_bulkBar">
         <span><strong id="cr_selCount">0</strong> selected</span>
-        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('cr','../../ConfigCropController')">Delete Selected</button>
-        <button type="button" class="btn-cancel" onclick="cfgClearSelection('cr')">Clear</button>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('cr','../../ConfigCropController')"><%= msg.getString("btn.delete_selected") %></button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('cr')"><%= msg.getString("btn.clear") %></button>
     </div>
     <form method="post" id="cr_frmBulk" action="../../ConfigCropController"></form>
     <table class="cfg-table tbl-data" id="cr_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="cr_chkAll" onclick="cfgToggleAll('cr',this)"></th>
-            <th width="8%">ID</th>
-            <th>Crop Name</th>
-            <th width="16%" style="text-align:center;">Action</th>
+            <th width="8%"><%= msg.getString("tbl.col_id") %></th>
+            <th><%= msg.getString("tbl.col_crop_name") %></th>
+            <th width="16%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
         </tr></thead>
         <tbody>
         <% for (ConfigCropEntity c : crList) {
@@ -349,9 +350,9 @@
                 </form>
             </td>
             <td class="center">
-                <button id="cr_btnE_<%=cid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('cr',<%=cid%>)">Edit</button>
-                <button id="cr_btnS_<%=cid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('cr',<%=cid%>)" style="display:none">Save</button>
-                <button id="cr_btnC_<%=cid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('cr',<%=cid%>)" style="display:none">Cancel</button>
+                <button id="cr_btnE_<%=cid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('cr',<%=cid%>)"><%= msg.getString("btn.edit") %></button>
+                <button id="cr_btnS_<%=cid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('cr',<%=cid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
+                <button id="cr_btnC_<%=cid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('cr',<%=cid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
             </td>
         </tr>
         <% } %>
@@ -363,33 +364,33 @@
      TAB 4 : Farming Task
      ══════════════════════════════════════════════════ -->
 <div id="tab-task" class="cfg-tab-panel<%="task".equals(activeTab)?" active":""%>">
-    <span class="cfg-count-chip"><%=ftList.size()%> Tasks</span>
+    <span class="cfg-count-chip"><%=ftList.size()%> <%= msg.getString("config.count.tasks") %></span>
     <form method="post" id="ft_frm" action="../../ConfigFarmTaskController">
         <div class="cfg-form-card">
-            <div class="cfg-form-card-title">Add New Task</div>
+            <div class="cfg-form-card-title"><%= msg.getString("config.task.form_title_add") %></div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
-                    <label for="ft_taskName">Task Name</label>
+                    <label for="ft_taskName"><%= msg.getString("config.farm_task.label_task_name") %></label>
                     <input type="text" name="taskName" id="ft_taskName" required placeholder="e.g. Ploughing, Irrigation">
                 </div>
                 <div style="align-self:flex-end;">
-                    <input type="submit" class="btn-add" name="add" value="Add">
+                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
                 </div>
             </div>
         </div>
     </form>
     <div class="cfg-bulk-bar" id="ft_bulkBar">
         <span><strong id="ft_selCount">0</strong> selected</span>
-        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ft','../../ConfigFarmTaskController')">Delete Selected</button>
-        <button type="button" class="btn-cancel" onclick="cfgClearSelection('ft')">Clear</button>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ft','../../ConfigFarmTaskController')"><%= msg.getString("btn.delete_selected") %></button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('ft')"><%= msg.getString("btn.clear") %></button>
     </div>
     <form method="post" id="ft_frmBulk" action="../../ConfigFarmTaskController"></form>
     <table class="cfg-table tbl-data" id="ft_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="ft_chkAll" onclick="cfgToggleAll('ft',this)"></th>
-            <th width="8%">ID</th>
-            <th>Task Name</th>
-            <th width="16%" style="text-align:center;">Action</th>
+            <th width="8%"><%= msg.getString("tbl.col_id") %></th>
+            <th><%= msg.getString("tbl.col_task_name") %></th>
+            <th width="16%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
         </tr></thead>
         <tbody>
         <% for (ConfigFarmTaskEntity t : ftList) {
@@ -409,9 +410,9 @@
                 </form>
             </td>
             <td class="center">
-                <button id="ft_btnE_<%=tid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ft',<%=tid%>)">Edit</button>
-                <button id="ft_btnS_<%=tid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ft',<%=tid%>)" style="display:none">Save</button>
-                <button id="ft_btnC_<%=tid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ft',<%=tid%>)" style="display:none">Cancel</button>
+                <button id="ft_btnE_<%=tid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ft',<%=tid%>)"><%= msg.getString("btn.edit") %></button>
+                <button id="ft_btnS_<%=tid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ft',<%=tid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
+                <button id="ft_btnC_<%=tid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ft',<%=tid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
             </td>
         </tr>
         <% } %>
@@ -423,33 +424,33 @@
      TAB 5 : Category
      ══════════════════════════════════════════════════ -->
 <div id="tab-category" class="cfg-tab-panel<%="category".equals(activeTab)?" active":""%>">
-    <span class="cfg-count-chip"><%=caList.size()%> Categories</span>
+    <span class="cfg-count-chip"><%=caList.size()%> <%= msg.getString("config.count.categories") %></span>
     <form method="post" id="ca_frm" action="../../CategoryController">
         <div class="cfg-form-card">
-            <div class="cfg-form-card-title">Add New Category</div>
+            <div class="cfg-form-card-title"><%= msg.getString("config.category.form_title_add") %></div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
-                    <label for="ca_categoryName">Category Name</label>
+                    <label for="ca_categoryName"><%= msg.getString("config.category.label_category_name") %></label>
                     <input type="text" name="categoryName" id="ca_categoryName" required placeholder="e.g. Fertilizer, Pesticide">
                 </div>
                 <div style="align-self:flex-end;">
-                    <input type="submit" class="btn-add" name="add" value="Add">
+                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
                 </div>
             </div>
         </div>
     </form>
     <div class="cfg-bulk-bar" id="ca_bulkBar">
         <span><strong id="ca_selCount">0</strong> selected</span>
-        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ca','../../CategoryController')">Delete Selected</button>
-        <button type="button" class="btn-cancel" onclick="cfgClearSelection('ca')">Clear</button>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ca','../../CategoryController')"><%= msg.getString("btn.delete_selected") %></button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('ca')"><%= msg.getString("btn.clear") %></button>
     </div>
     <form method="post" id="ca_frmBulk" action="../../CategoryController"></form>
     <table class="cfg-table tbl-data" id="ca_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="ca_chkAll" onclick="cfgToggleAll('ca',this)"></th>
-            <th width="8%">ID</th>
-            <th>Category Name</th>
-            <th width="16%" style="text-align:center;">Action</th>
+            <th width="8%"><%= msg.getString("tbl.col_id") %></th>
+            <th><%= msg.getString("tbl.col_category_name") %></th>
+            <th width="16%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
         </tr></thead>
         <tbody>
         <% for (CategoryEntity ca : caList) {
@@ -469,9 +470,9 @@
                 </form>
             </td>
             <td class="center">
-                <button id="ca_btnE_<%=caid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ca',<%=caid%>)">Edit</button>
-                <button id="ca_btnS_<%=caid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ca',<%=caid%>)" style="display:none">Save</button>
-                <button id="ca_btnC_<%=caid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ca',<%=caid%>)" style="display:none">Cancel</button>
+                <button id="ca_btnE_<%=caid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ca',<%=caid%>)"><%= msg.getString("btn.edit") %></button>
+                <button id="ca_btnS_<%=caid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ca',<%=caid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
+                <button id="ca_btnC_<%=caid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ca',<%=caid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
             </td>
         </tr>
         <% } %>
@@ -483,33 +484,33 @@
      TAB 6 : Product
      ══════════════════════════════════════════════════ -->
 <div id="tab-product" class="cfg-tab-panel<%="product".equals(activeTab)?" active":""%>">
-    <span class="cfg-count-chip"><%=prList.size()%> Products</span>
+    <span class="cfg-count-chip"><%=prList.size()%> <%= msg.getString("config.count.products") %></span>
     <form method="post" id="pr_frm" action="../../FertilizerController">
         <div class="cfg-form-card">
-            <div class="cfg-form-card-title">Add New Product</div>
+            <div class="cfg-form-card-title"><%= msg.getString("config.product.form_title_add") %></div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
-                    <label for="pr_fertilizerName">Product Name</label>
+                    <label for="pr_fertilizerName"><%= msg.getString("config.fertilizer.label_product_name") %></label>
                     <input type="text" name="fertilizerName" id="pr_fertilizerName" required placeholder="e.g. Urea, DAP, Neem Oil">
                 </div>
                 <div style="align-self:flex-end;">
-                    <input type="submit" class="btn-add" name="add" value="Add">
+                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
                 </div>
             </div>
         </div>
     </form>
     <div class="cfg-bulk-bar" id="pr_bulkBar">
         <span><strong id="pr_selCount">0</strong> selected</span>
-        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('pr','../../FertilizerController')">Delete Selected</button>
-        <button type="button" class="btn-cancel" onclick="cfgClearSelection('pr')">Clear</button>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('pr','../../FertilizerController')"><%= msg.getString("btn.delete_selected") %></button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('pr')"><%= msg.getString("btn.clear") %></button>
     </div>
     <form method="post" id="pr_frmBulk" action="../../FertilizerController"></form>
     <table class="cfg-table tbl-data" id="pr_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="pr_chkAll" onclick="cfgToggleAll('pr',this)"></th>
-            <th width="8%">ID</th>
-            <th>Product Name</th>
-            <th width="16%" style="text-align:center;">Action</th>
+            <th width="8%"><%= msg.getString("tbl.col_id") %></th>
+            <th><%= msg.getString("tbl.col_product_name") %></th>
+            <th width="16%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
         </tr></thead>
         <tbody>
         <% for (FertilizerEntity pr : prList) {
@@ -529,9 +530,9 @@
                 </form>
             </td>
             <td class="center">
-                <button id="pr_btnE_<%=prid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('pr',<%=prid%>)">Edit</button>
-                <button id="pr_btnS_<%=prid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('pr',<%=prid%>)" style="display:none">Save</button>
-                <button id="pr_btnC_<%=prid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('pr',<%=prid%>)" style="display:none">Cancel</button>
+                <button id="pr_btnE_<%=prid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('pr',<%=prid%>)"><%= msg.getString("btn.edit") %></button>
+                <button id="pr_btnS_<%=prid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('pr',<%=prid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
+                <button id="pr_btnC_<%=prid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('pr',<%=prid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
             </td>
         </tr>
         <% } %>
@@ -543,33 +544,33 @@
      TAB 7 : Brand
      ══════════════════════════════════════════════════ -->
 <div id="tab-brand" class="cfg-tab-panel<%="brand".equals(activeTab)?" active":""%>">
-    <span class="cfg-count-chip"><%=brList.size()%> Brands</span>
+    <span class="cfg-count-chip"><%=brList.size()%> <%= msg.getString("config.count.brands") %></span>
     <form method="post" id="br_frm" action="../../BrandController">
         <div class="cfg-form-card">
-            <div class="cfg-form-card-title">Add New Brand</div>
+            <div class="cfg-form-card-title"><%= msg.getString("config.brand.form_title_add") %></div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
-                    <label for="br_brandName">Brand Name</label>
+                    <label for="br_brandName"><%= msg.getString("config.brand.label_brand_name") %></label>
                     <input type="text" name="brandName" id="br_brandName" required placeholder="e.g. Tata, Coromandel">
                 </div>
                 <div style="align-self:flex-end;">
-                    <input type="submit" class="btn-add" name="add" value="Add">
+                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
                 </div>
             </div>
         </div>
     </form>
     <div class="cfg-bulk-bar" id="br_bulkBar">
         <span><strong id="br_selCount">0</strong> selected</span>
-        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('br','../../BrandController')">Delete Selected</button>
-        <button type="button" class="btn-cancel" onclick="cfgClearSelection('br')">Clear</button>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('br','../../BrandController')"><%= msg.getString("btn.delete_selected") %></button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('br')"><%= msg.getString("btn.clear") %></button>
     </div>
     <form method="post" id="br_frmBulk" action="../../BrandController"></form>
     <table class="cfg-table tbl-data" id="br_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="br_chkAll" onclick="cfgToggleAll('br',this)"></th>
-            <th width="8%">ID</th>
-            <th>Brand Name</th>
-            <th width="16%" style="text-align:center;">Action</th>
+            <th width="8%"><%= msg.getString("tbl.col_id") %></th>
+            <th><%= msg.getString("tbl.col_brand_name") %></th>
+            <th width="16%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
         </tr></thead>
         <tbody>
         <% for (BrandEntity br : brList) {
@@ -589,9 +590,9 @@
                 </form>
             </td>
             <td class="center">
-                <button id="br_btnE_<%=brid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('br',<%=brid%>)">Edit</button>
-                <button id="br_btnS_<%=brid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('br',<%=brid%>)" style="display:none">Save</button>
-                <button id="br_btnC_<%=brid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('br',<%=brid%>)" style="display:none">Cancel</button>
+                <button id="br_btnE_<%=brid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('br',<%=brid%>)"><%= msg.getString("btn.edit") %></button>
+                <button id="br_btnS_<%=brid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('br',<%=brid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
+                <button id="br_btnC_<%=brid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('br',<%=brid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
             </td>
         </tr>
         <% } %>
@@ -603,33 +604,33 @@
      TAB 8 : Units
      ══════════════════════════════════════════════════ -->
 <div id="tab-unit" class="cfg-tab-panel<%="unit".equals(activeTab)?" active":""%>">
-    <span class="cfg-count-chip"><%=unList.size()%> Units</span>
+    <span class="cfg-count-chip"><%=unList.size()%> <%= msg.getString("config.count.units") %></span>
     <form method="post" id="un_frm" action="../../UnitController">
         <div class="cfg-form-card">
-            <div class="cfg-form-card-title">Add New Unit</div>
+            <div class="cfg-form-card-title"><%= msg.getString("config.unit.form_title_add") %></div>
             <div class="cfg-form-row">
                 <div class="cfg-field" style="min-width:220px;">
-                    <label for="un_unitName">Unit Name</label>
+                    <label for="un_unitName"><%= msg.getString("config.units.label_unit_name") %></label>
                     <input type="text" name="unitName" id="un_unitName" required placeholder="e.g. Kg, Litre, Bag">
                 </div>
                 <div style="align-self:flex-end;">
-                    <input type="submit" class="btn-add" name="add" value="Add">
+                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
                 </div>
             </div>
         </div>
     </form>
     <div class="cfg-bulk-bar" id="un_bulkBar">
         <span><strong id="un_selCount">0</strong> selected</span>
-        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('un','../../UnitController')">Delete Selected</button>
-        <button type="button" class="btn-cancel" onclick="cfgClearSelection('un')">Clear</button>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('un','../../UnitController')"><%= msg.getString("btn.delete_selected") %></button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('un')"><%= msg.getString("btn.clear") %></button>
     </div>
     <form method="post" id="un_frmBulk" action="../../UnitController"></form>
     <table class="cfg-table tbl-data" id="un_table">
         <thead><tr>
             <th width="4%" style="text-align:center;"><input type="checkbox" id="un_chkAll" onclick="cfgToggleAll('un',this)"></th>
-            <th width="8%">ID</th>
-            <th>Unit Name</th>
-            <th width="16%" style="text-align:center;">Action</th>
+            <th width="8%"><%= msg.getString("tbl.col_id") %></th>
+            <th><%= msg.getString("tbl.col_unit_name") %></th>
+            <th width="16%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
         </tr></thead>
         <tbody>
         <% for (UnitEntity un : unList) {
@@ -649,9 +650,9 @@
                 </form>
             </td>
             <td class="center">
-                <button id="un_btnE_<%=unid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('un',<%=unid%>)">Edit</button>
-                <button id="un_btnS_<%=unid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('un',<%=unid%>)" style="display:none">Save</button>
-                <button id="un_btnC_<%=unid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('un',<%=unid%>)" style="display:none">Cancel</button>
+                <button id="un_btnE_<%=unid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('un',<%=unid%>)"><%= msg.getString("btn.edit") %></button>
+                <button id="un_btnS_<%=unid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('un',<%=unid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
+                <button id="un_btnC_<%=unid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('un',<%=unid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
             </td>
         </tr>
         <% } %>

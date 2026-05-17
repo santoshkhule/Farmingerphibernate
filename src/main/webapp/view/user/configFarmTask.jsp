@@ -1,15 +1,16 @@
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
 <%@page import="java.util.List"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigFarmTaskService"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
 <script src="../../js/jquery-1.9.1.js"></script>
-<title>Farming Task</title>
+<title><%= msg.getString("config.farm_task.fieldset_title") %></title>
 <style>
 	#formPanel {
 		background:#f0f6ff; border:1px solid #b0c8f0;
@@ -114,26 +115,26 @@
 	}
 </script>
 <body>
-<fieldset><legend>Farming Task</legend>
+<fieldset><legend><%= msg.getString("config.farm_task.fieldset_title") %></legend>
 
 	<form method="post" id="frmTask" action="../../ConfigFarmTaskController">
 		<input type="hidden" name="taskId" id="taskId">
 		<div id="formPanel">
 			<div id="editBanner"></div>
-			<label for="taskName">Task Name:</label>
+			<label for="taskName"><%= msg.getString("config.farm_task.label_task_name") %>:</label>
 			<input type="text" name="taskName" id="taskName" required placeholder="Enter task name">
 			&nbsp;
-			<input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="Add">
-			<input type="submit" class="btn-update" id="btnUpdate" name="edit" value="Update" style="display:none">
-			<input type="button" class="btn-cancel" id="btnCancel"              value="Cancel" style="display:none" onclick="resetForm()">
+			<input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="<%= msg.getString("btn.add") %>">
+			<input type="submit" class="btn-update" id="btnUpdate" name="edit" value="<%= msg.getString("btn.update") %>" style="display:none">
+			<input type="button" class="btn-cancel" id="btnCancel"              value="<%= msg.getString("btn.cancel") %>" style="display:none" onclick="resetForm()">
 		</div>
 	</form>
 
 	<div id="bulkBar">
 		<span id="selCount">0</span> record(s) selected &nbsp;
-		<button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+		<button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %> Selected</button>
 		&nbsp;
-		<button type="button" class="btn-cancel" onclick="clearSelection()">Clear Selection</button>
+		<button type="button" class="btn-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear") %> Selection</button>
 	</div>
 
 	<form method="post" id="frmBulkDelete" action="../../ConfigFarmTaskController"></form>
@@ -141,10 +142,10 @@
 	<table border="1" width="100%" class="tbl-data" cellspacing="0">
 		<thead>
 			<tr>
-				<th width="4%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)" title="Select All"></th>
+				<th width="4%"><input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)" title="<%= msg.getString("tbl.col_select_all") %>"></th>
 				<th width="8%">Id</th>
-				<th>Task Name</th>
-				<th width="10%">Actions</th>
+				<th><%= msg.getString("config.farm_task.label_task_name") %></th>
+				<th width="10%"><%= msg.getString("tbl.col_actions") %></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -160,7 +161,7 @@
 				<td><%=t.getTaskName()%></td>
 				<td style="text-align:center;">
 					<button type="button" class="btn-row-edit"
-						onclick="editRow(<%=t.getTaskId()%>,'<%=eName%>')">Edit</button>
+						onclick="editRow(<%=t.getTaskId()%>,'<%=eName%>')"><%= msg.getString("btn.edit") %></button>
 				</td>
 			</tr>
 			<%} %>

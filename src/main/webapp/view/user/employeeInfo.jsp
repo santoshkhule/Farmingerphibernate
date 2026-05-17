@@ -1,8 +1,9 @@
 <%@page import="com.san.farm.adminuser.entity.EmployeeInfoEntity"%>
 <%@page import="com.san.farm.adminuser.dao.EmployeeInfoService"%>
 <%@page import="com.san.farm.util.FarmUtility"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <%
     String mode       = request.getParameter("mode");
     String empIdParam = request.getParameter("employeeInfoId");
@@ -38,27 +39,21 @@
     String fAccNo      = emp != null && emp.getAccountNumber() != null ? emp.getAccountNumber()  : "";
     String fPan        = emp != null && emp.getPanCardNo()     != null ? emp.getPanCardNo()      : "";
     String fComment    = emp != null && emp.getComment()       != null ? emp.getComment()        : "";
-    String fPhotoPath  = emp != null && emp.getEmpPicPath()   != null && !emp.getEmpPicPath().isEmpty()
-                         ? emp.getEmpPicPath() : "";
-    // empPicPath stores the full absolute path — extract just the filename for URL use
-    String fPhotoFileName = "";
-    if (!fPhotoPath.isEmpty()) {
-        String normalized = fPhotoPath.replace('\\', '/');
-        int lastSlash = normalized.lastIndexOf('/');
-        fPhotoFileName = lastSlash >= 0 ? normalized.substring(lastSlash + 1) : normalized;
-    }
+    String fPhotoData = emp != null && emp.getEmpPic() != null ? emp.getEmpPic() : "";
 
-    String pageTitle = isView ? "View Employee" : (isEdit ? "Edit Employee" : "Add Employee");
+    String pageTitle = isView ? msg.getString("employee.fieldset_title_edit")
+                              : (isEdit ? msg.getString("employee.fieldset_title_edit")
+                                        : msg.getString("employee.fieldset_title_add"));
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
 <script src="../../js/jquery-1.9.1.js"></script>
 <script src="../../js/jquery-ui.js"></script>
-<title><%=pageTitle%></title>
+<title><%= isAdd ? msg.getString("employee.page_title_add") : pageTitle %></title>
 </head>
 <script>
     $(function() {
@@ -72,8 +67,15 @@
     });
 </script>
 <script>
+    var MAX_PHOTO_BYTES = 204800; // 200 KB
     function previewPhoto(input) {
         if (input.files && input.files[0]) {
+            var file = input.files[0];
+            if (file.size > MAX_PHOTO_BYTES) {
+                alert('Photo must be 200 KB or smaller. Selected file is ' + Math.round(file.size / 1024) + ' KB.');
+                input.value = '';
+                return;
+            }
             var reader = new FileReader();
             reader.onload = function(e) {
                 var img = document.getElementById('imgPreview');
@@ -82,7 +84,7 @@
                 img.style.display = 'block';
                 ph.style.display  = 'none';
             };
-            reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
         }
     }
 </script>
@@ -97,11 +99,11 @@
             <!-- Photo column -->
             <div style="flex-shrink:0; text-align:center; padding:8px;">
                 <img id="imgPreview"
-                     src="<%=fPhotoFileName.isEmpty() ? "" : "../../uploads/" + fPhotoFileName%>"
-                     style="width:130px; height:155px; object-fit:cover; border:2px solid var(--green-bd); border-radius:4px; display:<%=fPhotoFileName.isEmpty() ? "none" : "block"%>; margin:0 auto;">
+                     src="<%=fPhotoData.isEmpty() ? "" : fPhotoData%>"
+                     style="width:130px; height:155px; object-fit:cover; border:2px solid var(--green-bd); border-radius:4px; display:<%=fPhotoData.isEmpty() ? "none" : "block"%>; margin:0 auto;">
                 <div id="photoPlaceholder"
                      style="width:130px; height:155px; background:var(--green-lt); border:2px solid var(--green-bd); border-radius:4px;
-                            display:<%=fPhotoFileName.isEmpty() ? "flex" : "none"%>;
+                            display:<%=fPhotoData.isEmpty() ? "flex" : "none"%>;
                             align-items:center; justify-content:center;
                             color:var(--green-md); font-size:13px; margin:0 auto; flex-direction:column; gap:6px;">
                     <span style="font-size:32px;">&#128100;</span>
@@ -112,6 +114,7 @@
                 <input type="file" name="fileEmpPhoto" id="fileEmpPhoto" accept="image/*"
                        style="width:140px; font-size:11px; margin-top:4px;"
                        onchange="previewPhoto(this)">
+                <div style="font-size:10px; color:var(--text-muted); margin-top:3px;">Max 200 KB</div>
                 <%}%>
             </div>
 
@@ -122,31 +125,31 @@
                     <!-- Left column -->
                     <div style="flex:1; min-width:260px;">
                         <div class="form-row">
-                            <label>First Name:</label>
-                            <input type="text" name="firstName" id="firstName" <%=isAdd?"required":""%> value="<%=fFirst%>" <%=ro%> placeholder="First name">
+                            <label><%= msg.getString("employee.label_first_name") %>:</label>
+                            <input type="text" name="firstName" id="firstName" <%=isAdd?"required":""%> value="<%=fFirst%>" <%=ro%> placeholder="<%= msg.getString("employee.label_first_name") %>">
                         </div>
                         <div class="form-row">
-                            <label>Middle Name:</label>
-                            <input type="text" name="middleName" id="middleName" value="<%=fMiddle%>" <%=ro%> placeholder="Middle name">
+                            <label><%= msg.getString("employee.label_middle_name") %>:</label>
+                            <input type="text" name="middleName" id="middleName" value="<%=fMiddle%>" <%=ro%> placeholder="<%= msg.getString("employee.label_middle_name") %>">
                         </div>
                         <div class="form-row">
-                            <label>Last Name:</label>
-                            <input type="text" name="lastName" id="lastName" <%=isAdd?"required":""%> value="<%=fLast%>" <%=ro%> placeholder="Last name">
+                            <label><%= msg.getString("employee.label_last_name") %>:</label>
+                            <input type="text" name="lastName" id="lastName" <%=isAdd?"required":""%> value="<%=fLast%>" <%=ro%> placeholder="<%= msg.getString("employee.label_last_name") %>">
                         </div>
                         <div class="form-row">
-                            <label>Contact No. 1:</label>
-                            <input type="text" name="contactNo1" id="contactNo1" <%=isAdd?"required":""%> value="<%=fContact1%>" <%=ro%> placeholder="Primary contact">
+                            <label><%= msg.getString("employee.label_contact1") %>:</label>
+                            <input type="text" name="contactNo1" id="contactNo1" <%=isAdd?"required":""%> value="<%=fContact1%>" <%=ro%> placeholder="<%= msg.getString("employee.label_contact1") %>">
                         </div>
                         <div class="form-row">
-                            <label>Contact No. 2:</label>
-                            <input type="text" name="contactNo2" id="contactNo2" value="<%=fContact2%>" <%=ro%> placeholder="Secondary contact">
+                            <label><%= msg.getString("employee.label_contact2") %>:</label>
+                            <input type="text" name="contactNo2" id="contactNo2" value="<%=fContact2%>" <%=ro%> placeholder="<%= msg.getString("employee.label_contact2") %>">
                         </div>
                         <div class="form-row">
-                            <label>Email Id:</label>
-                            <input type="text" name="emailId" id="emailId" readonly value="<%=fEmail%>" placeholder="Email address">
+                            <label><%= msg.getString("employee.label_email") %>:</label>
+                            <input type="text" name="emailId" id="emailId" readonly value="<%=fEmail%>" placeholder="<%= msg.getString("employee.label_email") %>">
                         </div>
                         <div class="form-row">
-                            <label>Birth Date:</label>
+                            <label><%= msg.getString("employee.label_birth_date") %>:</label>
                             <input type="text" name="birthDate" id="birthDate" placeholder="dd/mm/yyyy"
                                 pattern="(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}"
                                 oninvalid="setCustomValidity('Select Date From Calendar')"
@@ -156,27 +159,27 @@
                     <!-- Right column -->
                     <div style="flex:1; min-width:260px;">
                         <div class="form-row">
-                            <label>Local Address:</label>
+                            <label><%= msg.getString("employee.label_local_address") %>:</label>
                             <textarea name="localAddress" id="localAddress" <%=isAdd?"required":""%> rows="3" style="width:210px; resize:vertical;" <%=ro%>><%=fLocal%></textarea>
                         </div>
                         <div class="form-row">
-                            <label>Permanent Address:</label>
+                            <label><%= msg.getString("employee.label_permanent_address") %>:</label>
                             <textarea name="permanantAddress" id="permanantAddress" <%=isAdd?"required":""%> rows="3" style="width:210px; resize:vertical;" <%=ro%>><%=fPer%></textarea>
                         </div>
                         <div class="form-row">
-                            <label>Bank Name:</label>
-                            <input type="text" name="bankName" id="bankName" <%=isAdd?"required":""%> value="<%=fBank%>" <%=ro%> placeholder="Bank name">
+                            <label><%= msg.getString("employee.label_bank_name") %>:</label>
+                            <input type="text" name="bankName" id="bankName" <%=isAdd?"required":""%> value="<%=fBank%>" <%=ro%> placeholder="<%= msg.getString("employee.label_bank_name") %>">
                         </div>
                         <div class="form-row">
-                            <label>Account Number:</label>
-                            <input type="text" name="accountNumber" id="accountNumber" <%=isAdd?"required":""%> value="<%=fAccNo%>" <%=ro%> placeholder="Account number">
+                            <label><%= msg.getString("employee.label_account_number") %>:</label>
+                            <input type="text" name="accountNumber" id="accountNumber" <%=isAdd?"required":""%> value="<%=fAccNo%>" <%=ro%> placeholder="<%= msg.getString("employee.label_account_number") %>">
                         </div>
                         <div class="form-row">
-                            <label>Pan Card No:</label>
-                            <input type="text" name="panCardNo" id="panCardNo" value="<%=fPan%>" <%=ro%> placeholder="PAN number">
+                            <label><%= msg.getString("employee.label_pan_card") %>:</label>
+                            <input type="text" name="panCardNo" id="panCardNo" value="<%=fPan%>" <%=ro%> placeholder="<%= msg.getString("employee.label_pan_card") %>">
                         </div>
                         <div class="form-row">
-                            <label>Comment:</label>
+                            <label><%= msg.getString("employee.label_comment") %>:</label>
                             <textarea name="comment" rows="3" style="width:210px; resize:vertical;" <%=ro%>><%=fComment%></textarea>
                         </div>
                     </div>
@@ -184,13 +187,13 @@
 
                 <div class="form-btns" style="margin-top:14px;">
                     <%if (isAdd) {%>
-                        <input type="submit" class="btn-add" name="add" value="Add Employee">
+                        <input type="submit" class="btn-add" name="add" value="<%= msg.getString("employee.btn_add_employee") %>">
                     <%} else if (isEdit) {%>
-                        <input type="submit" class="btn-update" name="edit" value="Save Changes">
+                        <input type="submit" class="btn-update" name="edit" value="<%= msg.getString("employee.btn_save_changes") %>">
                         &nbsp;
-                        <a href="employeeViewAll.jsp"><button type="button" class="btn-cancel">Cancel</button></a>
+                        <a href="employeeViewAll.jsp"><button type="button" class="btn-cancel"><%= msg.getString("btn.cancel") %></button></a>
                     <%} else {%>
-                        <a href="employeeViewAll.jsp"><button type="button" class="btn-action">&#8592; Back to List</button></a>
+                        <a href="employeeViewAll.jsp"><button type="button" class="btn-action">&#8592; <%= msg.getString("btn.back") %></button></a>
                     <%}%>
                 </div>
 

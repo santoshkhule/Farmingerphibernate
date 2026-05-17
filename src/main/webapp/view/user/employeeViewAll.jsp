@@ -3,17 +3,18 @@
 <%@page import="com.san.farm.adminuser.dao.EmployeeInfoService"%>
 <%@page import="com.san.farm.adminuser.dao.PaymentProcessingDao"%>
 <%@page import="com.san.farm.adminuser.dao.AssignResourceEmployeeToFarmService"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ include file="../../lang.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../../css/style.css">
 <script src="../../js/jquery-1.9.1.js"></script>
 <script src="../../js/datatables.min.js"></script>
-<title>View All Employee</title>
+<title><%= msg.getString("employee.view_all.fieldset_title") %></title>
 <style>
     #bulkBar {
         display: none;
@@ -83,14 +84,14 @@
 </script>
 <body>
 <%@include file="../../header.jsp" %>
-<fieldset><legend>View All Employee</legend>
+<fieldset><legend><%= msg.getString("employee.view_all.fieldset_title") %></legend>
 
     <%-- Bulk delete bar --%>
     <div id="bulkBar">
         <span id="selCount">0</span> employee(s) selected &nbsp;
-        <button type="button" class="btn-delete" onclick="deleteSelected()">Delete Selected</button>
+        <button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %></button>
         &nbsp;
-        <button type="button" class="btn-cancel" onclick="clearSelection()">Clear Selection</button>
+        <button type="button" class="btn-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear") %></button>
     </div>
 
     <%-- Hidden form for bulk delete — multipart to match EmployeeInfoController --%>
@@ -102,19 +103,19 @@
     <table border="1" width="100%" class="tbl-data" id="empTable" cellspacing="0">
         <thead>
             <tr>
-                <th width="3%" title="Select All">
+                <th width="3%" title="<%= msg.getString("tbl.col_select_all") %>">
                     <input type="checkbox" id="chkAll" onclick="toggleSelectAll(this)">
                 </th>
-                <th width="4%">Id</th>
-                <th>Name</th>
-                <th width="11%">Contact</th>
-                <th>Address</th>
-                <th>Bank</th>
-                <th>Acc No</th>
-                <th width="9%">Total Amt</th>
-                <th width="9%">Unpaid</th>
-                <th width="8%">Pay Status</th>
-                <th width="13%">Actions</th>
+                <th width="4%"><%= msg.getString("tbl.col_number") %></th>
+                <th><%= msg.getString("tbl.col_name") %></th>
+                <th width="11%"><%= msg.getString("tbl.col_contact") %></th>
+                <th><%= msg.getString("tbl.col_address") %></th>
+                <th><%= msg.getString("employee.label_bank_name") %></th>
+                <th><%= msg.getString("employee.view_all.tbl_col_acc_no") %></th>
+                <th width="9%"><%= msg.getString("employee.view_all.tbl_col_total_amount") %></th>
+                <th width="9%"><%= msg.getString("employee.view_all.tbl_col_unpaid") %></th>
+                <th width="8%"><%= msg.getString("employee.view_all.tbl_col_pay_status") %></th>
+                <th width="13%"><%= msg.getString("tbl.col_actions") %></th>
             </tr>
         </thead>
         <tbody>
@@ -134,10 +135,10 @@
                     double totalPaid     = totalAdv + totalSalaryPaid;
                     double unpaid        = (totalAssigned - totalPaid) > 0 ? (totalAssigned - totalPaid) : 0;
                     String payStatus, psClass;
-                    if (totalAssigned == 0)        { payStatus = "No Work"; psClass = "NoWork";  }
-                    else if (totalPaid >= totalAssigned) { payStatus = "Paid";    psClass = "Paid";    }
-                    else if (totalPaid > 0)         { payStatus = "Partial"; psClass = "Partial"; }
-                    else                            { payStatus = "Unpaid";  psClass = "Unpaid";  }
+                    if (totalAssigned == 0)             { payStatus = msg.getString("employee.view_all.status_no_work"); psClass = "NoWork";  }
+                    else if (totalPaid >= totalAssigned) { payStatus = msg.getString("employee.view_all.status_paid");    psClass = "Paid";    }
+                    else if (totalPaid > 0)              { payStatus = msg.getString("employee.view_all.status_partial"); psClass = "Partial"; }
+                    else                                 { payStatus = msg.getString("employee.view_all.status_unpaid");  psClass = "Unpaid";  }
 
                     String fullName = "";
                     if (entity.getFirstName()  != null && !entity.getFirstName().isEmpty())  fullName += entity.getFirstName()  + " ";
@@ -162,7 +163,7 @@
                 </td>
                 <td style="text-align:center; white-space:nowrap;">
                     <button type="button" class="btn-row-edit"
-                        onclick="window.location='employeeInfo.jsp?employeeInfoId=<%=empId%>&mode=edit'">Edit</button>
+                        onclick="window.location='employeeInfo.jsp?employeeInfoId=<%=empId%>&mode=edit'"><%= msg.getString("btn.edit") %></button>
                     <button type="button" class="btn-view"
                         onclick="window.location='employeeInfo.jsp?employeeInfoId=<%=empId%>&mode=view'">View</button>
                 </td>
