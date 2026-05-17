@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" isErrorPage="true" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isErrorPage="true" %>
+<%@ page import="org.apache.log4j.Logger" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,6 +22,14 @@
     Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
     String  errorMsg   = (String)  request.getAttribute("javax.servlet.error.message");
     Throwable cause    = (Throwable) request.getAttribute("javax.servlet.error.exception");
+
+    /* Log the exception via Log4j so it appears in farmingerERP.log */
+    if (cause != null) {
+        Logger.getLogger("com.san.farm.error").error(
+            "HTTP " + (statusCode != null ? statusCode : 500) + " — "
+            + request.getAttribute("javax.servlet.error.request_uri")
+            + " — " + cause.getClass().getName() + ": " + cause.getMessage(), cause);
+    }
 
     String userMsg = "An unexpected error occurred. Please try again or contact your system administrator.";
     String codeStr = statusCode != null ? String.valueOf(statusCode) : "500";
