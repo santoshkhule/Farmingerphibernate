@@ -31,10 +31,63 @@
 		border-bottom: 1px solid rgba(255,255,255,.08);
 		display: flex;
 		align-items: center;
-		justify-content: flex-end;
+		justify-content: space-between;
 		padding: 0 16px;
 		gap: 10px;
 		z-index: 100;
+	}
+	/* Brand (left) */
+	.topbar-brand {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		text-decoration: none;
+	}
+	.topbar-brand-icon {
+		font-size: 22px;
+		line-height: 1;
+	}
+	.topbar-brand-text {
+		display: flex;
+		flex-direction: column;
+		line-height: 1.15;
+	}
+	.topbar-brand-name {
+		font-size: 15px;
+		font-weight: 700;
+		color: #e8f5e9;
+		letter-spacing: .3px;
+	}
+	.topbar-brand-sub {
+		font-size: 9px;
+		font-weight: 500;
+		color: var(--sidebar-muted);
+		letter-spacing: .6px;
+		text-transform: uppercase;
+	}
+	/* Actions (right) */
+	.topbar-right {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.topbar-user {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 3px 10px;
+		background: rgba(255,255,255,.07);
+		border: 1px solid rgba(255,255,255,.1);
+		border-radius: 20px;
+		color: #a5d6a7;
+		font-size: 11px;
+		font-weight: 600;
+	}
+	.topbar-user-dot {
+		width: 7px; height: 7px;
+		background: #69f0ae;
+		border-radius: 50%;
+		flex-shrink: 0;
 	}
 	.topbar-lang-select {
 		background: rgba(255,255,255,.1);
@@ -100,16 +153,40 @@
 <%
     String _activeLang = (String) session.getAttribute("locale");
     if (_activeLang == null) _activeLang = "en";
+    com.san.farm.login.entity.LoginUser _loggedUser =
+        (com.san.farm.login.entity.LoginUser) session.getAttribute("loggedInUser");
+    String _uname = (_loggedUser != null && _loggedUser.getUname() != null)
+                    ? _loggedUser.getUname() : "";
 %>
 
 <!-- ── Top menu bar ── -->
 <div id="topbar">
-	<select class="topbar-lang-select" onchange="switchLang(this)">
-		<option value="en" <%="en".equals(_activeLang) ? "selected" : ""%>>EN — English</option>
-		<option value="hi" <%="hi".equals(_activeLang) ? "selected" : ""%>>HI — हिंदी</option>
-		<option value="mr" <%="mr".equals(_activeLang) ? "selected" : ""%>>MR — मराठी</option>
-	</select>
-	<a class="topbar-logout" href="logout.jsp" target="_top">&#128682; <%= msg.getString("nav.logout") %></a>
+
+	<!-- Brand (left) -->
+	<div class="topbar-brand">
+		<span class="topbar-brand-icon">&#127807;</span>
+		<div class="topbar-brand-text">
+			<span class="topbar-brand-name"><%= msg.getString("nav.brand_name") %></span>
+			<span class="topbar-brand-sub"><%= msg.getString("nav.brand_sub") %></span>
+		</div>
+	</div>
+
+	<!-- Actions (right) -->
+	<div class="topbar-right">
+		<% if (!_uname.isEmpty()) { %>
+		<span class="topbar-user">
+			<span class="topbar-user-dot"></span>
+			<%= _uname %>
+		</span>
+		<% } %>
+		<select class="topbar-lang-select" onchange="switchLang(this)">
+			<option value="en" <%="en".equals(_activeLang) ? "selected" : ""%>>EN — English</option>
+			<option value="hi" <%="hi".equals(_activeLang) ? "selected" : ""%>>HI — हिंदी</option>
+			<option value="mr" <%="mr".equals(_activeLang) ? "selected" : ""%>>MR — मराठी</option>
+		</select>
+		<a class="topbar-logout" href="logout.jsp" target="_top">&#128682; <%= msg.getString("nav.logout") %></a>
+	</div>
+
 </div>
 
 <div id="appShell">
