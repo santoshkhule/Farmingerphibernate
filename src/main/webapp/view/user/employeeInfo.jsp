@@ -39,15 +39,7 @@
     String fAccNo      = emp != null && emp.getAccountNumber() != null ? emp.getAccountNumber()  : "";
     String fPan        = emp != null && emp.getPanCardNo()     != null ? emp.getPanCardNo()      : "";
     String fComment    = emp != null && emp.getComment()       != null ? emp.getComment()        : "";
-    String fPhotoPath  = emp != null && emp.getEmpPicPath()   != null && !emp.getEmpPicPath().isEmpty()
-                         ? emp.getEmpPicPath() : "";
-    // empPicPath stores the full absolute path — extract just the filename for URL use
-    String fPhotoFileName = "";
-    if (!fPhotoPath.isEmpty()) {
-        String normalized = fPhotoPath.replace('\\', '/');
-        int lastSlash = normalized.lastIndexOf('/');
-        fPhotoFileName = lastSlash >= 0 ? normalized.substring(lastSlash + 1) : normalized;
-    }
+    String fPhotoData = emp != null && emp.getEmpPic() != null ? emp.getEmpPic() : "";
 
     String pageTitle = isView ? msg.getString("employee.fieldset_title_edit")
                               : (isEdit ? msg.getString("employee.fieldset_title_edit")
@@ -75,8 +67,15 @@
     });
 </script>
 <script>
+    var MAX_PHOTO_BYTES = 261120; // 255 KB
     function previewPhoto(input) {
         if (input.files && input.files[0]) {
+            var file = input.files[0];
+            if (file.size > MAX_PHOTO_BYTES) {
+                alert('Photo must be 255 KB or smaller. Selected file is ' + Math.round(file.size / 1024) + ' KB.');
+                input.value = '';
+                return;
+            }
             var reader = new FileReader();
             reader.onload = function(e) {
                 var img = document.getElementById('imgPreview');
@@ -85,7 +84,7 @@
                 img.style.display = 'block';
                 ph.style.display  = 'none';
             };
-            reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
         }
     }
 </script>
@@ -100,11 +99,11 @@
             <!-- Photo column -->
             <div style="flex-shrink:0; text-align:center; padding:8px;">
                 <img id="imgPreview"
-                     src="<%=fPhotoFileName.isEmpty() ? "" : "../../uploads/" + fPhotoFileName%>"
-                     style="width:130px; height:155px; object-fit:cover; border:2px solid var(--green-bd); border-radius:4px; display:<%=fPhotoFileName.isEmpty() ? "none" : "block"%>; margin:0 auto;">
+                     src="<%=fPhotoData.isEmpty() ? "" : fPhotoData%>"
+                     style="width:130px; height:155px; object-fit:cover; border:2px solid var(--green-bd); border-radius:4px; display:<%=fPhotoData.isEmpty() ? "none" : "block"%>; margin:0 auto;">
                 <div id="photoPlaceholder"
                      style="width:130px; height:155px; background:var(--green-lt); border:2px solid var(--green-bd); border-radius:4px;
-                            display:<%=fPhotoFileName.isEmpty() ? "flex" : "none"%>;
+                            display:<%=fPhotoData.isEmpty() ? "flex" : "none"%>;
                             align-items:center; justify-content:center;
                             color:var(--green-md); font-size:13px; margin:0 auto; flex-direction:column; gap:6px;">
                     <span style="font-size:32px;">&#128100;</span>
@@ -115,6 +114,7 @@
                 <input type="file" name="fileEmpPhoto" id="fileEmpPhoto" accept="image/*"
                        style="width:140px; font-size:11px; margin-top:4px;"
                        onchange="previewPhoto(this)">
+                <div style="font-size:10px; color:var(--text-muted); margin-top:3px;">Max 255 KB</div>
                 <%}%>
             </div>
 

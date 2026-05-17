@@ -2,149 +2,124 @@ package com.san.farm.adminuser.controller;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.util.Base64;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import com.san.farm.adminuser.dao.EmployeeInfoService;
 import com.san.farm.adminuser.entity.EmployeeInfoEntity;
-import com.san.farm.util.FarmConstants;
 import com.san.farm.util.FarmUtility;
-import com.san.farm.util.MyFileRenamePolicy;
-import com.san.farm.util.Symbols;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.san.farm.util.MultipartRequest;
-
 /**
- * This servlet file Accept the request from employeeInfo.jsp perform db CRUD
- * Operation on that data send result back to the viewAllEmployee.jsp
- * 
- * @author santosh khule
- * @version 1.2
- * @since 20/11/2014
+ * Handles employee CRUD. Photos are stored as base64 CLOB values in the DB
+ * (max 255 KB source file; enforced both client-side and server-side).
  */
+@MultipartConfig(maxFileSize = 261120, maxRequestSize = 786432)
 public class EmployeeInfoController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeInfoController.class);
+	private static final int MAX_PHOTO_BYTES = 261120; // 255 KB
 
-	protected void doProcess(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doProcess(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		logger.debug("Processing EmployeeInfo request");
-		try{
-			MyFileRenamePolicy objFileRenamePolicy=new MyFileRenamePolicy();
-			
-			MultipartRequest mrequest=new MultipartRequest(request, FarmConstants.getInstance().getFarmProperty("path.name"),
-					
-			Integer.parseInt(FarmConstants.getInstance().getFarmProperty("filesize")), objFileRenamePolicy);
-			// variable Declaration
-			String firstName = Symbols.EMPTY.getSymbol(), lastName = Symbols.EMPTY.getSymbol(), middleName = Symbols.EMPTY.getSymbol(), contactNo1 = Symbols.EMPTY.getSymbol(), contactNo2 = Symbols.EMPTY.getSymbol(), comment = Symbols.EMPTY.getSymbol();
-			String emailId = Symbols.EMPTY.getSymbol(),localAddress = Symbols.EMPTY.getSymbol(), permanantAddress = Symbols.EMPTY.getSymbol(), bankName = Symbols.EMPTY.getSymbol(), accountNumber = Symbols.EMPTY.getSymbol(), panCardNo = Symbols.EMPTY.getSymbol();
-			int employeeInfoId =0;
-			Date birthDate=null;
-			String empPicPath = FarmUtility.uploadedFilesCSV(mrequest);
-			if (null != mrequest.getParameter("firstName")) {
-				firstName = mrequest.getParameter("firstName");
+		try {
+			String firstName        = nvl(request.getParameter("firstName"));
+			String middleName       = nvl(request.getParameter("middleName"));
+			String lastName         = nvl(request.getParameter("lastName"));
+			String contactNo1       = nvl(request.getParameter("contactNo1"));
+			String contactNo2       = nvl(request.getParameter("contactNo2"));
+			String emailId          = nvl(request.getParameter("emailId"));
+			String localAddress     = nvl(request.getParameter("localAddress"));
+			String permanantAddress = nvl(request.getParameter("permanantAddress"));
+			String bankName         = nvl(request.getParameter("bankName"));
+			String accountNumber    = nvl(request.getParameter("accountNumber"));
+			String comment          = nvl(request.getParameter("comment"));
+			String panCardNo        = nvl(request.getParameter("panCardNo"));
+			int    employeeInfoId   = 0;
+			Date   birthDate        = null;
+
+			String rawDate = request.getParameter("birthDate");
+			if (rawDate != null && !rawDate.isEmpty())
+				birthDate = Date.valueOf(FarmUtility.convertfrom_ddmmyyToyymmdd(rawDate));
+
+			String rawId = request.getParameter("employeeInfoId");
+			if (rawId != null && !rawId.isEmpty())
+				employeeInfoId = Integer.parseInt(rawId);
+
+			// Photo: read uploaded file, validate size, encode as full data URI
+			String empPic = null;
+			Part photoPart = request.getPart("fileEmpPhoto");
+			if (photoPart != null && photoPart.getSize() > 0) {
+				if (photoPart.getSize() > MAX_PHOTO_BYTES) {
+					logger.warn("Photo rejected: {} bytes exceeds 255 KB limit", photoPart.getSize());
+				} else {
+					String mime = photoPart.getContentType();
+					if (mime == null || mime.isEmpty()) mime = "image/jpeg";
+					byte[] bytes = photoPart.getInputStream().readAllBytes();
+					empPic = "data:" + mime + ";base64," + Base64.getEncoder().encodeToString(bytes);
+					logger.info("Photo encoded: {} bytes -> {} chars CLOB", bytes.length, empPic.length());
+				}
 			}
-			if (null != mrequest.getParameter("middleName")) {
-				middleName = mrequest.getParameter("middleName");
-			}
-			if (null != mrequest.getParameter("lastName")) {
-				lastName = mrequest.getParameter("lastName");
-			}
-			if (null != mrequest.getParameter("contactNo1")) {
-				contactNo1 = mrequest.getParameter("contactNo1");
-			}
-			if (null != mrequest.getParameter("contactNo2")) {
-				contactNo2 = mrequest.getParameter("contactNo2");
-			}
-			if (null != mrequest.getParameter("emailId")) {
-				emailId = mrequest.getParameter("emailId");
-			}
-			if (null != mrequest.getParameter("birthDate") && !mrequest.getParameter("birthDate").isEmpty()) {
-				birthDate=Date.valueOf(FarmUtility.convertfrom_ddmmyyToyymmdd(mrequest.getParameter("birthDate")));
-			}
-			if (null != mrequest.getParameter("localAddress")) {
-				localAddress = mrequest.getParameter("localAddress");
-			}
-			if (null != mrequest.getParameter("permanantAddress")) {
-				permanantAddress = mrequest.getParameter("permanantAddress");
-			}
-			if (null != mrequest.getParameter("bankName")) {
-				bankName = mrequest.getParameter("bankName");
-			}
-			if (null != mrequest.getParameter("accountNumber")) {
-				accountNumber = mrequest.getParameter("accountNumber");
-			}
-			if (null != mrequest.getParameter("comment")) {
-				comment = mrequest.getParameter("comment");
-			}
-			if (null != mrequest.getParameter("panCardNo")) {
-				panCardNo = mrequest.getParameter("panCardNo");
-			}
-			if (null != mrequest.getParameter("employeeInfoId") && !mrequest.getParameter("employeeInfoId").equalsIgnoreCase("")) {
-				employeeInfoId =Integer.parseInt(mrequest.getParameter("employeeInfoId"));
-			}
-			
-			//create Object
+
 			EmployeeInfoService employeeInfoService = new EmployeeInfoService();
-			EmployeeInfoEntity employeeInfoEntity = new EmployeeInfoEntity();
-			
-			//setValues To the object
-			employeeInfoEntity.setFirstName(firstName);
-			employeeInfoEntity.setMiddleName(middleName);
-			employeeInfoEntity.setLastName(lastName);
-			employeeInfoEntity.setContactNo1(contactNo1);
-			employeeInfoEntity.setContactNo2(contactNo2);
-			employeeInfoEntity.setEmailId(emailId);
-			employeeInfoEntity.setBirthDate(birthDate);
-			employeeInfoEntity.setLocalAddress(localAddress);
-			employeeInfoEntity.setPerAddress(permanantAddress);
-			employeeInfoEntity.setBankName(bankName);
-			employeeInfoEntity.setAccountNumber(accountNumber);
-			employeeInfoEntity.setComment(comment);
-			employeeInfoEntity.setPanCardNo(panCardNo);
-			employeeInfoEntity.setEmpPicPath(empPicPath);
-			
-			//Insert Operation
-			if (null != mrequest.getParameter("add")) {
+			EmployeeInfoEntity  entity              = new EmployeeInfoEntity();
+
+			entity.setFirstName(firstName);
+			entity.setMiddleName(middleName);
+			entity.setLastName(lastName);
+			entity.setContactNo1(contactNo1);
+			entity.setContactNo2(contactNo2);
+			entity.setEmailId(emailId);
+			entity.setBirthDate(birthDate);
+			entity.setLocalAddress(localAddress);
+			entity.setPerAddress(permanantAddress);
+			entity.setBankName(bankName);
+			entity.setAccountNumber(accountNumber);
+			entity.setComment(comment);
+			entity.setPanCardNo(panCardNo);
+			entity.setEmpPic(empPic);
+
+			if (request.getParameter("add") != null) {
 				logger.info("Adding new employee: {} {}", firstName, lastName);
-				employeeInfoService.saveAuthEmployeeInfo(employeeInfoEntity);
+				employeeInfoService.saveAuthEmployeeInfo(entity);
 				logger.info("Employee added successfully");
 			}
-			//Edit Operation
-			if (null != mrequest.getParameter("edit")) {
-				employeeInfoEntity.setEmployeeInfoId(employeeInfoId);
-				if (empPicPath == null || empPicPath.isEmpty()) {
+
+			if (request.getParameter("edit") != null) {
+				entity.setEmployeeInfoId(employeeInfoId);
+				if (empPic == null) {
+					// No new photo uploaded — preserve the existing CLOB value
 					EmployeeInfoEntity existing = employeeInfoService.getEmployeeById(employeeInfoId);
-					if (existing != null) {
-						employeeInfoEntity.setEmpPicPath(existing.getEmpPicPath());
-					}
+					if (existing != null) entity.setEmpPic(existing.getEmpPic());
 				}
 				logger.info("Updating employee with id: {}", employeeInfoId);
-				employeeInfoService.updateAuthEmployeeInfo(employeeInfoEntity);
+				employeeInfoService.updateAuthEmployeeInfo(entity);
 				logger.info("Employee updated successfully");
 			}
-			//Delete Operation
-			if (null != mrequest.getParameter("delete")) {
-				employeeInfoEntity.setEmployeeInfoId(employeeInfoId);
+
+			if (request.getParameter("delete") != null) {
+				entity.setEmployeeInfoId(employeeInfoId);
 				logger.info("Deleting employee with id: {}", employeeInfoId);
-				employeeInfoService.deleteAuthEmployeeInfo(employeeInfoEntity);
+				employeeInfoService.deleteAuthEmployeeInfo(entity);
 				logger.info("Employee deleted successfully");
 			}
-			//Bulk Delete Operation
-			if (null != mrequest.getParameter("deleteBulk")) {
-				String idsParam = mrequest.getParameter("deleteIds");
+
+			if (request.getParameter("deleteBulk") != null) {
+				String idsParam = request.getParameter("deleteIds");
 				if (idsParam != null && !idsParam.trim().isEmpty()) {
 					for (String idStr : idsParam.split(",")) {
 						try {
-							int delId = Integer.parseInt(idStr.trim());
-							employeeInfoService.deleteEmployeeById(delId);
-							logger.info("Bulk delete: employee {} deleted", delId);
+							employeeInfoService.deleteEmployeeById(Integer.parseInt(idStr.trim()));
+							logger.info("Bulk delete: employee {} deleted", idStr.trim());
 						} catch (NumberFormatException nfe) {
 							logger.warn("Invalid id in bulk delete: {}", idStr);
 						}
@@ -152,31 +127,19 @@ public class EmployeeInfoController extends HttpServlet {
 				}
 				logger.info("Bulk delete completed");
 			}
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			logger.error("Error processing EmployeeInfo request", ex);
-		}finally{
+		} finally {
 			logger.debug("Redirecting to employeeViewAll.jsp");
 			response.sendRedirect("view/user/employeeViewAll.jsp");
 		}
-		
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		doProcess(request, response);
-	}
+	private static String nvl(String s) { return s != null ? s : ""; }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		doProcess(request, response);
-	}
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException { doProcess(request, response); }
 
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException { doProcess(request, response); }
 }
