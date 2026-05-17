@@ -194,14 +194,6 @@
 	<!-- ── Sidebar ── -->
 	<aside id="sidebar">
 
-		<div id="sidebar-brand">
-			<span class="brand-icon">&#127807;</span>
-			<div class="brand-text">
-				<span class="brand-name"><%= msg.getString("nav.brand_name") %></span>
-				<span class="brand-sub"><%= msg.getString("nav.brand_sub") %></span>
-			</div>
-		</div>
-
 		<nav id="sideNav">
 
 			<div class="nav-group">
