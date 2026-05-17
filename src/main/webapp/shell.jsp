@@ -21,10 +21,56 @@
 <title>Sevak ERP</title>
 <style>
 	html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+	body { display: flex; flex-direction: column; }
+
+	/* ── Top menu bar ── */
+	#topbar {
+		flex-shrink: 0;
+		height: 44px;
+		background: var(--sidebar-brand);
+		border-bottom: 1px solid rgba(255,255,255,.08);
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		padding: 0 16px;
+		gap: 10px;
+		z-index: 100;
+	}
+	.topbar-lang-select {
+		background: rgba(255,255,255,.1);
+		color: #c8e6c9;
+		border: 1px solid rgba(255,255,255,.2);
+		border-radius: var(--r-sm);
+		padding: 4px 8px;
+		font-size: 12px;
+		font-family: inherit;
+		cursor: pointer;
+		outline: none;
+		transition: background .15s;
+	}
+	.topbar-lang-select:hover,
+	.topbar-lang-select:focus { background: rgba(255,255,255,.18); }
+	.topbar-lang-select option { background: #1a3320; color: #c8e6c9; }
+	.topbar-logout {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		padding: 5px 12px;
+		background: rgba(239,154,154,.15);
+		color: #ef9a9a;
+		border: 1px solid rgba(239,154,154,.25);
+		border-radius: var(--r-sm);
+		text-decoration: none;
+		font-size: 12px;
+		font-weight: 600;
+		transition: background .15s, color .15s;
+	}
+	.topbar-logout:hover { background: rgba(239,154,154,.28); color: #ffcdd2; text-decoration: none; }
 
 	#appShell {
 		display: flex;
-		height: 100vh;
+		flex: 1;
+		min-height: 0;
 		width: 100%;
 	}
 
@@ -35,25 +81,10 @@
 		background: var(--sidebar-bg);
 		display: flex;
 		flex-direction: column;
-		height: 100vh;
+		height: 100%;
 		overflow-y: auto;
 		overflow-x: hidden;
 	}
-
-	/* ── Language switcher ── */
-	.lang-switcher {
-		display: flex; gap: 4px; padding: 6px 12px 8px;
-		border-top: 1px solid rgba(255,255,255,.1);
-	}
-	.lang-btn {
-		flex: 1; text-align: center; padding: 4px 2px;
-		font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer;
-		text-decoration: none; color: rgba(255,255,255,.65);
-		border: 1px solid rgba(255,255,255,.15);
-		transition: background .15s, color .15s;
-	}
-	.lang-btn:hover  { background: rgba(255,255,255,.12); color: #fff; }
-	.lang-btn.active { background: rgba(255,255,255,.2);  color: #fff; border-color: rgba(255,255,255,.35); }
 
 	#contentFrame {
 		flex: 1;
@@ -66,6 +97,20 @@
 </style>
 </head>
 <body>
+<%
+    String _activeLang = (String) session.getAttribute("locale");
+    if (_activeLang == null) _activeLang = "en";
+%>
+
+<!-- ── Top menu bar ── -->
+<div id="topbar">
+	<select class="topbar-lang-select" onchange="switchLang(this)">
+		<option value="en" <%="en".equals(_activeLang) ? "selected" : ""%>>EN — English</option>
+		<option value="hi" <%="hi".equals(_activeLang) ? "selected" : ""%>>HI — हिंदी</option>
+		<option value="mr" <%="mr".equals(_activeLang) ? "selected" : ""%>>MR — मराठी</option>
+	</select>
+	<a class="topbar-logout" href="logout.jsp" target="_top">&#128682; <%= msg.getString("nav.logout") %></a>
+</div>
 
 <div id="appShell">
 
@@ -132,21 +177,6 @@
 
 		</nav>
 
-		<div id="sidebar-foot">
-			<%
-			    String _activeLang = (String) session.getAttribute("locale");
-			    if (_activeLang == null) _activeLang = "en";
-			%>
-			<div class="lang-switcher">
-				<a class="lang-btn <%="en".equals(_activeLang) ? "active" : ""%>"
-				   href="LanguageController?lang=en">EN</a>
-				<a class="lang-btn <%="hi".equals(_activeLang) ? "active" : ""%>"
-				   href="LanguageController?lang=hi">हिंदी</a>
-				<a class="lang-btn <%="mr".equals(_activeLang) ? "active" : ""%>"
-				   href="LanguageController?lang=mr">मराठी</a>
-			</div>
-			<a class="nav-logout" href="logout.jsp" target="_top">&#128682; <%= msg.getString("nav.logout") %></a>
-		</div>
 
 	</aside>
 
@@ -159,6 +189,10 @@
 </div>
 
 <script>
+function switchLang(sel) {
+    window.location.href = '<%=request.getContextPath()%>/LanguageController?lang=' + sel.value;
+}
+
 (function() {
     var frame   = document.getElementById('contentFrame');
     var ctxPath = '<%=request.getContextPath()%>';
