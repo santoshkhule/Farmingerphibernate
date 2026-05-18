@@ -19,7 +19,7 @@ import java.util.Properties;
 public class LicenseClient {
 
     private static final Logger log = LoggerFactory.getLogger(LicenseClient.class);
-    private static final int TIMEOUT_MS = 4000;
+    private static final int TIMEOUT_MS = 2000;
 
     /** Calls the license server and returns a {@link LicenseStatus}. Thread-safe, stateless. */
     public static LicenseStatus check() {

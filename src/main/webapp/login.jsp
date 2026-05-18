@@ -37,8 +37,10 @@
         /* ── Enforce license before checking credentials ── */
         if (!_lic.noConfig) {
             if (_lic.unreachable) {
-                errorMsg = "License server is unreachable. Contact your system administrator.";
+                /* Server down — warn but allow login (fail-open for unreachable) */
+                warnMsg = "License server is unreachable. Running without license validation.";
             } else if (!_lic.valid) {
+                /* Server responded explicitly — block login */
                 String licMsg = (_lic.message != null && !_lic.message.isEmpty())
                                 ? _lic.message : "License is expired or invalid.";
                 errorMsg = licMsg + " Contact your administrator to renew.";
