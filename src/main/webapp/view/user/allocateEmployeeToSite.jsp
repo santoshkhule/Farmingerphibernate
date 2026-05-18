@@ -4,6 +4,7 @@
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <%
     /* ── cropToSiteId ── */
     int cropToSiteId = 0;
@@ -434,7 +435,9 @@ function saveAllocRow(id) {
 
     <div class="section-title">
         <%= msg.getString("emp_alloc.section_new_assignment") %>
+        <% if (_isAdmin || !_hasRolePerms || _perms.contains("farm_site_alloc.add")) { %>
         <button type="button" class="btn-add-row" onclick="addRow()">+ <%= msg.getString("btn.add") %></button>
+        <% } %>
     </div>
 
     <div style="overflow-x:auto;">
@@ -513,7 +516,9 @@ function saveAllocRow(id) {
     </div>
 
     <div style="margin:10px 0;">
+        <% if (_isAdmin || !_hasRolePerms || _perms.contains("farm_site_alloc.add")) { %>
         <button type="submit" class="btn-save-all"><%= msg.getString("btn.save_all") %></button>
+        <% } %>
     </div>
 </form>
 
@@ -654,9 +659,12 @@ function saveAllocRow(id) {
         </td>
         <!-- Action -->
         <td style="text-align:center; white-space:nowrap;">
+            <% if (_isAdmin || !_hasRolePerms || _perms.contains("farm_site_alloc.edit")) { %>
             <button type="button" class="btn-row-edit" id="btnEdit_<%=rid%>"
                     onclick="editAllocRow(<%=rid%>)"><%= msg.getString("btn.edit") %></button>
+            <% } %>
 
+            <% if (_isAdmin || !_hasRolePerms || _perms.contains("farm_site_alloc.delete")) { %>
             <span id="btnRemove_<%=rid%>">
             <form method="post" action="<%=request.getContextPath()%>/AllocateEmployeeController" style="display:inline;">
                 <input type="hidden" name="action"           value="delete">
@@ -666,8 +674,10 @@ function saveAllocRow(id) {
                     onclick="return (window.top||window).confirm('Remove this assignment?')"><%= msg.getString("btn.remove") %></button>
             </form>
             </span>
+            <% } %>
 
             <!-- Hidden update form — populated and submitted by saveAllocRow() -->
+            <% if (_isAdmin || !_hasRolePerms || _perms.contains("farm_site_alloc.edit")) { %>
             <form id="frmUpdate_<%=rid%>" method="post"
                   action="<%=request.getContextPath()%>/AllocateEmployeeController">
                 <input type="hidden" name="action"           value="update">
@@ -687,6 +697,7 @@ function saveAllocRow(id) {
                     style="display:none;" onclick="saveAllocRow(<%=rid%>)"><%= msg.getString("btn.save") %></button>
             <button type="button" class="btn-row-cancel" id="btnCancel_<%=rid%>"
                     style="display:none;" onclick="cancelAllocRow(<%=rid%>)"><%= msg.getString("btn.cancel") %></button>
+            <% } %>
         </td>
     </tr>
     <% } %>
