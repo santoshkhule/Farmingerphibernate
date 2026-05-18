@@ -462,7 +462,7 @@
         <form method="post" action="../../RegisterUserController">
             <input type="hidden" name="savePermissions" value="1">
             <div style="overflow-x:auto;">
-            <table border="1" cellspacing="0" class="tbl-data perm-matrix" style="min-width:500px;">
+            <table border="1" cellspacing="0" class="perm-matrix" style="min-width:500px; border-collapse:collapse; width:100%;">
                 <thead>
                 <tr>
                     <th style="text-align:left; min-width:160px; padding:6px 10px;">Page</th>
