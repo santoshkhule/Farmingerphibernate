@@ -193,7 +193,7 @@
                 </div>
                 <div class="field-group">
                     <label for="email"><%= msg.getString("buyer.label_email") %></label>
-                    <input type="text" name="email" id="email" maxlength="100">
+                    <input type="email" name="email" id="email" maxlength="100" placeholder="user@example.com">
                 </div>
                 <div class="field-group">
                     <label for="address"><%= msg.getString("buyer.label_address") %></label>

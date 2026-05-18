@@ -2,7 +2,10 @@ package com.san.farm.adminuser.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.san.farm.adminuser.dao.RolePermissionDao;
 import com.san.farm.adminuser.dao.UserTypeService;
 import com.san.farm.adminuser.entity.UserTypeEntity;
 import com.san.farm.login.dao.LoginUserService;
@@ -130,6 +134,22 @@ public class RegisterUserController extends HttpServlet {
                         redirectUrl = "view/user/registerUser.jsp?msg=updated";
                     }
                 }
+            }
+
+            // ── SAVE PERMISSIONS ─────────────────────────────────────────────
+            if (request.getParameter("savePermissions") != null) {
+                UserTypeService utSvc = new UserTypeService();
+                List<UserTypeEntity> allRoles = utSvc.fetch();
+                RolePermissionDao permDao = new RolePermissionDao();
+                for (UserTypeEntity ute : allRoles) {
+                    int roleId = ute.getUserTypeId();
+                    String[] checked = request.getParameterValues("perm_" + roleId);
+                    Set<String> pageKeys = new HashSet<String>();
+                    if (checked != null) Collections.addAll(pageKeys, checked);
+                    permDao.saveRolePermissions(roleId, pageKeys);
+                }
+                redirectUrl = "view/user/registerUser.jsp?msg=perms_saved";
+                return;
             }
 
         } catch (Exception ex) {

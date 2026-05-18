@@ -10,6 +10,7 @@
 <%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <%
     ConfigSiteInformationService informationService = new ConfigSiteInformationService();
     List<ConfigSiteInformationEntity> listOfSite = informationService.fetch();
@@ -212,11 +213,101 @@ function clearSelection() {
     $('#bulkBar').hide();
 }
 
+var _dtId = null;
+
 function doToggleDispatch(id) {
-    document.getElementById('toggleDispatchId').value = id;
-    document.getElementById('frmToggleDispatch').submit();
+    _dtId = id;
+    document.getElementById('dispatchPwd').value = '';
+    document.getElementById('dispatchPwdErr').style.display = 'none';
+    document.getElementById('dispatchSummaryBox').innerHTML =
+        '<span style="color:#888;font-style:italic;">Loading&hellip;</span>';
+    document.getElementById('dispatchModal').style.display = 'flex';
+    setTimeout(function() { document.getElementById('dispatchPwd').focus(); }, 100);
+
+    fetch('dispatchSummary.jsp?cropToSiteId=' + id)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            document.getElementById('dispatchSummaryBox').innerHTML =
+                '&#128203; Pending assignments: <strong>' + d.pendingCount + '</strong><br>' +
+                '&#128176; Balance to settle: <strong>&#8377; ' +
+                parseFloat(d.totalBalance).toFixed(2) + '</strong>';
+        })
+        .catch(function() {
+            document.getElementById('dispatchSummaryBox').innerHTML =
+                '<span style="color:#888;">(Could not load summary)</span>';
+        });
 }
+
+function closeDispatchModal() {
+    document.getElementById('dispatchModal').style.display = 'none';
+    _dtId = null;
+}
+
+function confirmDispatch() {
+    var pwd = document.getElementById('dispatchPwd').value;
+    if (!pwd) { showDispatchErr('Please enter your password.'); return; }
+
+    fetch('<%=request.getContextPath()%>/validatePassword.jsp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'pwd=' + encodeURIComponent(pwd)
+    })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (d.ok) {
+                document.getElementById('toggleDispatchId').value = _dtId;
+                document.getElementById('frmToggleDispatch').submit();
+            } else {
+                showDispatchErr(d.msg || 'Incorrect password.');
+            }
+        })
+        .catch(function() { showDispatchErr('Error validating password. Please try again.'); });
+}
+
+function showDispatchErr(msg) {
+    var el = document.getElementById('dispatchPwdErr');
+    el.innerText = msg;
+    el.style.display = 'block';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDispatchModal();
+    if (e.key === 'Enter' && document.getElementById('dispatchModal').style.display === 'flex') confirmDispatch();
+});
 </script>
+
+<!-- ── Dispatch confirmation modal ── -->
+<div id="dispatchModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(0,0,0,.45); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:8px; padding:24px 28px; width:380px; max-width:95%;
+                box-shadow:0 8px 32px rgba(0,0,0,.25); font-family:inherit;">
+        <div style="font-size:14px; font-weight:700; color:#1b5e20; margin-bottom:4px;">
+            &#128274; Confirm Dispatch Status Change
+        </div>
+        <p style="font-size:11px; color:#616161; margin:0 0 12px;">
+            Please review before proceeding:
+        </p>
+        <div id="dispatchSummaryBox" style="background:#f1f8e9; border:1px solid #a5d6a7;
+             border-radius:4px; padding:10px 14px; font-size:12px; margin-bottom:14px; line-height:2;
+             color:#1b5e20;"></div>
+        <div style="margin-bottom:14px;">
+            <label style="font-size:11px; font-weight:700; color:#424242; display:block; margin-bottom:5px;">
+                Enter your password to confirm:
+            </label>
+            <input type="password" id="dispatchPwd"
+                style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid #bdbdbd;
+                       border-radius:3px; font-size:13px; font-family:inherit; outline:none;"
+                onfocus="this.style.borderColor='#388e3c'"
+                onblur="this.style.borderColor='#bdbdbd'">
+            <span id="dispatchPwdErr"
+                style="display:none; color:#b71c1c; font-size:11px; margin-top:4px; display:block;"></span>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button type="button" class="btn-cancel" onclick="closeDispatchModal()">Cancel</button>
+            <button type="button" class="btn-update" onclick="confirmDispatch()">&#10003; Confirm</button>
+        </div>
+    </div>
+</div>
 
 <fieldset>
 <legend><%= msg.getString("site_alloc.fieldset_title") %></legend>
@@ -389,6 +480,7 @@ function doToggleDispatch(id) {
                 <button type="button" class="btn-icon-nav btn-emp"
                     title="<%= msg.getString("site_alloc.tooltip_allocate_employees") %>"
                     onclick="window.location.href='allocateEmployeeToSite.jsp?cropToSiteId=<%=rowId%>'">&#128100;</button>
+                <% if (_isAdmin || !_hasRolePerms || _perms.contains("farm_site_alloc.edit")) { %>
                 <% if (cropToSiteEntity.isReadyToDispatch()) { %>
                 <button type="button" class="btn-icon-nav btn-dispatch-ready"
                     title="<%= msg.getString("site_alloc.tooltip_ready_to_dispatch") %>"
@@ -397,6 +489,7 @@ function doToggleDispatch(id) {
                 <button type="button" class="btn-icon-nav btn-dispatch-mark"
                     title="<%= msg.getString("site_alloc.tooltip_mark_ready") %>"
                     onclick="doToggleDispatch(<%=rowId%>)">&#128666;</button>
+                <% } %>
                 <% } %>
             </td>
         </tr>

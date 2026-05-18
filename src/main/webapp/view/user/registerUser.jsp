@@ -2,10 +2,17 @@
 <%@page import="com.san.farm.login.entity.LoginUser"%>
 <%@page import="com.san.farm.adminuser.entity.UserTypeEntity"%>
 <%@page import="com.san.farm.adminuser.dao.UserTypeService"%>
+<%@page import="com.san.farm.adminuser.dao.RolePermissionDao"%>
+<%@page import="com.san.farm.util.AppPage"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.HashSet"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <%!
     /* Returns inline-style background/border/color for a given role name. */
     private String[] roleColors(String typeName) {
@@ -30,12 +37,16 @@
     else if ("deleted".equals(msgParam))        { bannerMsg = msg.getString("user_mgmt.banner_deleted");         bannerClass = "banner-ok"; }
     else if ("username_exists".equals(errParam)){ bannerMsg = msg.getString("user_mgmt.error_username_exists");  bannerClass = "banner-err"; }
     else if ("admin_protected".equals(errParam)){ bannerMsg = msg.getString("user_mgmt.error_admin_protected");  bannerClass = "banner-err"; }
+    else if ("perms_saved".equals(msgParam))     { bannerMsg = "Role permissions saved successfully.";            bannerClass = "banner-ok"; }
 
     List<UserTypeEntity> utList = new ArrayList<UserTypeEntity>();
     try { utList = new UserTypeService().fetch(); } catch (Exception ex) { ex.printStackTrace(); }
 
     List<LoginUser> luList = new ArrayList<LoginUser>();
     try { luList = new LoginUserService().fetch(); } catch (Exception ex) { ex.printStackTrace(); }
+
+    Map<Integer, Set<String>> permMap = new HashMap<Integer, Set<String>>();
+    try { permMap = new RolePermissionDao().fetchAllByRole(); } catch (Exception ex) { ex.printStackTrace(); }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -265,6 +276,23 @@
     }
 
     window.onload = function() { updateChkStyles(); };
+
+    function togglePermSection() {
+        var body = document.getElementById('permBody');
+        var chev = document.getElementById('permChevron');
+        if (body.style.display === 'none') {
+            body.style.display = '';
+            chev.style.transform = 'rotate(180deg)';
+        } else {
+            body.style.display = 'none';
+            chev.style.transform = '';
+        }
+    }
+
+    function setAllPerms(checked) {
+        document.querySelectorAll('.perm-matrix input[type=checkbox]:not([disabled])')
+                .forEach(function(c) { c.checked = checked; });
+    }
 </script>
 </head>
 <body>
@@ -340,12 +368,16 @@
 
             <!-- Buttons -->
             <div class="form-btns">
+                <% if (_isAdmin || !_hasRolePerms || _perms.contains("users_roles.add")) { %>
                 <input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="<%= msg.getString("user_mgmt.btn_register") %>"
                        onclick="this.form.action='../../RegisterUserController'">
+                <% } %>
+                <% if (_isAdmin || !_hasRolePerms || _perms.contains("users_roles.edit")) { %>
                 <input type="submit" class="btn-update" id="btnUpdate" name="edit" value="<%= msg.getString("user_mgmt.btn_update") %>"
                        style="display:none" onclick="this.form.action='../../RegisterUserController'">
                 <input type="button" class="btn-cancel" id="btnCancel" value="<%= msg.getString("user_mgmt.btn_cancel") %>"
                        style="display:none" onclick="resetForm()">
+                <% } %>
             </div>
 
         </div><!-- /.field-grid -->
@@ -407,9 +439,11 @@
             </td>
             <td><%=rolesHtml.toString()%></td>
             <td class="action-cell">
+                <% if (_isAdmin || !_hasRolePerms || _perms.contains("users_roles.edit")) { %>
                 <button type="button" class="btn-row-edit"
                     onclick="editRow(<%=luId%>, '<%=safeUname%>', '<%=typeIdsSb.toString()%>', <%=isAdm%>)"><%= msg.getString("btn.edit") %></button>
-                <% if (!isAdm) { %>
+                <% } %>
+                <% if (!isAdm && (_isAdmin || !_hasRolePerms || _perms.contains("users_roles.delete"))) { %>
                 <button type="button" class="btn-row-del"
                     onclick="confirmDelete(<%=luId%>, '<%=safeUname%>')"><%= msg.getString("btn.delete") %></button>
                 <% } %>
@@ -418,6 +452,130 @@
     <%  } %>
     </tbody>
 </table>
+
+<!-- ── Role Permissions Section ── -->
+<div style="margin-top:20px; border-top:1px solid var(--green-bd); padding-top:16px;">
+<div class="form-card" id="permCard" style="background:#f1f8e9;">
+    <div class="form-card-title" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; margin-bottom:0;"
+         onclick="togglePermSection()">
+        <span>&#128274; Role Permissions &mdash; Page Access Control</span>
+        <span id="permChevron" style="font-size:11px; transition:transform .2s; display:inline-block;">&#9660;</span>
+    </div>
+    <div id="permBody" style="display:none; margin-top:12px;">
+        <p style="font-size:11px; color:#616161; margin:0 0 12px;">
+            Check which pages each role can access. <strong>Admin always has full access</strong> regardless of settings here.
+            If no permissions are configured for a role, that role sees all pages.
+        </p>
+        <form method="post" action="../../RegisterUserController">
+            <input type="hidden" name="savePermissions" value="1">
+            <div style="overflow-x:auto;">
+            <table border="1" cellspacing="0" class="perm-matrix" style="min-width:500px; border-collapse:collapse; width:100%;">
+                <thead>
+                <tr>
+                    <th style="text-align:left; min-width:180px; padding:6px 10px;">Page / Action</th>
+                    <!-- Admin column -->
+                    <th style="text-align:center; min-width:80px; background:#fff3cd; color:#856404; padding:6px 8px;">
+                        Admin<br><span style="font-size:9px; font-weight:400;">&#128274; Full Access</span>
+                    </th>
+                    <!-- One column per non-admin role -->
+                    <%
+                        for (UserTypeEntity ute : utList) {
+                            if (ute == null) continue;
+                            String tName = ute.getUserType() != null ? ute.getUserType() : "";
+                            String[] clr = roleColors(tName);
+                    %>
+                    <th style="text-align:center; min-width:80px; background:<%=clr[0]%>; color:<%=clr[2]%>; border-color:<%=clr[1]%>; padding:6px 8px;">
+                        <%=tName%>
+                    </th>
+                    <% } %>
+                </tr>
+                </thead>
+                <tbody>
+                <%
+                    String lastGroup = null;
+                    for (AppPage ap : AppPage.ALL) {
+                        if (!ap.group.equals(lastGroup)) {
+                            lastGroup = ap.group;
+                %>
+                <tr style="background:#e8f5e9;">
+                    <td colspan="<%=utList.size() + 2%>"
+                        style="font-size:10px; font-weight:700; color:#1b5e20; text-transform:uppercase;
+                               letter-spacing:.5px; padding:4px 10px;">
+                        <%=ap.group%>
+                    </td>
+                </tr>
+                <%      }  %>
+                <%-- Page view-access row --%>
+                <tr>
+                    <td style="padding:5px 10px; font-size:12px; font-weight:<%=ap.actions.length > 0 ? "600" : "400"%>;">
+                        <%=ap.label%>
+                        <% if (ap.actions.length > 0) { %>
+                        <span style="font-weight:400; font-size:10px; color:#888; margin-left:4px;">(View)</span>
+                        <% } %>
+                    </td>
+                    <td style="text-align:center; background:#fffde7;">
+                        <input type="checkbox" disabled checked title="Admin always has access">
+                    </td>
+                    <%
+                        for (UserTypeEntity ute : utList) {
+                            if (ute == null) continue;
+                            int rId = ute.getUserTypeId();
+                            Set<String> rolePerms = permMap.get(rId);
+                            boolean isChecked = (rolePerms != null && rolePerms.contains(ap.key));
+                    %>
+                    <td style="text-align:center;">
+                        <input type="checkbox" name="perm_<%=rId%>" value="<%=ap.key%>"
+                               <%=isChecked ? "checked" : ""%>>
+                    </td>
+                    <% } %>
+                </tr>
+                <%-- Action sub-rows --%>
+                <% for (String _act : ap.actions) {
+                       String _actLabel = "add".equals(_act) ? "Add" : "edit".equals(_act) ? "Edit" : "Delete";
+                       String _actKey   = ap.key + "." + _act;
+                       String _actBg    = "delete".equals(_act) ? "background:#fff8f8;" : "";
+                %>
+                <tr style="<%=_actBg%>">
+                    <td style="padding:3px 10px 3px 26px; font-size:11px; color:#555;">
+                        &#8627; <%=_actLabel%>
+                    </td>
+                    <td style="text-align:center; background:#fffde7;">
+                        <input type="checkbox" disabled checked title="Admin always has access">
+                    </td>
+                    <%
+                        for (UserTypeEntity ute2 : utList) {
+                            if (ute2 == null) continue;
+                            int rId2 = ute2.getUserTypeId();
+                            String _actKey2 = ap.key + "." + _act;
+                            Set<String> rolePerms2 = permMap.get(rId2);
+                            boolean isActChecked = (rolePerms2 != null && rolePerms2.contains(_actKey2));
+                    %>
+                    <td style="text-align:center;">
+                        <input type="checkbox" name="perm_<%=rId2%>" value="<%=_actKey2%>"
+                               <%=isActChecked ? "checked" : ""%>>
+                    </td>
+                    <% } %>
+                </tr>
+                <% } %>
+                <% } %>
+                </tbody>
+            </table>
+            </div>
+            <div style="margin-top:12px; text-align:right;">
+                <input type="button" class="btn-cancel" value="Select All"
+                       onclick="setAllPerms(true)" style="margin-right:6px;">
+                <input type="button" class="btn-cancel" value="Clear All"
+                       onclick="setAllPerms(false)" style="margin-right:10px;">
+                <% if (_isAdmin) { %>
+                <input type="submit" class="btn-update" value="&#128190; Save Role Permissions">
+                <% } else { %>
+                <span style="font-size:11px; color:#888; font-style:italic;">&#128274; Only Admin can save role permissions.</span>
+                <% } %>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
 
 </fieldset>
 

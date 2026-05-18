@@ -140,7 +140,7 @@
 			<div class="form-row"><label for="perContactNo"><%= msg.getString("vendor.label_personal_contact") %>:</label><input type="text" name="perContactNo" id="perContactNo" placeholder="Personal number"></div>
 			<div class="form-row"><label for="ofcContactNo"><%= msg.getString("vendor.label_shop_contact") %>:</label><input type="text" name="ofcContactNo" id="ofcContactNo" placeholder="Shop number"></div>
 			<div class="form-row"><label for="address"><%= msg.getString("vendor.label_address") %>:</label><textarea name="address" id="address" placeholder="Enter address"></textarea></div>
-			<div class="form-row"><label for="emailId"><%= msg.getString("vendor.label_email") %>:</label><input type="text" name="emailId" id="emailId" placeholder="Enter email"></div>
+			<div class="form-row"><label for="emailId"><%= msg.getString("vendor.label_email") %>:</label><input type="email" name="emailId" id="emailId" maxlength="100" placeholder="user@example.com"></div>
 			<div class="form-btns">
 				<input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="<%= msg.getString("btn.add") %>">
 				<input type="submit" class="btn-update" id="btnUpdate" name="edit" value="<%= msg.getString("btn.update") %>" style="display:none">

@@ -4,6 +4,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <%
     String mode       = request.getParameter("mode");
     String empIdParam = request.getParameter("employeeInfoId");
@@ -51,21 +52,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
-<script src="../../js/jquery-1.9.1.js"></script>
-<script src="../../js/jquery-ui.js"></script>
 <title><%= isAdd ? msg.getString("employee.page_title_add") : pageTitle %></title>
 </head>
-<script>
-    $(function() {
-        <%if (!isView) {%>
-        $("#birthDate").datepicker({
-            changeMonth : true,
-            changeYear  : true,
-            dateFormat  : "dd/mm/yy"
-        }).val();
-        <%}%>
-    });
-</script>
 <script>
     var MAX_PHOTO_BYTES = 204800; // 200 KB
     function previewPhoto(input) {
@@ -90,6 +78,18 @@
 </script>
 <body>
 <%@include file="../../header.jsp" %>
+<script src="../../js/jquery-ui.js"></script>
+<script>
+    $(function() {
+        <%if (!isView) {%>
+        $("#birthDate").datepicker({
+            changeMonth : true,
+            changeYear  : true,
+            dateFormat  : "dd/mm/yy"
+        });
+        <%}%>
+    });
+</script>
 <fieldset><legend><%=pageTitle%></legend>
     <form name="frmAddEmp" action="../../EmployeeInfoController" enctype="multipart/form-data" method="post">
         <input type="hidden" name="employeeInfoId" id="employeeInfoId" value="<%=fEmpId%>">
@@ -146,7 +146,7 @@
                         </div>
                         <div class="form-row">
                             <label><%= msg.getString("employee.label_email") %>:</label>
-                            <input type="text" name="emailId" id="emailId" readonly value="<%=fEmail%>" placeholder="<%= msg.getString("employee.label_email") %>">
+                            <input type="email" name="emailId" id="emailId" <%=ro%> maxlength="100" value="<%=fEmail%>" placeholder="user@example.com">
                         </div>
                         <div class="form-row">
                             <label><%= msg.getString("employee.label_birth_date") %>:</label>
@@ -187,9 +187,13 @@
 
                 <div class="form-btns" style="margin-top:14px;">
                     <%if (isAdd) {%>
+                        <% if (_isAdmin || !_hasRolePerms || _perms.contains("employee_add.add")) { %>
                         <input type="submit" class="btn-add" name="add" value="<%= msg.getString("employee.btn_add_employee") %>">
+                        <% } %>
                     <%} else if (isEdit) {%>
+                        <% if (_isAdmin || !_hasRolePerms || _perms.contains("employee_add.edit")) { %>
                         <input type="submit" class="btn-update" name="edit" value="<%= msg.getString("employee.btn_save_changes") %>">
+                        <% } %>
                         &nbsp;
                         <a href="employeeViewAll.jsp"><button type="button" class="btn-cancel"><%= msg.getString("btn.cancel") %></button></a>
                     <%} else {%>
