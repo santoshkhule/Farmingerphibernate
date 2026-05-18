@@ -67,7 +67,7 @@ body {
     font-size: 13px;
     color: var(--text);
     background: #eaf2ea;
-    overflow-x: hidden;
+    overflow-x: auto;
     overflow-y: auto;
 }
 
@@ -571,6 +571,19 @@ div.dataTables_paginate .paginate_button.disabled { opacity: 0.4; cursor: defaul
 table.dataTable tbody tr.odd  { background: #fff; }
 table.dataTable tbody tr.even { background: #f4faf4; }
 table.dataTable tbody tr:hover { background: #dcedc8 !important; }
+
+/* ── Mobile: horizontal table scroll ── */
+.dataTables_wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+/* Keep controls (search/pagination) readable; let only the table overflow */
+.tbl-data,
+table[border="1"].tbl-data,
+table.dataTable {
+    min-width: 480px;
+}
 
 /* =====================================================
    REPORT PAGES
