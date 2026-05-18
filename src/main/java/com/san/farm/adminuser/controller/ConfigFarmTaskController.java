@@ -15,8 +15,8 @@ import com.san.farm.adminuser.entity.ConfigFarmTaskEntity;
 import com.san.farm.util.Symbols;
 
 /**
- * This servlet file Accept the request from configFarmTask.jsp,perform db CRUD Operation on that data using ConfigFarmTaskService.java,
- * redirect back to the configFarmTask.jsp 
+ * This servlet file Accept the request from farmingTask.jsp,perform db CRUD Operation on that data using ConfigFarmTaskService.java,
+ * redirect back to the masterData.jsp
  * @author santosh khule
  * @version 1.2
  * @since 16/11/2014
@@ -79,8 +79,8 @@ public class ConfigFarmTaskController extends HttpServlet {
 		} catch (Exception exception) {
 			logger.error("Error processing ConfigFarmTask request", exception);
 		} finally {
-			logger.debug("Redirecting to configFarmTask.jsp");
-			response.sendRedirect("view/user/configuration.jsp?tab=task");
+			logger.debug("Redirecting to masterData.jsp?tab=task");
+			response.sendRedirect("view/user/masterData.jsp?tab=task");
 		}
 	}
 

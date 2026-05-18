@@ -103,7 +103,7 @@ public class SalePaymentController extends HttpServlet {
         } catch (Exception exception) {
             logger.error("Error processing SalePaymentController request", exception);
         } finally {
-            String redirectUrl = "view/user/cropSaleProcess.jsp?saleId=" + saleId;
+            String redirectUrl = "view/user/saleProcess.jsp?saleId=" + saleId;
             logger.debug("Redirecting to: {}", redirectUrl);
             response.sendRedirect(redirectUrl);
         }

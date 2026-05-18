@@ -61,7 +61,7 @@ public class BrandController extends HttpServlet {
 		} catch (Exception e) {
 			logger.error("Error processing Brand request", e);
 		} finally {
-			response.sendRedirect("view/user/configuration.jsp?tab=brand");
+			response.sendRedirect("view/user/masterData.jsp?tab=brand");
 		}
 	}
 

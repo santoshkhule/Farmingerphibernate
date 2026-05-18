@@ -228,7 +228,7 @@
 			<div class="nav-group">
 				<div class="nav-group-title">&#9881; <%= msg.getString("nav.group_master_data") %></div>
 				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("configuration")) { %>
-				<a class="nav-link" href="view/user/configuration.jsp" target="contentFrame"><%= msg.getString("nav.master_configuration") %></a>
+				<a class="nav-link" href="view/user/masterData.jsp" target="contentFrame"><%= msg.getString("nav.master_configuration") %></a>
 				<% } %>
 				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("users_roles")) { %>
 				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame"><%= msg.getString("nav.master_register_user") %></a>
@@ -278,7 +278,7 @@
 				<a class="nav-link" href="view/user/addBuyer.jsp" target="contentFrame"><%= msg.getString("nav.sales_manage_buyers") %></a>
 				<% } %>
 				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("sales_crop")) { %>
-				<a class="nav-link" href="view/user/cropSaleProcess.jsp" target="contentFrame"><%= msg.getString("nav.sales_crop_sales") %></a>
+				<a class="nav-link" href="view/user/saleProcess.jsp" target="contentFrame"><%= msg.getString("nav.sales_crop_sales") %></a>
 				<% } %>
 			</div>
 
