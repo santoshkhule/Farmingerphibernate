@@ -24,7 +24,7 @@ public class UserTypeController extends HttpServlet {
 
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.debug("Processing UserType request");
-		String redirectUrl = "view/user/masterData.jsp?tab=userType";
+		String redirectUrl = "view/user/registerUser.jsp?tab=userTypes";
 		try {
 			String userType = request.getParameter("userType");
 			logger.debug("userType: {}", userType);
@@ -36,7 +36,7 @@ public class UserTypeController extends HttpServlet {
 			if (request.getParameter("add") != null) {
 				if (userTypeService.existsByName(userType)) {
 					logger.warn("Duplicate user type rejected: {}", userType);
-					redirectUrl = "view/user/masterData.jsp?tab=userType&error=duplicate"
+					redirectUrl = "view/user/registerUser.jsp?tab=userTypes&error=duplicate"
 						+ "&errVal=" + URLEncoder.encode(userType.trim(), "UTF-8");
 				} else {
 					logger.info("Adding new user type: {}", userType);

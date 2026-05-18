@@ -1,4 +1,3 @@
-<%@page import="com.san.farm.adminuser.entity.UserTypeEntity"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigSiteInformationEntity"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigCropEntity"%>
 <%@page import="com.san.farm.adminuser.entity.ConfigFarmTaskEntity"%>
@@ -6,7 +5,6 @@
 <%@page import="com.san.farm.adminuser.entity.FertilizerEntity"%>
 <%@page import="com.san.farm.adminuser.entity.BrandEntity"%>
 <%@page import="com.san.farm.adminuser.entity.UnitEntity"%>
-<%@page import="com.san.farm.adminuser.dao.UserTypeService"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigCropService"%>
 <%@page import="com.san.farm.adminuser.dao.ConfigFarmTaskService"%>
@@ -19,15 +17,8 @@
 <%@ include file="../../lang.jsp" %>
 <%
     String activeTab = request.getParameter("tab");
-    if (activeTab == null || activeTab.trim().isEmpty()) activeTab = "userType";
+    if (activeTab == null || activeTab.trim().isEmpty()) activeTab = "site";
 
-    /* duplicate-validation feedback from UserTypeController */
-    String utError   = request.getParameter("error");
-    String utErrVal  = request.getParameter("errVal");
-    boolean utDupErr = "duplicate".equals(utError) && utErrVal != null && !utErrVal.trim().isEmpty();
-    String  utErrSafe = utDupErr ? utErrVal.trim().replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot;") : "";
-
-    UserTypeService              utSvc = new UserTypeService();
     ConfigSiteInformationService siSvc = new ConfigSiteInformationService();
     ConfigCropService            crSvc = new ConfigCropService();
     ConfigFarmTaskService        ftSvc = new ConfigFarmTaskService();
@@ -36,7 +27,6 @@
     BrandService                 brSvc = new BrandService();
     UnitService                  unSvc = new UnitService();
 
-    List<UserTypeEntity>              utList = utSvc.fetch();
     List<ConfigSiteInformationEntity> siList = siSvc.fetch();
     List<ConfigCropEntity>            crList = crSvc.fetch();
     List<ConfigFarmTaskEntity>        ftList = ftSvc.fetch();
@@ -140,7 +130,6 @@
 
 <!-- Tab nav -->
 <div class="cfg-tabs">
-    <button class="cfg-tab-btn<%="userType".equals(activeTab)?" active":""%>" onclick="switchTab('userType')"><%= msg.getString("config.tab_user_type") %></button>
     <button class="cfg-tab-btn<%="site".equals(activeTab)?" active":""%>"     onclick="switchTab('site')"><%= msg.getString("config.tab_site_info") %></button>
     <button class="cfg-tab-btn<%="crop".equals(activeTab)?" active":""%>"     onclick="switchTab('crop')"><%= msg.getString("config.tab_crops") %></button>
     <button class="cfg-tab-btn<%="task".equals(activeTab)?" active":""%>"     onclick="switchTab('task')"><%= msg.getString("config.tab_farming_task") %></button>
@@ -151,74 +140,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     TAB 1 : User Type
-     ══════════════════════════════════════════════════ -->
-<div id="tab-userType" class="cfg-tab-panel<%="userType".equals(activeTab)?" active":""%>">
-    <span class="cfg-count-chip"><%=utList.size()%> <%= msg.getString("config.count.user_types") %></span>
-    <form method="post" id="ut_frm" action="../../UserTypeController">
-        <div class="cfg-form-card">
-            <div class="cfg-form-card-title"><%= msg.getString("config.user_type.form_title_add") %></div>
-            <% if (utDupErr) { %>
-            <div class="cfg-err-msg">
-                &#9888;&nbsp;<%= msg.getString("config.user_type.fieldset_title") %> <strong>"<%=utErrSafe%>"</strong> <%= msg.getString("config.user_type.error_duplicate") %>
-            </div>
-            <% } %>
-            <div class="cfg-form-row">
-                <div class="cfg-field" style="min-width:220px;">
-                    <label for="ut_name"><%= msg.getString("config.user_type.label_name") %></label>
-                    <input type="text" name="userType" id="ut_name" required placeholder="e.g. Admin, Supervisor"
-                        value="<%=utErrSafe%>"
-                        <%=utDupErr ? "style=\"border-color:#c62828;\"" : ""%>>
-                </div>
-                <div style="align-self:flex-end;">
-                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
-                </div>
-            </div>
-        </div>
-    </form>
-    <div class="cfg-bulk-bar" id="ut_bulkBar">
-        <span><strong id="ut_selCount">0</strong> selected</span>
-        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ut','../../UserTypeController')"><%= msg.getString("btn.delete_selected") %></button>
-        <button type="button" class="btn-cancel" onclick="cfgClearSelection('ut')"><%= msg.getString("btn.clear") %></button>
-    </div>
-    <form method="post" id="ut_frmBulk" action="../../UserTypeController"></form>
-    <table class="cfg-table tbl-data" id="ut_table">
-        <thead><tr>
-            <th width="4%" style="text-align:center;"><input type="checkbox" id="ut_chkAll" onclick="cfgToggleAll('ut',this)"></th>
-            <th width="7%"><%= msg.getString("tbl.col_id") %></th>
-            <th><%= msg.getString("tbl.col_user_type") %></th>
-            <th width="16%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
-        </tr></thead>
-        <tbody>
-        <% for (UserTypeEntity u : utList) {
-               int uid = u.getUserTypeId();
-               String uval = u.getUserType() != null ? u.getUserType() : "";
-               String uesc = uval.replace("\\","\\\\").replace("\"","&quot;"); %>
-        <tr id="ut_row<%=uid%>">
-            <td class="center"><input type="checkbox" class="ut_chk" value="<%=uid%>" onchange="cfgUpdateBulkBar('ut','ut_chk')"></td>
-            <td><%=uid%></td>
-            <td>
-                <span id="ut_vn_<%=uid%>"><%=uval%></span>
-                <input type="text" id="ut_en_<%=uid%>" class="inp-inline" value="<%=uesc%>" style="display:none">
-                <form id="ut_frmUpd_<%=uid%>" method="post" action="../../UserTypeController" style="display:none">
-                    <input type="hidden" name="userTypeId" value="<%=uid%>">
-                    <input type="hidden" name="userType"   id="ut_hn_<%=uid%>">
-                    <input type="hidden" name="edit"       value="1">
-                </form>
-            </td>
-            <td class="center">
-                <button id="ut_btnE_<%=uid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ut',<%=uid%>)"><%= msg.getString("btn.edit") %></button>
-                <button id="ut_btnS_<%=uid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ut',<%=uid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
-                <button id="ut_btnC_<%=uid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ut',<%=uid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
-            </td>
-        </tr>
-        <% } %>
-        </tbody>
-    </table>
-</div>
-
-<!-- ══════════════════════════════════════════════════
-     TAB 2 : Site Information
+     TAB 1 : Site Information
      ══════════════════════════════════════════════════ -->
 <div id="tab-site" class="cfg-tab-panel<%="site".equals(activeTab)?" active":""%>">
     <span class="cfg-count-chip"><%=siList.size()%> <%= msg.getString("config.count.sites") %></span>
@@ -301,7 +223,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     TAB 3 : Crops
+     TAB 2 : Crops
      ══════════════════════════════════════════════════ -->
 <div id="tab-crop" class="cfg-tab-panel<%="crop".equals(activeTab)?" active":""%>">
     <span class="cfg-count-chip"><%=crList.size()%> <%= msg.getString("config.count.crops") %></span>
@@ -361,7 +283,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     TAB 4 : Farming Task
+     TAB 3 : Farming Task
      ══════════════════════════════════════════════════ -->
 <div id="tab-task" class="cfg-tab-panel<%="task".equals(activeTab)?" active":""%>">
     <span class="cfg-count-chip"><%=ftList.size()%> <%= msg.getString("config.count.tasks") %></span>
@@ -421,7 +343,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     TAB 5 : Category
+     TAB 4 : Category
      ══════════════════════════════════════════════════ -->
 <div id="tab-category" class="cfg-tab-panel<%="category".equals(activeTab)?" active":""%>">
     <span class="cfg-count-chip"><%=caList.size()%> <%= msg.getString("config.count.categories") %></span>
@@ -481,7 +403,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     TAB 6 : Product
+     TAB 5 : Product
      ══════════════════════════════════════════════════ -->
 <div id="tab-product" class="cfg-tab-panel<%="product".equals(activeTab)?" active":""%>">
     <span class="cfg-count-chip"><%=prList.size()%> <%= msg.getString("config.count.products") %></span>
@@ -541,7 +463,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     TAB 7 : Brand
+     TAB 6 : Brand
      ══════════════════════════════════════════════════ -->
 <div id="tab-brand" class="cfg-tab-panel<%="brand".equals(activeTab)?" active":""%>">
     <span class="cfg-count-chip"><%=brList.size()%> <%= msg.getString("config.count.brands") %></span>
@@ -601,7 +523,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     TAB 8 : Units
+     TAB 7 : Units
      ══════════════════════════════════════════════════ -->
 <div id="tab-unit" class="cfg-tab-panel<%="unit".equals(activeTab)?" active":""%>">
     <span class="cfg-count-chip"><%=unList.size()%> <%= msg.getString("config.count.units") %></span>
@@ -680,7 +602,7 @@ function switchTab(name) {
 
 /* ── DataTables init ── */
 $(document).ready(function () {
-    var idToTab = {ut_table:'userType', si_table:'site', cr_table:'crop', ft_table:'task',
+    var idToTab = {si_table:'site', cr_table:'crop', ft_table:'task',
                    ca_table:'category', pr_table:'product', br_table:'brand', un_table:'unit'};
     Object.keys(idToTab).forEach(function(id) {
         var dt;

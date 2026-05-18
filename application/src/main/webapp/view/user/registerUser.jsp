@@ -39,6 +39,15 @@
     else if ("admin_protected".equals(errParam)){ bannerMsg = msg.getString("user_mgmt.error_admin_protected");  bannerClass = "banner-err"; }
     else if ("perms_saved".equals(msgParam))     { bannerMsg = "Role permissions saved successfully.";            bannerClass = "banner-ok"; }
 
+    String activeTab = request.getParameter("tab");
+    if (activeTab == null || activeTab.trim().isEmpty()) activeTab = "users";
+
+    String utError   = request.getParameter("error");
+    String utErrVal  = request.getParameter("errVal");
+    boolean utDupErr = "duplicate".equals(utError) && utErrVal != null && !utErrVal.trim().isEmpty();
+    String  utErrSafe = utDupErr ? utErrVal.trim().replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot;") : "";
+    if (utDupErr) activeTab = "userTypes";
+
     List<UserTypeEntity> utList = new ArrayList<UserTypeEntity>();
     try { utList = new UserTypeService().fetch(); } catch (Exception ex) { ex.printStackTrace(); }
 
@@ -139,6 +148,42 @@
         font-size:11px; font-family:inherit; transition:background .1s; margin-left:4px;
     }
     .btn-row-del:hover { background:#ffcdd2; }
+
+    /* ── Page tabs ── */
+    .page-tabs          { display:flex; flex-wrap:wrap; gap:3px; border-bottom:2px solid var(--green-dk,#2e7d32); margin-bottom:20px; }
+    .page-tab-btn       { background:#f5f5f5; border:1px solid #ccc; border-bottom:none; padding:9px 24px; cursor:pointer; font-size:13px; font-weight:600; color:#555; border-radius:4px 4px 0 0; transition:background .15s,color .15s; }
+    .page-tab-btn:hover { background:#e8f5e9; color:var(--green-dk,#2e7d32); border-color:var(--green-bd,#a5d6a7); }
+    .page-tab-btn.active{ background:var(--green-dk,#2e7d32); color:#fff; border-color:var(--green-dk,#2e7d32); }
+    .page-tab-panel     { display:none; }
+    .page-tab-panel.active { display:block; }
+
+    /* ── User Types tab — form & table styles ── */
+    .cfg-form-card      { background:#f8fdf8; border:1px solid var(--green-bd,#a5d6a7); border-radius:6px; padding:14px 18px; margin-bottom:16px; }
+    .cfg-form-card-title{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--green-dk,#2e7d32); margin-bottom:10px; }
+    .cfg-form-row       { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px 20px; }
+    .cfg-field          { display:flex; flex-direction:column; gap:4px; min-width:160px; }
+    .cfg-field label    { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--text-muted,#666); }
+    .cfg-field input    { padding:6px 9px; border:1px solid #ccc; border-radius:4px; font-size:13px; width:100%; box-sizing:border-box; }
+    .cfg-field input:focus { border-color:var(--green-dk,#2e7d32); outline:none; box-shadow:0 0 0 2px rgba(46,125,50,.15); }
+    .cfg-bulk-bar       { display:none; background:#fdecea; border:1px solid #e06060; border-radius:4px; padding:8px 14px; margin-bottom:10px; font-size:13px; align-items:center; gap:10px; }
+    .cfg-bulk-bar.show  { display:flex; }
+    .cfg-table          { width:100%; border-collapse:collapse; font-size:13px; }
+    .cfg-table thead th { background:var(--green-dk,#2e7d32); color:#fff; padding:9px 10px; text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.4px; }
+    .cfg-table tbody tr:nth-child(even) { background:#f5fdf5; }
+    .cfg-table tbody tr:hover { background:#e8f5e9; }
+    .cfg-table td       { padding:6px 10px; border-bottom:1px solid #e8e8e8; vertical-align:middle; }
+    .cfg-table td.center{ text-align:center; }
+    .cfg-err-msg        { display:flex; align-items:center; gap:8px; background:#fdecea; border:1px solid #ef9a9a; color:#c62828; border-radius:4px; padding:8px 12px; margin-bottom:10px; font-size:12px; }
+    .cfg-count-chip     { display:inline-flex; align-items:center; gap:6px; background:#e8f5e9; border:1px solid var(--green-bd,#a5d6a7); border-radius:20px; padding:3px 12px; font-size:12px; font-weight:700; color:var(--green-dk,#2e7d32); margin-bottom:10px; }
+    .btn-delete         { background:#c62828; color:#fff; border:none; padding:6px 14px; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer; }
+    .btn-delete:hover   { background:#b71c1c; }
+    .btn-row-save       { background:#1565c0; color:#fff; border:none; padding:3px 10px; border-radius:3px; font-size:12px; font-weight:600; cursor:pointer; }
+    .btn-row-save:hover { background:#0d47a1; }
+    .btn-row-cancel     { background:#fff; color:#666; border:1px solid #bbb; padding:3px 8px; border-radius:3px; font-size:12px; cursor:pointer; }
+    .btn-row-cancel:hover { background:#f5f5f5; }
+    .inp-inline         { padding:4px 7px; border:1px solid var(--green-bd,#a5d6a7); border-radius:3px; font-size:13px; width:100%; box-sizing:border-box; min-width:100px; }
+    .inp-inline:focus   { border-color:var(--green-dk,#2e7d32); outline:none; }
+    tr.editing-row      { background:#fff8e1 !important; }
 </style>
 <script type="text/javascript">
     var editingRowEl = null;
@@ -293,6 +338,98 @@
         document.querySelectorAll('.perm-matrix input[type=checkbox]:not([disabled])')
                 .forEach(function(c) { c.checked = checked; });
     }
+
+    /* ── Page tab switching ── */
+    function switchPageTab(name) {
+        document.querySelectorAll('.page-tab-panel').forEach(function(p) { p.classList.remove('active'); });
+        document.querySelectorAll('.page-tab-btn').forEach(function(b)   { b.classList.remove('active'); });
+        document.getElementById('tab-' + name).classList.add('active');
+        document.querySelectorAll('.page-tab-btn').forEach(function(b) {
+            if (b.getAttribute('onclick') === "switchPageTab('" + name + "')") b.classList.add('active');
+        });
+        if (name === 'userTypes' && $.fn.DataTable && $.fn.DataTable.isDataTable('#ut_table')) {
+            $('#ut_table').DataTable().columns.adjust().draw(false);
+        }
+        history.replaceState(null, '', '?tab=' + name);
+    }
+
+    /* ── User Type inline row editing ── */
+    function cfgInlineEdit(p, id) {
+        var span = document.getElementById(p + '_vn_' + id);
+        var inp  = document.getElementById(p + '_en_' + id);
+        span.style.display = 'none';
+        inp.style.display  = '';
+        inp.focus(); inp.select();
+        document.getElementById(p + '_btnE_' + id).style.display = 'none';
+        document.getElementById(p + '_btnS_' + id).style.display = '';
+        document.getElementById(p + '_btnC_' + id).style.display = '';
+        var row = document.getElementById(p + '_row' + id);
+        if (row) row.classList.add('editing-row');
+        inp.onkeydown = function(e) { if (e.key === 'Enter') cfgInlineSave(p, id); };
+    }
+
+    function cfgInlineCancel(p, id) {
+        var span = document.getElementById(p + '_vn_' + id);
+        var inp  = document.getElementById(p + '_en_' + id);
+        inp.value          = span.innerText;
+        span.style.display = '';
+        inp.style.display  = 'none';
+        document.getElementById(p + '_btnE_' + id).style.display = '';
+        document.getElementById(p + '_btnS_' + id).style.display = 'none';
+        document.getElementById(p + '_btnC_' + id).style.display = 'none';
+        var row = document.getElementById(p + '_row' + id);
+        if (row) row.classList.remove('editing-row');
+    }
+
+    function cfgInlineSave(p, id) {
+        var val = document.getElementById(p + '_en_' + id).value.trim();
+        if (!val) { document.getElementById(p + '_en_' + id).focus(); return; }
+        document.getElementById(p + '_hn_' + id).value = val;
+        document.getElementById(p + '_frmUpd_' + id).submit();
+    }
+
+    function cfgToggleAll(p, chk) {
+        document.querySelectorAll('.' + p + '_chk').forEach(function(b) { b.checked = chk.checked; });
+        cfgUpdateBulkBar(p, p + '_chk');
+    }
+
+    function cfgUpdateBulkBar(p, cls) {
+        var checked = document.querySelectorAll('.' + cls + ':checked');
+        var all     = document.querySelectorAll('.' + cls);
+        var bar = document.getElementById(p + '_bulkBar');
+        if (checked.length > 0) {
+            bar.classList.add('show');
+            document.getElementById(p + '_selCount').innerText = checked.length;
+        } else {
+            bar.classList.remove('show');
+            document.getElementById(p + '_chkAll').checked = false;
+        }
+        document.getElementById(p + '_chkAll').checked = (checked.length === all.length && all.length > 0);
+    }
+
+    function cfgDeleteSelected(p, action) {
+        var checked = document.querySelectorAll('.' + p + '_chk:checked');
+        if (checked.length === 0) return;
+        if (!confirm('Delete ' + checked.length + ' selected record(s)?')) return;
+        var form = document.getElementById(p + '_frmBulk');
+        form.innerHTML = '';
+        form.action = action;
+        checked.forEach(function(b) {
+            var inp = document.createElement('input');
+            inp.type = 'hidden'; inp.name = 'deleteIds'; inp.value = b.value;
+            form.appendChild(inp);
+        });
+        var flag = document.createElement('input');
+        flag.type = 'hidden'; flag.name = 'deleteSelected'; flag.value = '1';
+        form.appendChild(flag);
+        form.submit();
+    }
+
+    function cfgClearSelection(p) {
+        document.querySelectorAll('.' + p + '_chk').forEach(function(b) { b.checked = false; });
+        document.getElementById(p + '_chkAll').checked = false;
+        document.getElementById(p + '_bulkBar').classList.remove('show');
+    }
 </script>
 </head>
 <body>
@@ -304,6 +441,13 @@
 
 <fieldset>
 <legend><%= msg.getString("user_mgmt.page_title") %></legend>
+
+<div class="page-tabs">
+    <button class="page-tab-btn<%="users".equals(activeTab)?" active":""%>"     onclick="switchPageTab('users')">&#128101; Users &amp; Roles</button>
+    <button class="page-tab-btn<%="userTypes".equals(activeTab)?" active":""%>" onclick="switchPageTab('userTypes')">&#127991; User Types</button>
+</div>
+
+<div id="tab-users" class="page-tab-panel<%="users".equals(activeTab)?" active":""%>">
 
 <!-- ── Add / Edit form ── -->
 <div class="form-card" id="formCard">
@@ -576,6 +720,75 @@
     </div>
 </div>
 </div>
+
+</div><!-- /#tab-users -->
+
+<!-- ══════════════════════════════════════════════════
+     TAB : User Types
+     ══════════════════════════════════════════════════ -->
+<div id="tab-userTypes" class="page-tab-panel<%="userTypes".equals(activeTab)?" active":""%>">
+    <span class="cfg-count-chip"><%=utList.size()%> <%= msg.getString("config.count.user_types") %></span>
+    <form method="post" id="ut_frm" action="../../UserTypeController">
+        <div class="cfg-form-card">
+            <div class="cfg-form-card-title"><%= msg.getString("config.user_type.form_title_add") %></div>
+            <% if (utDupErr) { %>
+            <div class="cfg-err-msg">
+                &#9888;&nbsp;<%= msg.getString("config.user_type.fieldset_title") %> <strong>"<%=utErrSafe%>"</strong> <%= msg.getString("config.user_type.error_duplicate") %>
+            </div>
+            <% } %>
+            <div class="cfg-form-row">
+                <div class="cfg-field" style="min-width:220px;">
+                    <label for="ut_name"><%= msg.getString("config.user_type.label_name") %></label>
+                    <input type="text" name="userType" id="ut_name" required placeholder="e.g. Admin, Supervisor"
+                        value="<%=utErrSafe%>"
+                        <%=utDupErr ? "style=\"border-color:#c62828;\"" : ""%>>
+                </div>
+                <div style="align-self:flex-end;">
+                    <input type="submit" class="btn-add" name="add" value="<%= msg.getString("btn.add") %>">
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="cfg-bulk-bar" id="ut_bulkBar">
+        <span><strong id="ut_selCount">0</strong> selected</span>
+        <button type="button" class="btn-delete" onclick="cfgDeleteSelected('ut','../../UserTypeController')"><%= msg.getString("btn.delete_selected") %></button>
+        <button type="button" class="btn-cancel" onclick="cfgClearSelection('ut')"><%= msg.getString("btn.clear") %></button>
+    </div>
+    <form method="post" id="ut_frmBulk" action="../../UserTypeController"></form>
+    <table class="cfg-table tbl-data" id="ut_table">
+        <thead><tr>
+            <th width="4%" style="text-align:center;"><input type="checkbox" id="ut_chkAll" onclick="cfgToggleAll('ut',this)"></th>
+            <th width="7%"><%= msg.getString("tbl.col_id") %></th>
+            <th><%= msg.getString("tbl.col_user_type") %></th>
+            <th width="16%" style="text-align:center;"><%= msg.getString("tbl.col_action") %></th>
+        </tr></thead>
+        <tbody>
+        <% for (UserTypeEntity u : utList) {
+               int uid = u.getUserTypeId();
+               String uval = u.getUserType() != null ? u.getUserType() : "";
+               String uesc = uval.replace("\\","\\\\").replace("\"","&quot;"); %>
+        <tr id="ut_row<%=uid%>">
+            <td class="center"><input type="checkbox" class="ut_chk" value="<%=uid%>" onchange="cfgUpdateBulkBar('ut','ut_chk')"></td>
+            <td><%=uid%></td>
+            <td>
+                <span id="ut_vn_<%=uid%>"><%=uval%></span>
+                <input type="text" id="ut_en_<%=uid%>" class="inp-inline" value="<%=uesc%>" style="display:none">
+                <form id="ut_frmUpd_<%=uid%>" method="post" action="../../UserTypeController" style="display:none">
+                    <input type="hidden" name="userTypeId" value="<%=uid%>">
+                    <input type="hidden" name="userType"   id="ut_hn_<%=uid%>">
+                    <input type="hidden" name="edit"       value="1">
+                </form>
+            </td>
+            <td class="center">
+                <button id="ut_btnE_<%=uid%>" type="button" class="btn-row-edit"   onclick="cfgInlineEdit('ut',<%=uid%>)"><%= msg.getString("btn.edit") %></button>
+                <button id="ut_btnS_<%=uid%>" type="button" class="btn-row-save"   onclick="cfgInlineSave('ut',<%=uid%>)" style="display:none"><%= msg.getString("btn.save") %></button>
+                <button id="ut_btnC_<%=uid%>" type="button" class="btn-row-cancel" onclick="cfgInlineCancel('ut',<%=uid%>)" style="display:none"><%= msg.getString("btn.cancel") %></button>
+            </td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+</div><!-- /#tab-userTypes -->
 
 </fieldset>
 
