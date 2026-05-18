@@ -3,6 +3,7 @@
 <%@ page import="com.san.farm.login.entity.LoginUser"%>
 <%@ page import="com.san.farm.license.LicenseClient"%>
 <%@ page import="com.san.farm.license.LicenseStatus"%>
+<%@ page import="com.san.farm.util.BuildConfig"%>
 <%@ page import="javax.servlet.http.HttpSession"%>
 <%@ include file="lang.jsp" %>
 <%
@@ -37,8 +38,13 @@
         /* ── Enforce license before checking credentials ── */
         if (!_lic.noConfig) {
             if (_lic.unreachable) {
-                /* Server down — warn but allow login (fail-open for unreachable) */
-                warnMsg = "License server is unreachable. Running without license validation.";
+                if (BuildConfig.IS_PROD) {
+                    /* PROD: fail-closed — cannot reach license server, block login */
+                    errorMsg = "License server is unreachable. Login is not allowed in production without a valid license. Contact your administrator.";
+                } else {
+                    /* DEV: fail-open — warn but allow */
+                    warnMsg = "License server is unreachable. Running without license validation.";
+                }
             } else if (!_lic.valid) {
                 /* Server responded explicitly — block login */
                 String licMsg = (_lic.message != null && !_lic.message.isEmpty())
