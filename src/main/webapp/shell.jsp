@@ -130,7 +130,7 @@
 
 	#sidebar {
 		width: 220px;
-		min-width: 180px;
+		min-width: 0;
 		flex-shrink: 0;
 		background: var(--sidebar-bg);
 		display: flex;
@@ -558,12 +558,17 @@ function switchLang(sel) {
     });
 
     /* ── Drag-resize ── */
+    var frame = document.getElementById('contentFrame');
     resizer.addEventListener('mousedown', function (e) {
         e.preventDefault();
-        var startX  = e.clientX;
-        var startW  = sidebar.offsetWidth;
+        var startX = e.clientX;
+        var startW = sidebar.offsetWidth;
         sidebar.classList.add('is-dragging');
         resizer.classList.add('is-dragging');
+        /* Prevent iframe from swallowing mouse events during drag */
+        document.body.style.userSelect = 'none';
+        document.body.style.webkitUserSelect = 'none';
+        if (frame) frame.style.pointerEvents = 'none';
 
         function onMove(e) {
             var newW = Math.max(32, startW + (e.clientX - startX));
@@ -574,6 +579,9 @@ function switchLang(sel) {
         function onUp() {
             sidebar.classList.remove('is-dragging');
             resizer.classList.remove('is-dragging');
+            document.body.style.userSelect = '';
+            document.body.style.webkitUserSelect = '';
+            if (frame) frame.style.pointerEvents = '';
             var finalW = sidebar.offsetWidth;
             if (finalW >= NARROW_THRESHOLD) {
                 localStorage.setItem(KEY_W, finalW);
