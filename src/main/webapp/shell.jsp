@@ -258,6 +258,12 @@
 </div>
 
 <script>
+    /* Safety net: if shell somehow loads inside the iframe, break it out. */
+    if (window !== window.top) {
+        window.top.location.replace(window.location.href);
+    }
+</script>
+<script>
 function switchLang(sel) {
     window.location.href = '<%=request.getContextPath()%>/LanguageController?lang=' + sel.value;
 }

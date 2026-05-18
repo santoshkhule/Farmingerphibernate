@@ -48,6 +48,13 @@
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 <link rel="stylesheet" href="css/style.css">
 <title><%= msg.getString("login.page_title") %></title>
+<script>
+    /* If session expired while inside the content iframe, break out to the top window
+       so the login page always renders full-screen, not embedded. */
+    if (window !== window.top) {
+        window.top.location.replace(window.location.href);
+    }
+</script>
 </head>
 <body class="login-page">
 
