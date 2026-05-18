@@ -10,6 +10,7 @@
 <%@page import="com.san.farm.adminuser.dao.ConfigSiteInformationService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <%
     ConfigSiteInformationService informationService = new ConfigSiteInformationService();
     List<ConfigSiteInformationEntity> listOfSite = informationService.fetch();
@@ -389,6 +390,7 @@ function doToggleDispatch(id) {
                 <button type="button" class="btn-icon-nav btn-emp"
                     title="<%= msg.getString("site_alloc.tooltip_allocate_employees") %>"
                     onclick="window.location.href='allocateEmployeeToSite.jsp?cropToSiteId=<%=rowId%>'">&#128100;</button>
+                <% if (_isAdmin || !_hasRolePerms || _perms.contains("farm_site_alloc.edit")) { %>
                 <% if (cropToSiteEntity.isReadyToDispatch()) { %>
                 <button type="button" class="btn-icon-nav btn-dispatch-ready"
                     title="<%= msg.getString("site_alloc.tooltip_ready_to_dispatch") %>"
@@ -397,6 +399,7 @@ function doToggleDispatch(id) {
                 <button type="button" class="btn-icon-nav btn-dispatch-mark"
                     title="<%= msg.getString("site_alloc.tooltip_mark_ready") %>"
                     onclick="doToggleDispatch(<%=rowId%>)">&#128666;</button>
+                <% } %>
                 <% } %>
             </td>
         </tr>
