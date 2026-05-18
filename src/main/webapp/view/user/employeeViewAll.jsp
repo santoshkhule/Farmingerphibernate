@@ -6,6 +6,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -89,7 +90,9 @@
     <%-- Bulk delete bar --%>
     <div id="bulkBar">
         <span id="selCount">0</span> employee(s) selected &nbsp;
+        <% if (_isAdmin || !_hasRolePerms || _perms.contains("employee_view.delete")) { %>
         <button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %></button>
+        <% } %>
         &nbsp;
         <button type="button" class="btn-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear") %></button>
     </div>
@@ -162,8 +165,10 @@
                     <span class="ps-pill ps-<%=psClass%>"><%=payStatus%></span>
                 </td>
                 <td style="text-align:center; white-space:nowrap;">
+                    <% if (_isAdmin || !_hasRolePerms || _perms.contains("employee_view.edit")) { %>
                     <button type="button" class="btn-row-edit"
                         onclick="window.location='employeeInfo.jsp?employeeInfoId=<%=empId%>&mode=edit'"><%= msg.getString("btn.edit") %></button>
+                    <% } %>
                     <button type="button" class="btn-view"
                         onclick="window.location='employeeInfo.jsp?employeeInfoId=<%=empId%>&mode=view'">View</button>
                 </td>

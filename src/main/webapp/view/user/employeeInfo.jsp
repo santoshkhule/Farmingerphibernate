@@ -4,6 +4,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <%
     String mode       = request.getParameter("mode");
     String empIdParam = request.getParameter("employeeInfoId");
@@ -187,9 +188,13 @@
 
                 <div class="form-btns" style="margin-top:14px;">
                     <%if (isAdd) {%>
+                        <% if (_isAdmin || !_hasRolePerms || _perms.contains("employee_add.add")) { %>
                         <input type="submit" class="btn-add" name="add" value="<%= msg.getString("employee.btn_add_employee") %>">
+                        <% } %>
                     <%} else if (isEdit) {%>
+                        <% if (_isAdmin || !_hasRolePerms || _perms.contains("employee_add.edit")) { %>
                         <input type="submit" class="btn-update" name="edit" value="<%= msg.getString("employee.btn_save_changes") %>">
+                        <% } %>
                         &nbsp;
                         <a href="employeeViewAll.jsp"><button type="button" class="btn-cancel"><%= msg.getString("btn.cancel") %></button></a>
                     <%} else {%>

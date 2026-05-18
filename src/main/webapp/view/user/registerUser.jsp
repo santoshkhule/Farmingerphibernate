@@ -12,6 +12,7 @@
 <%@page import="java.util.HashSet"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <%!
     /* Returns inline-style background/border/color for a given role name. */
     private String[] roleColors(String typeName) {
@@ -367,12 +368,16 @@
 
             <!-- Buttons -->
             <div class="form-btns">
+                <% if (_isAdmin || !_hasRolePerms || _perms.contains("users_roles.add")) { %>
                 <input type="submit" class="btn-add"    id="btnAdd"    name="add"  value="<%= msg.getString("user_mgmt.btn_register") %>"
                        onclick="this.form.action='../../RegisterUserController'">
+                <% } %>
+                <% if (_isAdmin || !_hasRolePerms || _perms.contains("users_roles.edit")) { %>
                 <input type="submit" class="btn-update" id="btnUpdate" name="edit" value="<%= msg.getString("user_mgmt.btn_update") %>"
                        style="display:none" onclick="this.form.action='../../RegisterUserController'">
                 <input type="button" class="btn-cancel" id="btnCancel" value="<%= msg.getString("user_mgmt.btn_cancel") %>"
                        style="display:none" onclick="resetForm()">
+                <% } %>
             </div>
 
         </div><!-- /.field-grid -->
@@ -434,9 +439,11 @@
             </td>
             <td><%=rolesHtml.toString()%></td>
             <td class="action-cell">
+                <% if (_isAdmin || !_hasRolePerms || _perms.contains("users_roles.edit")) { %>
                 <button type="button" class="btn-row-edit"
                     onclick="editRow(<%=luId%>, '<%=safeUname%>', '<%=typeIdsSb.toString()%>', <%=isAdm%>)"><%= msg.getString("btn.edit") %></button>
-                <% if (!isAdm) { %>
+                <% } %>
+                <% if (!isAdm && (_isAdmin || !_hasRolePerms || _perms.contains("users_roles.delete"))) { %>
                 <button type="button" class="btn-row-del"
                     onclick="confirmDelete(<%=luId%>, '<%=safeUname%>')"><%= msg.getString("btn.delete") %></button>
                 <% } %>
@@ -465,7 +472,7 @@
             <table border="1" cellspacing="0" class="perm-matrix" style="min-width:500px; border-collapse:collapse; width:100%;">
                 <thead>
                 <tr>
-                    <th style="text-align:left; min-width:160px; padding:6px 10px;">Page</th>
+                    <th style="text-align:left; min-width:180px; padding:6px 10px;">Page / Action</th>
                     <!-- Admin column -->
                     <th style="text-align:center; min-width:80px; background:#fff3cd; color:#856404; padding:6px 8px;">
                         Admin<br><span style="font-size:9px; font-weight:400;">&#128274; Full Access</span>
@@ -498,13 +505,17 @@
                     </td>
                 </tr>
                 <%      }  %>
+                <%-- Page view-access row --%>
                 <tr>
-                    <td style="padding:5px 10px; font-size:12px;"><%=ap.label%></td>
-                    <!-- Admin: locked checked -->
+                    <td style="padding:5px 10px; font-size:12px; font-weight:<%=ap.actions.length > 0 ? "600" : "400"%>;">
+                        <%=ap.label%>
+                        <% if (ap.actions.length > 0) { %>
+                        <span style="font-weight:400; font-size:10px; color:#888; margin-left:4px;">(View)</span>
+                        <% } %>
+                    </td>
                     <td style="text-align:center; background:#fffde7;">
                         <input type="checkbox" disabled checked title="Admin always has access">
                     </td>
-                    <!-- Each role -->
                     <%
                         for (UserTypeEntity ute : utList) {
                             if (ute == null) continue;
@@ -518,6 +529,34 @@
                     </td>
                     <% } %>
                 </tr>
+                <%-- Action sub-rows --%>
+                <% for (String _act : ap.actions) {
+                       String _actLabel = "add".equals(_act) ? "Add" : "edit".equals(_act) ? "Edit" : "Delete";
+                       String _actKey   = ap.key + "." + _act;
+                       String _actBg    = "delete".equals(_act) ? "background:#fff8f8;" : "";
+                %>
+                <tr style="<%=_actBg%>">
+                    <td style="padding:3px 10px 3px 26px; font-size:11px; color:#555;">
+                        &#8627; <%=_actLabel%>
+                    </td>
+                    <td style="text-align:center; background:#fffde7;">
+                        <input type="checkbox" disabled checked title="Admin always has access">
+                    </td>
+                    <%
+                        for (UserTypeEntity ute2 : utList) {
+                            if (ute2 == null) continue;
+                            int rId2 = ute2.getUserTypeId();
+                            String _actKey2 = ap.key + "." + _act;
+                            Set<String> rolePerms2 = permMap.get(rId2);
+                            boolean isActChecked = (rolePerms2 != null && rolePerms2.contains(_actKey2));
+                    %>
+                    <td style="text-align:center;">
+                        <input type="checkbox" name="perm_<%=rId2%>" value="<%=_actKey2%>"
+                               <%=isActChecked ? "checked" : ""%>>
+                    </td>
+                    <% } %>
+                </tr>
+                <% } %>
                 <% } %>
                 </tbody>
             </table>
@@ -527,7 +566,11 @@
                        onclick="setAllPerms(true)" style="margin-right:6px;">
                 <input type="button" class="btn-cancel" value="Clear All"
                        onclick="setAllPerms(false)" style="margin-right:10px;">
+                <% if (_isAdmin) { %>
                 <input type="submit" class="btn-update" value="&#128190; Save Role Permissions">
+                <% } else { %>
+                <span style="font-size:11px; color:#888; font-style:italic;">&#128274; Only Admin can save role permissions.</span>
+                <% } %>
             </div>
         </form>
     </div>

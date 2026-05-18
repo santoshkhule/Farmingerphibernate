@@ -10,6 +10,7 @@
 <%@page import="java.util.ArrayList"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <%
     int assignResourceId = 0;
     String arparam = request.getParameter("assignResourceId");
@@ -409,10 +410,14 @@
                                    placeholder="<%= msg.getString("form.placeholder_optional") %>" style="width:140px;">
                         </div>
                         <div class="pay-btns">
+                            <% if (_isAdmin || !_hasRolePerms || _perms.contains("process_payment.add")) { %>
                             <input type="submit" class="btn-add" id="sbtPayAmount" name="sbtPayAmount"
                                    value="<%= msg.getString("btn.pay_amount") %>" onclick="this.form.action='../../PaymentProcessingServlet'">
+                            <% } %>
+                            <% if (_isAdmin || !_hasRolePerms || _perms.contains("process_payment.edit")) { %>
                             <input type="submit" class="btn-update" id="sbtUpdateAmount" name="sbtUpdateAmount"
                                    value="<%= msg.getString("btn.update") %>" hidden onclick="this.form.action='../../PaymentProcessingServlet'">
+                            <% } %>
                             <input type="button" class="btn-cancel" value="<%= msg.getString("btn.reset") %>" onclick="resetPayForm()">
                         </div>
                     </div>
@@ -453,14 +458,18 @@
                             <td><%=pe.getAccountNumber() != null ? pe.getAccountNumber() : ""%></td>
                             <td><%=pe.getComment()       != null ? pe.getComment()       : ""%></td>
                             <td style="text-align:center; white-space:nowrap;">
+                                <% if (_isAdmin || !_hasRolePerms || _perms.contains("process_payment.edit")) { %>
                                 <button type="button" class="btn-row-edit"
                                     onclick="editTransaction(<%=pe.getSalaryProcessId()%>)"><%= msg.getString("btn.edit") %></button>
+                                <% } %>
+                                <% if (_isAdmin || !_hasRolePerms || _perms.contains("process_payment.delete")) { %>
                                 <form method="post" action="../../PaymentProcessingServlet" style="display:inline;"
                                       onsubmit="return confirm('Delete this payment record?');">
                                     <input type="hidden" name="salaryProcessId"  value="<%=pe.getSalaryProcessId()%>">
                                     <input type="hidden" name="assignResourceId" value="<%=assignResourceId%>">
                                     <input type="submit"  class="btn-row-del"    name="sbtDelete" value="<%= msg.getString("btn.delete") %>">
                                 </form>
+                                <% } %>
                             </td>
                         </tr>
                     <%

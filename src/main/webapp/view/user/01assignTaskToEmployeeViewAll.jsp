@@ -9,6 +9,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="../../lang.jsp" %>
+<%@ include file="../../userPerms.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -240,7 +241,9 @@
 		<!-- ── bulk-delete bar ── -->
 		<div id="bulkBar" style="display:none; background:#fdecea; border:1px solid #e06060; padding:6px 12px; border-radius:3px; margin-bottom:8px;">
 			<span id="selCount">0</span> record(s) selected &nbsp;
+			<% if (_isAdmin || !_hasRolePerms || _perms.contains("farm_view_tasks.delete")) { %>
 			<button type="button" class="btn-delete" onclick="deleteSelected()"><%= msg.getString("btn.delete") %> Selected</button>
+			<% } %>
 			&nbsp;
 			<button type="button" class="btn-cancel" onclick="clearSelection()"><%= msg.getString("btn.clear") %> Selection</button>
 		</div>
@@ -332,7 +335,9 @@
 					<td><%=totalSalaryPaid%></td>
 					<td><%=balanceAmount%></td>
 					<td>
+						<% if (_isAdmin || !_hasRolePerms || _perms.contains("farm_view_tasks.edit")) { %>
 						<button type="button" class="btn-row-edit" onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'edit')"><%= msg.getString("btn.edit") %></button>
+						<% } %>
 						<button type="button" class="btn-update"   onclick="actionRowNav(<%=employeeToFarm.getAssignResourceId()%>,'view')">View</button>
 					</td>
 				</tr>
