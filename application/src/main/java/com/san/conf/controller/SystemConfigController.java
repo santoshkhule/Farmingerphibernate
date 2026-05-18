@@ -2,6 +2,7 @@ package com.san.conf.controller;
 
 import com.san.conf.service.SystemConfigService;
 import com.san.farm.login.entity.LoginUser;
+import com.san.farm.util.BuildConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,8 +88,14 @@ public class SystemConfigController extends HttpServlet {
             Properties updates = new Properties();
             String url     = req.getParameter("license.server.url");
             String enabled = req.getParameter("license.server.enabled");
-            if (url     != null) updates.setProperty("license.server.url",     url.trim());
-            if (enabled != null) updates.setProperty("license.server.enabled", enabled.trim());
+            if (url != null) updates.setProperty("license.server.url", url.trim());
+            /* In PROD builds, always force license checks on — ignore any submitted value */
+            if (BuildConfig.IS_PROD) {
+                updates.setProperty("license.server.enabled", "true");
+                log.warn("Attempt to set license.server.enabled ignored in PROD build");
+            } else if (enabled != null) {
+                updates.setProperty("license.server.enabled", enabled.trim());
+            }
             try {
                 service.saveDbProperties(webappRoot, updates);
                 log.info("License server settings saved: url={}, enabled={}", url, enabled);

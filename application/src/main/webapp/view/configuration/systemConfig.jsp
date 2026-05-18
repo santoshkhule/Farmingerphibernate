@@ -2,6 +2,7 @@
          import="com.san.conf.service.SystemConfigService,
                  com.san.farm.license.LicenseClient,
                  com.san.farm.license.LicenseStatus,
+                 com.san.farm.util.BuildConfig,
                  com.san.farm.login.entity.LoginUser,
                  java.io.File,
                  java.util.Properties,
@@ -458,6 +459,11 @@
     <!-- Edit form -->
     <div class="sc-card">
         <div class="sc-card-title">Update License Server Settings</div>
+        <% if (BuildConfig.IS_PROD) { %>
+        <div class="sc-alert warn" style="margin-bottom:14px;">
+            &#128274;&nbsp;<strong>Production build</strong> — license enforcement is locked and cannot be disabled.
+        </div>
+        <% } %>
         <form method="post" action="<%=_ctxPath%>/SystemConfigController">
             <input type="hidden" name="action" value="saveLicenseProps">
             <div class="sc-row">
@@ -468,11 +474,20 @@
                            placeholder="http://localhost:8085">
                 </div>
                 <div class="sc-field sc-sm">
-                    <label for="license.server.enabled">License Checks</label>
+                    <label>License Checks</label>
+                    <% if (BuildConfig.IS_PROD) { %>
+                    <%-- PROD: locked to ENABLED — no select rendered, hidden field forces value --%>
+                    <input type="hidden" name="license.server.enabled" value="true">
+                    <span style="background:#2e7d32;color:#fff;padding:5px 14px;border-radius:4px;
+                                 font-size:13px;font-weight:600;display:inline-block;">
+                        &#128274; Enforced (PROD)
+                    </span>
+                    <% } else { %>
                     <select name="license.server.enabled" id="license.server.enabled">
                         <option value="true"  <%="true".equalsIgnoreCase(_licEnabled) ?"selected":""%>>Enabled</option>
                         <option value="false" <%="false".equalsIgnoreCase(_licEnabled)?"selected":""%>>Disabled</option>
                     </select>
+                    <% } %>
                 </div>
                 <div style="align-self:flex-end;">
                     <button type="submit" class="btn-sc-save">Save Settings</button>
@@ -483,8 +498,10 @@
         <div style="font-size:12px;color:#666;">
             <strong>URL</strong> — base URL of the running Sevak License Server, e.g.
             <code>http://localhost:8085</code>. Leave blank to disable checks.<br>
+            <% if (BuildConfig.IS_DEV) { %>
             <strong>License Checks Disabled</strong> — all users can log in regardless of license status.
             Use only for local development.<br>
+            <% } %>
             Changes are written to <code>application.properties</code> and take effect on the <strong>next login attempt</strong> — no server restart needed.
         </div>
     </div>

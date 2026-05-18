@@ -12,6 +12,9 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <!-- Default environment — overridden by active profile -->
+        <build.env>dev</build.env>
+        <license.ui.editable>true</license.ui.editable>
     </properties>
 
     <dependencies>
@@ -162,6 +165,25 @@
     </dependencies>
 
     <build>
+        <!-- Filter only build.properties; leave all other resources as-is
+             so ${...} literals in application.properties are never expanded -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>build.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>build.properties</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -178,5 +200,40 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- ================================================================
+         Environment profiles
+         Build with:  mvn package -P dev   (default)
+                      mvn package -P prod
+         ================================================================ -->
+    <profiles>
+
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build.env>dev</build.env>
+                <license.ui.editable>true</license.ui.editable>
+            </properties>
+            <build>
+                <finalName>FarmingERP-dev</finalName>
+            </build>
+        </profile>
+
+        <profile>
+            <id>prod</id>
+            <properties>
+                <build.env>prod</build.env>
+                <license.ui.editable>false</license.ui.editable>
+            </properties>
+            <build>
+                <finalName>FarmingERP</finalName>
+            </build>
+        </profile>
+
+    </profiles>
+
 </project>
 
