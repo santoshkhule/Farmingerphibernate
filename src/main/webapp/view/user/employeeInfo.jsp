@@ -52,21 +52,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css" type="text/css">
 <link rel="stylesheet" href="../../css/jquery-ui.css" />
-<script src="../../js/jquery-1.9.1.js"></script>
-<script src="../../js/jquery-ui.js"></script>
 <title><%= isAdd ? msg.getString("employee.page_title_add") : pageTitle %></title>
 </head>
-<script>
-    $(function() {
-        <%if (!isView) {%>
-        $("#birthDate").datepicker({
-            changeMonth : true,
-            changeYear  : true,
-            dateFormat  : "dd/mm/yy"
-        }).val();
-        <%}%>
-    });
-</script>
 <script>
     var MAX_PHOTO_BYTES = 204800; // 200 KB
     function previewPhoto(input) {
@@ -91,6 +78,18 @@
 </script>
 <body>
 <%@include file="../../header.jsp" %>
+<script src="../../js/jquery-ui.js"></script>
+<script>
+    $(function() {
+        <%if (!isView) {%>
+        $("#birthDate").datepicker({
+            changeMonth : true,
+            changeYear  : true,
+            dateFormat  : "dd/mm/yy"
+        });
+        <%}%>
+    });
+</script>
 <fieldset><legend><%=pageTitle%></legend>
     <form name="frmAddEmp" action="../../EmployeeInfoController" enctype="multipart/form-data" method="post">
         <input type="hidden" name="employeeInfoId" id="employeeInfoId" value="<%=fEmpId%>">
