@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
+         import="java.util.*,com.san.farm.adminuser.dao.RolePermissionDao,com.san.farm.adminuser.entity.UserTypeEntity"%>
 <%
     /* Prevent browser from caching this page (kills bfcache bypass) */
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -157,6 +158,28 @@
         (com.san.farm.login.entity.LoginUser) session.getAttribute("loggedInUser");
     String _uname = (_loggedUser != null && _loggedUser.getUname() != null)
                     ? _loggedUser.getUname() : "";
+
+    boolean _isAdminUser = "admin".equalsIgnoreCase(_uname);
+    boolean _hasRolePerms = false;
+    Set<String> _permPages = new HashSet<String>();
+    if (!_isAdminUser && _loggedUser != null && _loggedUser.getUserTypes() != null) {
+        Set<Integer> _roleIds = new HashSet<Integer>();
+        for (UserTypeEntity _r : _loggedUser.getUserTypes()) {
+            if (_r != null) _roleIds.add(_r.getUserTypeId());
+        }
+        if (!_roleIds.isEmpty()) {
+            try {
+                Map<Integer, Set<String>> _allPerms = new RolePermissionDao().fetchAllByRole();
+                for (Integer _rid : _roleIds) {
+                    Set<String> _rp = _allPerms.get(_rid);
+                    if (_rp != null && !_rp.isEmpty()) {
+                        _hasRolePerms = true;
+                        _permPages.addAll(_rp);
+                    }
+                }
+            } catch (Exception _pe) { /* DB not ready — allow all */ }
+        }
+    }
 %>
 
 <!-- ── Top menu bar ── -->
@@ -197,54 +220,93 @@
 		<nav id="sideNav">
 
 			<div class="nav-group">
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("dashboard")) { %>
 				<a class="nav-link nav-link-dash" href="view/user/dashboard.jsp" target="contentFrame">&#128202; <%= msg.getString("nav.dashboard") %></a>
+				<% } %>
 			</div>
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#9881; <%= msg.getString("nav.group_master_data") %></div>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("configuration")) { %>
 				<a class="nav-link" href="view/user/configuration.jsp" target="contentFrame"><%= msg.getString("nav.master_configuration") %></a>
+				<% } %>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("users_roles")) { %>
 				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame"><%= msg.getString("nav.master_register_user") %></a>
+				<% } %>
 			</div>
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#128100; <%= msg.getString("nav.group_employee") %></div>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("employee_add")) { %>
 				<a class="nav-link" href="view/user/employeeInfo.jsp" target="contentFrame"><%= msg.getString("nav.employee_add") %></a>
+				<% } %>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("employee_view")) { %>
 				<a class="nav-link" href="view/user/employeeViewAll.jsp" target="contentFrame"><%= msg.getString("nav.employee_view_all") %></a>
+				<% } %>
 			</div>
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#128203; <%= msg.getString("nav.group_farm_setup") %></div>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("farm_site_alloc")) { %>
 				<a class="nav-link" href="view/user/assignCropToSite.jsp" target="contentFrame"><%= msg.getString("nav.farm_site_resource_allocation") %></a>
+				<% } %>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("farm_view_tasks")) { %>
 				<a class="nav-link" href="view/user/01assignTaskToEmployeeViewAll.jsp" target="contentFrame"><%= msg.getString("nav.farm_view_assign_tasks") %></a>
+				<% } %>
 			</div>
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#128176; <%= msg.getString("nav.group_account") %></div>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("process_payment")) { %>
 				<a class="nav-link" href="view/user/02employeePaymentProcess.jsp" target="contentFrame"><%= msg.getString("nav.account_process_payment") %></a>
+				<% } %>
 			</div>
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#127978; <%= msg.getString("nav.group_vendor") %></div>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("vendor_add")) { %>
 				<a class="nav-link" href="view/user/addVendor.jsp" target="contentFrame"><%= msg.getString("nav.vendor_add") %></a>
+				<% } %>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("vendor_assign")) { %>
 				<a class="nav-link" href="view/user/assignVendorToProduct.jsp" target="contentFrame"><%= msg.getString("nav.vendor_assign_products") %></a>
+				<% } %>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("vendor_view")) { %>
 				<a class="nav-link" href="view/user/assignVendorToProductView.jsp" target="contentFrame"><%= msg.getString("nav.vendor_view_products") %></a>
+				<% } %>
 			</div>
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#128176; <%= msg.getString("nav.group_sales") %></div>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("sales_buyers")) { %>
 				<a class="nav-link" href="view/user/addBuyer.jsp" target="contentFrame"><%= msg.getString("nav.sales_manage_buyers") %></a>
+				<% } %>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("sales_crop")) { %>
 				<a class="nav-link" href="view/user/cropSaleProcess.jsp" target="contentFrame"><%= msg.getString("nav.sales_crop_sales") %></a>
+				<% } %>
 			</div>
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#128202; <%= msg.getString("nav.group_reports") %></div>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("report_site")) { %>
 				<a class="nav-link" href="view/user/reportSite.jsp" target="contentFrame"><%= msg.getString("nav.report_site_expenditure") %></a>
+				<% } %>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("report_employee")) { %>
 				<a class="nav-link" href="view/user/reportEmployee.jsp" target="contentFrame"><%= msg.getString("nav.report_employee_payments") %></a>
+				<% } %>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("report_income")) { %>
 				<a class="nav-link" href="view/user/reportIncome.jsp" target="contentFrame"><%= msg.getString("nav.report_income") %></a>
+				<% } %>
+				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("report_pl")) { %>
 				<a class="nav-link" href="view/user/reportProfitLoss.jsp" target="contentFrame"><%= msg.getString("nav.report_profit_loss") %></a>
+				<% } %>
 			</div>
 
 		</nav>
+		<script>
+		document.querySelectorAll('#sideNav .nav-group').forEach(function(g) {
+		    if (!g.querySelector('.nav-link')) g.style.display = 'none';
+		});
+		</script>
 
 
 	</aside>
