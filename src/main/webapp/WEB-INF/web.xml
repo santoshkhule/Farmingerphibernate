@@ -244,4 +244,12 @@
     <servlet-name>LanguageController</servlet-name>
     <url-pattern>/LanguageController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>SystemConfigController</servlet-name>
+    <servlet-class>com.san.conf.controller.SystemConfigController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SystemConfigController</servlet-name>
+    <url-pattern>/SystemConfigController</url-pattern>
+  </servlet-mapping>
 </web-app>

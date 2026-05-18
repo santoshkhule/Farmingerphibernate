@@ -15,8 +15,8 @@ import com.san.farm.adminuser.entity.ConfigSiteInformationEntity;
 import com.san.farm.util.Symbols;
 
 /**
- * This servlet file Accept the request from configSiteInformation.jsp,perform db CRUD Operation on that data using ConfigSiteInformationService.java,
- * redirect back to the configSiteInformation.jsp 
+ * This servlet file Accept the request from siteInformation.jsp,perform db CRUD Operation on that data using ConfigSiteInformationService.java,
+ * redirect back to the masterData.jsp
  * @author santosh khule
  * @version 1.2
  * @since 15/11/2014
@@ -90,8 +90,8 @@ public class ConfigSiteInformationController extends HttpServlet {
 		} catch (Exception exception) {
 			logger.error("Error processing ConfigSiteInformation request", exception);
 		} finally {
-			logger.debug("Redirecting to configSiteInformation.jsp");
-			response.sendRedirect("view/user/configuration.jsp?tab=site");
+			logger.debug("Redirecting to masterData.jsp?tab=site");
+			response.sendRedirect("view/user/masterData.jsp?tab=site");
 		}
 	}
 

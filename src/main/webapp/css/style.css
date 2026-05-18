@@ -67,7 +67,7 @@ body {
     font-size: 13px;
     color: var(--text);
     background: #eaf2ea;
-    overflow-x: hidden;
+    overflow-x: auto;
     overflow-y: auto;
 }
 
@@ -110,6 +110,9 @@ a      { color: var(--blue-md); }
 .nav-group { margin-bottom: 2px; }
 
 .nav-group-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     padding: 10px 14px 3px;
     font-size: 9.5px;
     font-weight: 700;
@@ -119,7 +122,9 @@ a      { color: var(--blue-md); }
 }
 
 .nav-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     padding: 7px 12px 7px 22px;
     color: var(--sidebar-text);
     text-decoration: none;
@@ -128,7 +133,6 @@ a      { color: var(--blue-md); }
     border-left: 3px solid transparent;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .nav-link:hover {
@@ -153,6 +157,34 @@ a      { color: var(--blue-md); }
     background: rgba(255,255,255,0.14);
     color: #fff;
     border-left-color: #fff;
+}
+
+/* ── Administration (admin-only) nav section ── */
+.nav-group-admin {
+    margin-top: 10px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 200, 80, 0.18);
+}
+.nav-group-admin .nav-group-title {
+    color: #ffcc80;
+}
+.nav-group-admin .nav-link:hover {
+    border-left-color: #ffcc80;
+    background: rgba(255, 200, 80, 0.08);
+}
+.nav-admin-badge {
+    display: inline-block;
+    background: rgba(255, 160, 0, 0.18);
+    color: #ffcc80;
+    border: 1px solid rgba(255, 160, 0, 0.3);
+    border-radius: 3px;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 1px 5px;
+    letter-spacing: 0.08em;
+    vertical-align: middle;
+    margin-left: 5px;
+    text-transform: uppercase;
 }
 
 /* Sidebar footer */
@@ -539,6 +571,19 @@ div.dataTables_paginate .paginate_button.disabled { opacity: 0.4; cursor: defaul
 table.dataTable tbody tr.odd  { background: #fff; }
 table.dataTable tbody tr.even { background: #f4faf4; }
 table.dataTable tbody tr:hover { background: #dcedc8 !important; }
+
+/* ── Mobile: horizontal table scroll ── */
+.dataTables_wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+/* Keep controls (search/pagination) readable; let only the table overflow */
+.tbl-data,
+table[border="1"].tbl-data,
+table.dataTable {
+    min-width: 480px;
+}
 
 /* =====================================================
    REPORT PAGES

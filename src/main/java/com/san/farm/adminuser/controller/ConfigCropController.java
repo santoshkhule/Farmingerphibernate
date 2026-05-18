@@ -14,8 +14,8 @@ import com.san.farm.adminuser.dao.ConfigCropService;
 import com.san.farm.adminuser.entity.ConfigCropEntity;
 
 /**
- * This servlet file Accept the request from configCrop.jsp,perform db CRUD Operation on that data using ConfigCropService.java,
- * redirect back to the configCrop.jsp 
+ * This servlet file Accept the request from crop.jsp,perform db CRUD Operation on that data using ConfigCropService.java,
+ * redirect back to the masterData.jsp
  * @author santosh khule
  * @version 1.2
  * @since 16/11/2014
@@ -79,8 +79,8 @@ public class ConfigCropController extends HttpServlet {
 		} catch (Exception exception) {
 			logger.error("Error processing ConfigCrop request", exception);
 		} finally {
-			logger.debug("Redirecting to configCrop.jsp");
-			response.sendRedirect("view/user/configuration.jsp?tab=crop");
+			logger.debug("Redirecting to masterData.jsp?tab=crop");
+			response.sendRedirect("view/user/masterData.jsp?tab=crop");
 		}
 	}
 

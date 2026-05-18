@@ -35,7 +35,7 @@ public class CropSaleController extends HttpServlet {
     protected void doProcess(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         logger.debug("Processing CropSaleController request");
-        String redirectUrl = "view/user/cropSaleProcess.jsp";
+        String redirectUrl = "view/user/saleProcess.jsp";
         int saleId = 0;
         try {
             CropSaleDao cropSaleDao               = new CropSaleDao();
@@ -114,9 +114,9 @@ public class CropSaleController extends HttpServlet {
                     // Retrieve the id of the just-saved entity
                     // We do a fresh getAll and find the latest (H2 auto-increments)
                     // Better: re-query by latest — for simplicity redirect to list
-                    redirectUrl = "view/user/cropSaleProcess.jsp";
+                    redirectUrl = "view/user/saleProcess.jsp";
                 } else {
-                    redirectUrl = "view/user/cropSaleProcess.jsp";
+                    redirectUrl = "view/user/saleProcess.jsp";
                 }
             }
 
@@ -140,19 +140,19 @@ public class CropSaleController extends HttpServlet {
                 cropSale.setComment(comment);
 
                 cropSaleDao.update(cropSale);
-                redirectUrl = "view/user/cropSaleProcess.jsp?saleId=" + saleId;
+                redirectUrl = "view/user/saleProcess.jsp?saleId=" + saleId;
             }
 
             // Delete
             else if (request.getParameter("delete") != null) {
                 logger.info("Deleting CropSale with id: {}", saleId);
                 cropSaleDao.delete(saleId);
-                redirectUrl = "view/user/cropSaleProcess.jsp";
+                redirectUrl = "view/user/saleProcess.jsp";
             }
 
         } catch (Exception exception) {
             logger.error("Error processing CropSaleController request", exception);
-            redirectUrl = "view/user/cropSaleProcess.jsp" + (saleId > 0 ? "?saleId=" + saleId : "");
+            redirectUrl = "view/user/saleProcess.jsp" + (saleId > 0 ? "?saleId=" + saleId : "");
         } finally {
             logger.debug("Redirecting to: {}", redirectUrl);
             response.sendRedirect(redirectUrl);

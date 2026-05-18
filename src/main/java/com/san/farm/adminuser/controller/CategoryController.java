@@ -50,7 +50,7 @@ public class CategoryController extends HttpServlet {
 		} catch (Exception e) {
 			logger.error("Error processing Category request", e);
 		} finally {
-			response.sendRedirect("view/user/configuration.jsp?tab=category");
+			response.sendRedirect("view/user/masterData.jsp?tab=category");
 		}
 	}
 

@@ -10,7 +10,7 @@
 
 	<div class="nav-group">
 		<div class="nav-group-title">&#9881; Configuration</div>
-		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/configuration.jsp">Configuration</a>
+		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/masterData.jsp">Master Data</a>
 		<a class="nav-link" href="<%=request.getContextPath()%>/view/user/registerUser.jsp">Register User</a>
 	</div>
 

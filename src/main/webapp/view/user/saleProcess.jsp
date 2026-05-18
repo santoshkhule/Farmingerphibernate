@@ -345,7 +345,7 @@
 
     /* ── Sale list ── */
     function processSale(id) {
-        window.location.href = 'cropSaleProcess.jsp?saleId=' + id;
+        window.location.href = 'saleProcess.jsp?saleId=' + id;
     }
 
     function clearAllFilters() {
@@ -541,7 +541,7 @@
         </div>
         <div class="detail-card-actions">
             <button type="button" class="btn-cancel"
-                    onclick="window.location='cropSaleProcess.jsp'">&#8592; <%= msg.getString("btn.all_sales") %></button>
+                    onclick="window.location='saleProcess.jsp'">&#8592; <%= msg.getString("btn.all_sales") %></button>
             <button type="button" class="btn-update"
                     onclick="editSale()">&#9998; <%= msg.getString("btn.edit_sale") %></button>
             <button type="button" class="btn-add"
