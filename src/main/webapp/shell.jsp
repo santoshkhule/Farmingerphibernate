@@ -138,6 +138,13 @@
 		height: 100%;
 		overflow-y: auto;
 		overflow-x: hidden;
+		transition: width 0.22s ease;
+	}
+
+	/* Desktop — collapsed */
+	body.sidebar-collapsed #sidebar {
+		width: 0;
+		min-width: 0;
 	}
 
 	#contentFrame {
@@ -147,6 +154,56 @@
 		height: 100%;
 		background: #eaf2ea;
 		display: block;
+	}
+
+	/* ── Sidebar toggle button ── */
+	.topbar-left { display:flex; align-items:center; gap:4px; }
+	#sidebarToggle {
+		background: none;
+		border: none;
+		color: #c8e6c9;
+		cursor: pointer;
+		padding: 5px 9px;
+		font-size: 20px;
+		line-height: 1;
+		border-radius: 4px;
+		flex-shrink: 0;
+		transition: background .15s, color .15s;
+		display: flex;
+		align-items: center;
+	}
+	#sidebarToggle:hover { background: rgba(255,255,255,.13); color: #fff; }
+
+	/* ── Overlay backdrop (mobile) ── */
+	#sidebarOverlay {
+		display: none;
+		position: fixed;
+		top: 44px; left: 0; right: 0; bottom: 0;
+		background: rgba(0,0,0,0.45);
+		z-index: 299;
+	}
+	body.sidebar-open #sidebarOverlay { display: block; }
+
+	/* ── Mobile: sidebar as slide-in overlay ── */
+	@media (max-width: 767px) {
+		#sidebar {
+			position: fixed;
+			top: 44px; left: 0; bottom: 0;
+			height: auto;
+			z-index: 300;
+			width: 240px !important;
+			min-width: 0;
+			transform: translateX(-100%);
+			transition: transform 0.22s ease !important;
+			will-change: transform;
+		}
+		body.sidebar-open #sidebar {
+			transform: translateX(0);
+			box-shadow: 4px 0 24px rgba(0,0,0,0.45);
+		}
+		body.sidebar-collapsed #sidebar {
+			width: 240px !important;
+		}
 	}
 </style>
 </head>
@@ -185,12 +242,15 @@
 <!-- ── Top menu bar ── -->
 <div id="topbar">
 
-	<!-- Brand (left) -->
-	<div class="topbar-brand">
-		<span class="topbar-brand-icon">&#127807;</span>
-		<div class="topbar-brand-text">
-			<span class="topbar-brand-name"><%= msg.getString("nav.brand_name") %></span>
-			<span class="topbar-brand-sub"><%= msg.getString("nav.brand_sub") %></span>
+	<!-- Brand + hamburger (left) -->
+	<div class="topbar-left">
+		<button id="sidebarToggle" title="Toggle navigation" aria-label="Toggle navigation">&#9776;</button>
+		<div class="topbar-brand">
+			<span class="topbar-brand-icon">&#127807;</span>
+			<div class="topbar-brand-text">
+				<span class="topbar-brand-name"><%= msg.getString("nav.brand_name") %></span>
+				<span class="topbar-brand-sub"><%= msg.getString("nav.brand_sub") %></span>
+			</div>
 		</div>
 	</div>
 
@@ -211,6 +271,8 @@
 	</div>
 
 </div>
+
+<div id="sidebarOverlay"></div>
 
 <div id="appShell">
 
@@ -367,5 +429,40 @@ function switchLang(sel) {
 })();
 </script>
 
+<script>
+(function () {
+    var btn     = document.getElementById('sidebarToggle');
+    var overlay = document.getElementById('sidebarOverlay');
+    var PREF    = 'sevak_sidebar_collapsed';
+
+    function isMobile() { return window.innerWidth < 768; }
+
+    /* Restore desktop collapsed preference */
+    if (!isMobile() && localStorage.getItem(PREF) === '1') {
+        document.body.classList.add('sidebar-collapsed');
+    }
+
+    btn.addEventListener('click', function () {
+        if (isMobile()) {
+            document.body.classList.toggle('sidebar-open');
+        } else {
+            var nowCollapsed = document.body.classList.toggle('sidebar-collapsed');
+            localStorage.setItem(PREF, nowCollapsed ? '1' : '0');
+        }
+    });
+
+    overlay.addEventListener('click', function () {
+        document.body.classList.remove('sidebar-open');
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') document.body.classList.remove('sidebar-open');
+    });
+
+    window.addEventListener('resize', function () {
+        if (!isMobile()) document.body.classList.remove('sidebar-open');
+    });
+})();
+</script>
 </body>
 </html>
