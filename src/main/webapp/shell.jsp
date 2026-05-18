@@ -237,9 +237,6 @@
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#128100; <%= msg.getString("nav.group_employee") %></div>
-				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("employee_add")) { %>
-				<a class="nav-link" href="view/user/employeeInfo.jsp" target="contentFrame"><%= msg.getString("nav.employee_add") %></a>
-				<% } %>
 				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("employee_view")) { %>
 				<a class="nav-link" href="view/user/employeeViewAll.jsp" target="contentFrame"><%= msg.getString("nav.employee_view_all") %></a>
 				<% } %>
