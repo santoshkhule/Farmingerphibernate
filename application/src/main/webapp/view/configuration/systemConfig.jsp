@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
          import="com.san.conf.service.SystemConfigService,
+                 com.san.farm.license.LicenseClient,
+                 com.san.farm.license.LicenseStatus,
                  com.san.farm.login.entity.LoginUser,
                  java.io.File,
                  java.util.Properties,
@@ -23,8 +25,16 @@
     File _logFile     = _sc.getLogFile(_webappRoot);
     boolean _logExists = _logFile != null && _logFile.exists();
 
+    /* License server properties (same application.properties file) */
+    String _licUrl     = _dbp.getProperty("license.server.url", "");
+    String _licEnabled = _dbp.getProperty("license.server.enabled", "true");
+
+    /* Live status — checked once here so it shows in the tab without a round-trip */
+    LicenseStatus _licStatus = LicenseClient.check();
+
     String _activeTab = request.getParameter("tab");
-    if (!"dbProps".equals(_activeTab) && !"downloadLogs".equals(_activeTab))
+    if (!"dbProps".equals(_activeTab) && !"downloadLogs".equals(_activeTab)
+            && !"licenseServer".equals(_activeTab))
         _activeTab = "logLevel";
 
     String _msg = request.getParameter("msg");
@@ -149,6 +159,8 @@
             onclick="scTab('dbProps')">&#128263; Database</button>
     <button class="sc-tab-btn<%="downloadLogs".equals(_activeTab)?" active":""%>"
             onclick="scTab('downloadLogs')">&#128196; Download Logs</button>
+    <button class="sc-tab-btn<%="licenseServer".equals(_activeTab)?" active":""%>"
+            onclick="scTab('licenseServer')">&#128273; License Server</button>
 </div>
 
 <!-- ════════════════════════════════════════════════════════
@@ -346,6 +358,136 @@
         It is created when the first log entry is written after server startup.
     </div>
     <% } %>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     TAB 4 : License Server
+     ════════════════════════════════════════════════════════ -->
+<div id="sc-tab-licenseServer" class="sc-tab-panel<%="licenseServer".equals(_activeTab)?" active":""%>">
+
+    <% if ("licSaved".equals(_msg)) { %>
+    <div class="sc-alert ok">&#10003; License server settings saved to <code>application.properties</code>. Changes take effect immediately.</div>
+    <% } else if ("licError".equals(_msg)) { %>
+    <div class="sc-alert err">&#9888; Failed to save license settings. Check server logs for details.</div>
+    <% } %>
+
+    <!-- Current configuration + live status -->
+    <div class="sc-card">
+        <div class="sc-card-title">Current Configuration &amp; Status</div>
+        <table class="sc-info-table">
+            <tr>
+                <td>License Server URL</td>
+                <td>
+                    <% if (_licUrl == null || _licUrl.isEmpty()) { %>
+                    <em style="color:#999;">Not configured</em>
+                    <% } else { %>
+                    <code><%=esc.apply(_licUrl)%></code>
+                    <% } %>
+                </td>
+            </tr>
+            <tr>
+                <td>License Checks</td>
+                <td>
+                    <% if ("false".equalsIgnoreCase(_licEnabled)) { %>
+                    <span style="background:#757575;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">DISABLED</span>
+                    <span style="font-size:12px;color:#888;margin-left:8px;">All logins are permitted regardless of license</span>
+                    <% } else { %>
+                    <span style="background:#2e7d32;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">ENABLED</span>
+                    <% } %>
+                </td>
+            </tr>
+            <tr>
+                <td>Server Reachability</td>
+                <td>
+                    <% if (_licStatus.noConfig) { %>
+                    <span style="background:#757575;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">N/A</span>
+                    <span style="font-size:12px;color:#888;margin-left:8px;">No URL configured</span>
+                    <% } else if (_licStatus.unreachable) { %>
+                    <span style="background:#e65100;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">UNREACHABLE</span>
+                    <span style="font-size:12px;color:#888;margin-left:8px;">Could not connect — logins are still allowed (fail-open)</span>
+                    <% } else { %>
+                    <span style="background:#1565c0;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">CONNECTED</span>
+                    <% } %>
+                </td>
+            </tr>
+            <% if (!_licStatus.noConfig && !_licStatus.unreachable) { %>
+            <tr>
+                <td>License Validity</td>
+                <td>
+                    <% if (_licStatus.valid) { %>
+                    <span style="background:#2e7d32;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">VALID</span>
+                    <% } else { %>
+                    <span style="background:#c62828;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">INVALID / EXPIRED</span>
+                    <% } %>
+                    <% if (_licStatus.message != null) { %>
+                    <span style="font-size:12px;color:#888;margin-left:8px;"><%=esc.apply(_licStatus.message)%></span>
+                    <% } %>
+                </td>
+            </tr>
+            <% if (_licStatus.licensee != null) { %>
+            <tr>
+                <td>Licensee</td>
+                <td><%=esc.apply(_licStatus.licensee)%></td>
+            </tr>
+            <% } %>
+            <% if (_licStatus.licenseType != null) { %>
+            <tr>
+                <td>License Type</td>
+                <td><%=esc.apply(_licStatus.licenseType)%></td>
+            </tr>
+            <% } %>
+            <% if (_licStatus.expiryDate != null) { %>
+            <tr>
+                <td>Expiry Date</td>
+                <td>
+                    <%=esc.apply(_licStatus.expiryDate)%>
+                    <% if (_licStatus.daysRemaining == -1) { %>
+                    <span style="font-size:12px;color:#888;margin-left:6px;">(Perpetual)</span>
+                    <% } else if (_licStatus.daysRemaining >= 0) { %>
+                    <span style="font-size:12px;color:#2e7d32;margin-left:6px;"><%=_licStatus.daysRemaining%> day(s) remaining</span>
+                    <% } else { %>
+                    <span style="font-size:12px;color:#c62828;margin-left:6px;">Expired <%=Math.abs(_licStatus.daysRemaining)%> day(s) ago</span>
+                    <% } %>
+                </td>
+            </tr>
+            <% } %>
+            <% } %>
+        </table>
+    </div>
+
+    <!-- Edit form -->
+    <div class="sc-card">
+        <div class="sc-card-title">Update License Server Settings</div>
+        <form method="post" action="<%=_ctxPath%>/SystemConfigController">
+            <input type="hidden" name="action" value="saveLicenseProps">
+            <div class="sc-row">
+                <div class="sc-field" style="flex:1;min-width:280px;">
+                    <label for="license.server.url">License Server URL</label>
+                    <input type="text" name="license.server.url" id="license.server.url"
+                           value="<%=esc.apply(_licUrl)%>"
+                           placeholder="http://localhost:8085">
+                </div>
+                <div class="sc-field sc-sm">
+                    <label for="license.server.enabled">License Checks</label>
+                    <select name="license.server.enabled" id="license.server.enabled">
+                        <option value="true"  <%="true".equalsIgnoreCase(_licEnabled) ?"selected":""%>>Enabled</option>
+                        <option value="false" <%="false".equalsIgnoreCase(_licEnabled)?"selected":""%>>Disabled</option>
+                    </select>
+                </div>
+                <div style="align-self:flex-end;">
+                    <button type="submit" class="btn-sc-save">Save Settings</button>
+                </div>
+            </div>
+        </form>
+        <hr class="sc-divider">
+        <div style="font-size:12px;color:#666;">
+            <strong>URL</strong> — base URL of the running Sevak License Server, e.g.
+            <code>http://localhost:8085</code>. Leave blank to disable checks.<br>
+            <strong>License Checks Disabled</strong> — all users can log in regardless of license status.
+            Use only for local development.<br>
+            Changes are written to <code>application.properties</code> and take effect on the <strong>next login attempt</strong> — no server restart needed.
+        </div>
+    </div>
 </div>
 
 </fieldset>

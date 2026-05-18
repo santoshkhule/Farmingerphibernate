@@ -83,6 +83,25 @@ public class SystemConfigController extends HttpServlet {
             return;
         }
 
+        if ("saveLicenseProps".equals(action)) {
+            Properties updates = new Properties();
+            String url     = req.getParameter("license.server.url");
+            String enabled = req.getParameter("license.server.enabled");
+            if (url     != null) updates.setProperty("license.server.url",     url.trim());
+            if (enabled != null) updates.setProperty("license.server.enabled", enabled.trim());
+            try {
+                service.saveDbProperties(webappRoot, updates);
+                log.info("License server settings saved: url={}, enabled={}", url, enabled);
+                resp.sendRedirect(req.getContextPath()
+                    + "/view/configuration/systemConfig.jsp?tab=licenseServer&msg=licSaved");
+            } catch (IOException e) {
+                log.error("Failed to save license server settings", e);
+                resp.sendRedirect(req.getContextPath()
+                    + "/view/configuration/systemConfig.jsp?tab=licenseServer&msg=licError");
+            }
+            return;
+        }
+
         resp.sendRedirect(req.getContextPath() + "/view/configuration/systemConfig.jsp");
     }
 
