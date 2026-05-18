@@ -96,7 +96,7 @@ public class SystemConfigController extends HttpServlet {
         }
         resp.setContentType("text/plain;charset=UTF-8");
         resp.setHeader("Content-Disposition", "attachment; filename=\"farmingerERP.log\"");
-        resp.setContentLengthLong(logFile.length());
+        resp.setHeader("Content-Length", String.valueOf(logFile.length()));
         log.info("Log file download initiated: {} ({} bytes)", logFile.getName(), logFile.length());
         try (InputStream  in  = new FileInputStream(logFile);
              OutputStream out = resp.getOutputStream()) {
