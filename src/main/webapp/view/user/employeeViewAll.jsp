@@ -103,6 +103,14 @@
         <input type="hidden" name="deleteBulk" value="1">
     </form>
 
+    <div style="margin-bottom:8px; text-align:right;">
+        <% if (_isAdmin || !_hasRolePerms || _perms.contains("employee_add.add")) { %>
+        <a href="employeeInfo.jsp" style="text-decoration:none;">
+            <button type="button" class="btn-add">+ <%= msg.getString("employee.btn_add_employee") %></button>
+        </a>
+        <% } %>
+    </div>
+
     <table border="1" width="100%" class="tbl-data" id="empTable" cellspacing="0">
         <thead>
             <tr>
