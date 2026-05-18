@@ -298,6 +298,13 @@
 				<% } %>
 			</div>
 
+			<% if (_isAdminUser) { %>
+			<div class="nav-group">
+				<div class="nav-group-title">&#9881; System</div>
+				<a class="nav-link" href="view/configuration/systemConfig.jsp" target="contentFrame">Configuration</a>
+			</div>
+			<% } %>
+
 		</nav>
 		<script>
 		document.querySelectorAll('#sideNav .nav-group').forEach(function(g) {
