@@ -480,6 +480,11 @@ body.login-page {
     color: var(--red-md); font-size: 12px;
     font-style: italic; margin-bottom: 10px; min-height: 18px;
 }
+.login-card .warn-msg {
+    background: #fff8e1; color: #e65100; border: 1px solid #ffe082;
+    border-radius: 4px; padding: 7px 10px; font-size: 12px;
+    margin-bottom: 10px;
+}
 
 /* =====================================================
    DATATABLES THEME OVERRIDES

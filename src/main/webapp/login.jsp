@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.san.farm.login.dao.LoginUserService"%>
 <%@ page import="com.san.farm.login.entity.LoginUser"%>
+<%@ page import="com.san.farm.license.LicenseClient"%>
+<%@ page import="com.san.farm.license.LicenseStatus"%>
 <%@ page import="javax.servlet.http.HttpSession"%>
 <%@ include file="lang.jsp" %>
 <%
@@ -15,27 +17,49 @@
         return;
     }
 
-    String errorMsg  = "";
-    String lastUname = "";
+    /* ── License check (done once per page load, cached result reused below) ── */
+    LicenseStatus _lic = LicenseClient.check();
+
+    String errorMsg   = "";
+    String warnMsg    = "";
+    String lastUname  = "";
+
+    /* Show expiry warning on GET if license is nearing expiry */
+    if (!_lic.noConfig && _lic.valid && _lic.daysRemaining >= 0 && _lic.daysRemaining <= 14) {
+        warnMsg = "License expires in " + _lic.daysRemaining + " day(s). Please renew soon.";
+    }
 
     if ("POST".equalsIgnoreCase(request.getMethod())) {
         String uname = request.getParameter("txtUname");
         String pwd   = request.getParameter("txtPwd");
         lastUname    = (uname != null) ? uname.trim() : "";
 
-        if (lastUname.isEmpty() || pwd == null || pwd.trim().isEmpty()) {
-            errorMsg = msg.getString("login.error_required");
-        } else {
-            LoginUser user = new LoginUserService().authenticate(lastUname, pwd.trim());
-            if (user != null) {
-                /* Invalidate old session to prevent session fixation, start fresh */
-                session.invalidate();
-                HttpSession newSession = request.getSession(true);
-                newSession.setAttribute("loggedInUser", user);
-                response.sendRedirect(".");
-                return;
+        /* ── Enforce license before checking credentials ── */
+        if (!_lic.noConfig) {
+            if (_lic.unreachable) {
+                errorMsg = "License server is unreachable. Contact your system administrator.";
+            } else if (!_lic.valid) {
+                String licMsg = (_lic.message != null && !_lic.message.isEmpty())
+                                ? _lic.message : "License is expired or invalid.";
+                errorMsg = licMsg + " Contact your administrator to renew.";
+            }
+        }
+
+        if (errorMsg.isEmpty()) {
+            if (lastUname.isEmpty() || pwd == null || pwd.trim().isEmpty()) {
+                errorMsg = msg.getString("login.error_required");
             } else {
-                errorMsg = msg.getString("login.error_invalid");
+                LoginUser user = new LoginUserService().authenticate(lastUname, pwd.trim());
+                if (user != null) {
+                    /* Invalidate old session to prevent session fixation, start fresh */
+                    session.invalidate();
+                    HttpSession newSession = request.getSession(true);
+                    newSession.setAttribute("loggedInUser", user);
+                    response.sendRedirect(".");
+                    return;
+                } else {
+                    errorMsg = msg.getString("login.error_invalid");
+                }
             }
         }
     }
@@ -63,6 +87,9 @@
     <h1><%= msg.getString("login.app_name") %></h1>
     <p class="subtitle"><%= msg.getString("login.subtitle") %></p>
 
+    <%if (!warnMsg.isEmpty()) {%>
+    <div class="warn-msg">&#9888; <%=warnMsg%></div>
+    <%}%>
     <%if (!errorMsg.isEmpty()) {%>
     <div class="err-msg"><%=errorMsg%></div>
     <%}%>
