@@ -247,9 +247,11 @@ function confirmDispatch() {
     var pwd = document.getElementById('dispatchPwd').value;
     if (!pwd) { showDispatchErr('Please enter your password.'); return; }
 
-    var fd = new FormData();
-    fd.append('pwd', pwd);
-    fetch('<%=request.getContextPath()%>/validatePassword.jsp', { method: 'POST', body: fd })
+    fetch('<%=request.getContextPath()%>/validatePassword.jsp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'pwd=' + encodeURIComponent(pwd)
+    })
         .then(function(r) { return r.json(); })
         .then(function(d) {
             if (d.ok) {
