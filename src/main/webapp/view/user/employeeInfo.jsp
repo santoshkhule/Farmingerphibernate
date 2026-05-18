@@ -146,7 +146,7 @@
                         </div>
                         <div class="form-row">
                             <label><%= msg.getString("employee.label_email") %>:</label>
-                            <input type="text" name="emailId" id="emailId" readonly value="<%=fEmail%>" placeholder="<%= msg.getString("employee.label_email") %>">
+                            <input type="email" name="emailId" id="emailId" <%=ro%> maxlength="100" value="<%=fEmail%>" placeholder="user@example.com">
                         </div>
                         <div class="form-row">
                             <label><%= msg.getString("employee.label_birth_date") %>:</label>
