@@ -225,15 +225,17 @@
 				<% } %>
 			</div>
 
-			<div class="nav-group">
-				<div class="nav-group-title">&#9881; <%= msg.getString("nav.group_master_data") %></div>
-				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("configuration")) { %>
+			<% if (_isAdminUser) { %>
+			<div class="nav-group nav-group-admin">
+				<div class="nav-group-title">
+					&#9881; Administration
+					<span class="nav-admin-badge">Admin</span>
+				</div>
 				<a class="nav-link" href="view/user/masterData.jsp" target="contentFrame"><%= msg.getString("nav.master_configuration") %></a>
-				<% } %>
-				<% if (_isAdminUser || !_hasRolePerms || _permPages.contains("users_roles")) { %>
 				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame"><%= msg.getString("nav.master_register_user") %></a>
-				<% } %>
+				<a class="nav-link" href="view/configuration/systemConfig.jsp" target="contentFrame">System Configuration</a>
 			</div>
+			<% } %>
 
 			<div class="nav-group">
 				<div class="nav-group-title">&#128100; <%= msg.getString("nav.group_employee") %></div>
@@ -298,12 +300,6 @@
 				<% } %>
 			</div>
 
-			<% if (_isAdminUser) { %>
-			<div class="nav-group">
-				<div class="nav-group-title">&#9881; System</div>
-				<a class="nav-link" href="view/configuration/systemConfig.jsp" target="contentFrame">Configuration</a>
-			</div>
-			<% } %>
 
 		</nav>
 		<script>
