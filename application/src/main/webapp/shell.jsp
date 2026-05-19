@@ -339,7 +339,7 @@
 			<div class="nav-group nav-group-admin">
 				<div class="nav-group-title"><em class="nav-icon">&#9881;</em><span class="nav-text">Administration<span class="nav-admin-badge">Admin</span></span></div>
 				<a class="nav-link" href="view/user/registerUser.jsp" target="contentFrame" title="<%= msg.getString("nav.master_register_user") %>"><em class="nav-icon">&#128101;</em><span class="nav-text"><%= msg.getString("nav.master_register_user") %></span></a>
-				<a class="nav-link" href="view/configuration/systemConfig.jsp" target="contentFrame" title="System Configuration"><em class="nav-icon">&#128295;</em><span class="nav-text">System Configuration</span></a>
+				<a class="nav-link" href="view/configuration/systemConfig.jsp" target="contentFrame" title="<%= msg.getString("nav.system_config") %>"><em class="nav-icon">&#128295;</em><span class="nav-text"><%= msg.getString("nav.system_config") %></span></a>
 			</div>
 			<div class="nav-group nav-group-admin">
 				<div class="nav-group-title"><em class="nav-icon">&#128218;</em><span class="nav-text">Master Data<span class="nav-admin-badge">Admin</span></span></div>
