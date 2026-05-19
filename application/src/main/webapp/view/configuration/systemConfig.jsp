@@ -68,7 +68,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../../css/style.css">
-<title>System Configuration</title>
+<title><%=msg.getString("sysconfig.page_title")%></title>
 <style>
     /* ── tab nav (reused from masterData style) ── */
     .sc-tabs          { display:flex; flex-wrap:wrap; gap:3px;
@@ -150,18 +150,18 @@
 <body>
 <%@include file="../../header.jsp"%>
 <fieldset>
-<legend>System Configuration</legend>
+<legend><%=msg.getString("sysconfig.legend")%></legend>
 
 <!-- ── Tab nav ── -->
 <div class="sc-tabs">
     <button class="sc-tab-btn<%="logLevel".equals(_activeTab)?" active":""%>"
-            onclick="scTab('logLevel')">&#128195; Log Level</button>
+            onclick="scTab('logLevel')">&#128195; <%=msg.getString("sysconfig.tab_log_level")%></button>
     <button class="sc-tab-btn<%="dbProps".equals(_activeTab)?" active":""%>"
-            onclick="scTab('dbProps')">&#128263; Database</button>
+            onclick="scTab('dbProps')">&#128263; <%=msg.getString("sysconfig.tab_database")%></button>
     <button class="sc-tab-btn<%="downloadLogs".equals(_activeTab)?" active":""%>"
-            onclick="scTab('downloadLogs')">&#128196; Download Logs</button>
+            onclick="scTab('downloadLogs')">&#128196; <%=msg.getString("sysconfig.tab_download_logs")%></button>
     <button class="sc-tab-btn<%="licenseServer".equals(_activeTab)?" active":""%>"
-            onclick="scTab('licenseServer')">&#128273; License Server</button>
+            onclick="scTab('licenseServer')">&#128273; <%=msg.getString("sysconfig.tab_license_server")%></button>
 </div>
 
 <!-- ════════════════════════════════════════════════════════
@@ -170,27 +170,27 @@
 <div id="sc-tab-logLevel" class="sc-tab-panel<%="logLevel".equals(_activeTab)?" active":""%>">
 
     <% if ("levelSaved".equals(_msg)) { %>
-    <div class="sc-alert ok">&#10003; Log levels updated successfully. Changes are effective immediately.</div>
+    <div class="sc-alert ok">&#10003; <%=msg.getString("sysconfig.log.alert_saved")%></div>
     <% } %>
 
     <!-- Current levels summary -->
     <div class="sc-card">
-        <div class="sc-card-title">Current Effective Levels</div>
+        <div class="sc-card-title"><%=msg.getString("sysconfig.log.card_current")%></div>
         <table class="sc-info-table">
             <tr>
-                <td>Root Logger</td>
+                <td><%=msg.getString("sysconfig.log.lbl_root_logger")%></td>
                 <td>
                     <% String _rlc = _lvlColor.getOrDefault(_rootLevel, "#757575"); %>
                     <span class="lvl-badge" style="background:<%=_rlc%>"><%=_rootLevel%></span>
-                    <span style="font-size:12px;color:#888;margin-left:8px;">controls all logging unless overridden</span>
+                    <span style="font-size:12px;color:#888;margin-left:8px;"><%=msg.getString("sysconfig.log.root_hint")%></span>
                 </td>
             </tr>
             <tr>
-                <td>App Logger <code style="font-size:11px">com.san.farm</code></td>
+                <td><%=msg.getString("sysconfig.log.lbl_app_logger")%> <code style="font-size:11px">com.san.farm</code></td>
                 <td>
                     <% String _alc = _lvlColor.getOrDefault(_appLevel, "#757575"); %>
                     <span class="lvl-badge" style="background:<%=_alc%>"><%=_appLevel%></span>
-                    <span style="font-size:12px;color:#888;margin-left:8px;">overrides root for application code</span>
+                    <span style="font-size:12px;color:#888;margin-left:8px;"><%=msg.getString("sysconfig.log.app_hint")%></span>
                 </td>
             </tr>
         </table>
@@ -198,15 +198,15 @@
 
     <!-- Change levels form -->
     <div class="sc-card">
-        <div class="sc-card-title">Change Log Levels</div>
+        <div class="sc-card-title"><%=msg.getString("sysconfig.log.card_change")%></div>
         <div class="sc-alert warn">
-            &#9888;&nbsp;<strong>Note:</strong> Changes take effect immediately and persist only until the server is restarted.
+            &#9888;&nbsp;<strong><%=msg.getString("sysconfig.log.warn_note")%></strong> <%=msg.getString("sysconfig.log.warn_restart")%>
         </div>
         <form method="post" action="<%=_ctxPath%>/SystemConfigController">
             <input type="hidden" name="action" value="setLogLevel">
             <div class="sc-row">
                 <div class="sc-field sc-med">
-                    <label for="rootLevel">Root Logger Level</label>
+                    <label for="rootLevel"><%=msg.getString("sysconfig.log.lbl_root_level")%></label>
                     <select name="rootLevel" id="rootLevel">
                         <% for (String _lv : new String[]{"TRACE","DEBUG","INFO","WARN","ERROR","FATAL"}) { %>
                         <option value="<%=_lv%>" <%=_lv.equals(_rootLevel)?"selected":""%>><%=_lv%></option>
@@ -214,7 +214,7 @@
                     </select>
                 </div>
                 <div class="sc-field sc-med">
-                    <label for="appLevel">App Logger Level <small style="font-weight:400;">(com.san.farm)</small></label>
+                    <label for="appLevel"><%=msg.getString("sysconfig.log.lbl_app_level")%> <small style="font-weight:400;">(com.san.farm)</small></label>
                     <select name="appLevel" id="appLevel">
                         <% for (String _lv : new String[]{"TRACE","DEBUG","INFO","WARN","ERROR","FATAL"}) { %>
                         <option value="<%=_lv%>" <%=_lv.equals(_appLevel)?"selected":""%>><%=_lv%></option>
@@ -222,16 +222,16 @@
                     </select>
                 </div>
                 <div style="align-self:flex-end;">
-                    <button type="submit" class="btn-sc-save">Apply Levels</button>
+                    <button type="submit" class="btn-sc-save"><%=msg.getString("sysconfig.log.btn_apply")%></button>
                 </div>
             </div>
         </form>
         <hr class="sc-divider">
         <div style="font-size:12px;color:#666;">
-            <strong>Level hierarchy:</strong>&nbsp;
+            <strong><%=msg.getString("sysconfig.log.hierarchy_label")%></strong>&nbsp;
             TRACE &lt; DEBUG &lt; INFO &lt; WARN &lt; ERROR &lt; FATAL<br>
-            Setting a level means that level <em>and all levels above it</em> will be logged.
-            For example, setting INFO logs INFO, WARN, ERROR, and FATAL — but not DEBUG or TRACE.
+            <%=msg.getString("sysconfig.log.hierarchy_intro")%>
+            <%=msg.getString("sysconfig.log.hierarchy_example")%>
         </div>
     </div>
 </div>
@@ -242,29 +242,28 @@
 <div id="sc-tab-dbProps" class="sc-tab-panel<%="dbProps".equals(_activeTab)?" active":""%>">
 
     <% if ("dbSaved".equals(_msg)) { %>
-    <div class="sc-alert ok">&#10003; Database properties saved to <code>application.properties</code>. Restart the server for connection changes to take effect.</div>
+    <div class="sc-alert ok">&#10003; <%=msg.getString("sysconfig.db.alert_saved")%></div>
     <% } else if ("dbError".equals(_msg)) { %>
-    <div class="sc-alert err">&#9888; Failed to save properties. Check server logs for details.</div>
+    <div class="sc-alert err">&#9888; <%=msg.getString("sysconfig.db.alert_error")%></div>
     <% } %>
 
     <div class="sc-note">
-        <strong>Note:</strong> Changing the DB Driver, URL, or Credentials requires a <strong>server restart</strong>
-        to reconnect Hibernate. Show SQL and Schema Management changes are also applied on restart.
+        <strong><%=msg.getString("sysconfig.db.note_label")%></strong> <%=msg.getString("sysconfig.db.note_restart")%>
     </div>
 
     <div class="sc-card">
-        <div class="sc-card-title">Connection Settings</div>
+        <div class="sc-card-title"><%=msg.getString("sysconfig.db.card_connection")%></div>
         <form method="post" action="<%=_ctxPath%>/SystemConfigController">
             <input type="hidden" name="action" value="saveDbProps">
             <div class="sc-row">
                 <div class="sc-field sc-med">
-                    <label for="db.driver">Database Driver</label>
+                    <label for="db.driver"><%=msg.getString("sysconfig.db.lbl_driver")%></label>
                     <input type="text" name="db.driver" id="db.driver"
                            value="<%=esc.apply(_dbp.getProperty("db.driver",""))%>"
                            placeholder="org.h2.Driver">
                 </div>
                 <div class="sc-field sc-wide">
-                    <label for="db.url">Database URL</label>
+                    <label for="db.url"><%=msg.getString("sysconfig.db.lbl_url")%></label>
                     <input type="text" name="db.url" id="db.url"
                            value="<%=esc.apply(_dbp.getProperty("db.url",""))%>"
                            placeholder="jdbc:h2:file:./farmingErpDb;AUTO_SERVER=TRUE">
@@ -272,13 +271,13 @@
             </div>
             <div class="sc-row" style="margin-top:12px;">
                 <div class="sc-field sc-med">
-                    <label for="db.username">Username</label>
+                    <label for="db.username"><%=msg.getString("sysconfig.db.lbl_username")%></label>
                     <input type="text" name="db.username" id="db.username"
                            value="<%=esc.apply(_dbp.getProperty("db.username",""))%>"
                            placeholder="sa">
                 </div>
                 <div class="sc-field sc-med">
-                    <label for="db.password">Password</label>
+                    <label for="db.password"><%=msg.getString("sysconfig.db.lbl_password")%></label>
                     <input type="text" name="db.password" id="db.password"
                            value="<%=esc.apply(_dbp.getProperty("db.password",""))%>"
                            placeholder="(blank for H2)">
@@ -286,16 +285,16 @@
             </div>
 
             <hr class="sc-divider">
-            <div class="sc-card-title">Hibernate Settings</div>
+            <div class="sc-card-title"><%=msg.getString("sysconfig.db.section_hibernate")%></div>
             <div class="sc-row">
                 <div class="sc-field sc-wide">
-                    <label for="hibernate.dialect">Hibernate Dialect</label>
+                    <label for="hibernate.dialect"><%=msg.getString("sysconfig.db.lbl_dialect")%></label>
                     <input type="text" name="hibernate.dialect" id="hibernate.dialect"
                            value="<%=esc.apply(_dbp.getProperty("hibernate.dialect",""))%>"
                            placeholder="org.hibernate.dialect.H2Dialect">
                 </div>
                 <div class="sc-field sc-sm">
-                    <label for="hibernate.hbm2ddl.auto">Schema Management</label>
+                    <label for="hibernate.hbm2ddl.auto"><%=msg.getString("sysconfig.db.lbl_schema")%></label>
                     <select name="hibernate.hbm2ddl.auto" id="hibernate.hbm2ddl.auto">
                         <% for (String _opt : new String[]{"update","validate","create","none"}) { %>
                         <option value="<%=_opt%>" <%=_opt.equals(_dbp.getProperty("hibernate.hbm2ddl.auto","update"))?"selected":""%>><%=_opt%></option>
@@ -303,7 +302,7 @@
                     </select>
                 </div>
                 <div class="sc-field sc-sm">
-                    <label for="hibernate.show_sql">Show SQL</label>
+                    <label for="hibernate.show_sql"><%=msg.getString("sysconfig.db.lbl_show_sql")%></label>
                     <select name="hibernate.show_sql" id="hibernate.show_sql">
                         <% for (String _opt : new String[]{"false","true"}) { %>
                         <option value="<%=_opt%>" <%=_opt.equals(_dbp.getProperty("hibernate.show_sql","false"))?"selected":""%>><%=_opt%></option>
@@ -311,7 +310,7 @@
                     </select>
                 </div>
                 <div class="sc-field sc-sm">
-                    <label for="hibernate.format_sql">Format SQL</label>
+                    <label for="hibernate.format_sql"><%=msg.getString("sysconfig.db.lbl_format_sql")%></label>
                     <select name="hibernate.format_sql" id="hibernate.format_sql">
                         <% for (String _opt : new String[]{"false","true"}) { %>
                         <option value="<%=_opt%>" <%=_opt.equals(_dbp.getProperty("hibernate.format_sql","false"))?"selected":""%>><%=_opt%></option>
@@ -320,7 +319,7 @@
                 </div>
             </div>
             <div style="margin-top:16px;">
-                <button type="submit" class="btn-sc-save">Save Properties</button>
+                <button type="submit" class="btn-sc-save"><%=msg.getString("sysconfig.db.btn_save")%></button>
             </div>
         </form>
     </div>
@@ -333,30 +332,29 @@
 
     <% if (_logExists) { %>
     <div class="sc-card">
-        <div class="sc-card-title">Application Log File</div>
+        <div class="sc-card-title"><%=msg.getString("sysconfig.logs.card_title")%></div>
         <div class="sc-dl-box">
             <div class="sc-dl-icon">&#128196;</div>
             <div class="sc-dl-info">
                 <div class="sc-dl-name">farmingerERP.log</div>
                 <div class="sc-dl-meta">
-                    Size: <strong><%=_logSizeFmt%></strong>
-                    &bull; Last modified: <strong><%=_logModFmt%></strong>
-                    &bull; Path: <code style="font-size:11px"><%=esc.apply(_logFile.getAbsolutePath())%></code>
+                    <%=msg.getString("sysconfig.logs.lbl_size")%> <strong><%=_logSizeFmt%></strong>
+                    &bull; <%=msg.getString("sysconfig.logs.lbl_modified")%> <strong><%=_logModFmt%></strong>
+                    &bull; <%=msg.getString("sysconfig.logs.lbl_path")%> <code style="font-size:11px"><%=esc.apply(_logFile.getAbsolutePath())%></code>
                 </div>
             </div>
             <a class="btn-dl" href="<%=_ctxPath%>/SystemConfigController?action=downloadLog">
-                &#8675; Download
+                &#8675; <%=msg.getString("sysconfig.logs.btn_download")%>
             </a>
         </div>
         <div style="margin-top:12px; font-size:12px; color:#666;">
-            The log file rolls over when it reaches 10 MB. Up to 10 backup files are kept
-            (<code>farmingerERP.log.1</code>, <code>farmingerERP.log.2</code>, &hellip;).
+            <%=msg.getString("sysconfig.logs.rollover_note")%>
+            (<code>farmingerERP.log.1</code>, <code>farmingerERP.log.2</code>, &hellip;)
         </div>
     </div>
     <% } else { %>
     <div class="sc-alert warn">
-        &#9888;&nbsp;Log file <code>farmingerERP.log</code> not found yet.
-        It is created when the first log entry is written after server startup.
+        &#9888;&nbsp;<code>farmingerERP.log</code> <%=msg.getString("sysconfig.logs.not_found")%>
     </div>
     <% } %>
 </div>
@@ -367,58 +365,58 @@
 <div id="sc-tab-licenseServer" class="sc-tab-panel<%="licenseServer".equals(_activeTab)?" active":""%>">
 
     <% if ("licSaved".equals(_msg)) { %>
-    <div class="sc-alert ok">&#10003; License server settings saved to <code>application.properties</code>. Changes take effect immediately.</div>
+    <div class="sc-alert ok">&#10003; <%=msg.getString("sysconfig.lic.alert_saved")%></div>
     <% } else if ("licError".equals(_msg)) { %>
-    <div class="sc-alert err">&#9888; Failed to save license settings. Check server logs for details.</div>
+    <div class="sc-alert err">&#9888; <%=msg.getString("sysconfig.lic.alert_error")%></div>
     <% } %>
 
     <!-- Current configuration + live status -->
     <div class="sc-card">
-        <div class="sc-card-title">Current Configuration &amp; Status</div>
+        <div class="sc-card-title"><%=msg.getString("sysconfig.lic.card_status")%></div>
         <table class="sc-info-table">
             <tr>
-                <td>License Server URL</td>
+                <td><%=msg.getString("sysconfig.lic.lbl_url")%></td>
                 <td>
                     <% if (_licUrl == null || _licUrl.isEmpty()) { %>
-                    <em style="color:#999;">Not configured</em>
+                    <em style="color:#999;"><%=msg.getString("sysconfig.lic.lbl_not_configured")%></em>
                     <% } else { %>
                     <code><%=esc.apply(_licUrl)%></code>
                     <% } %>
                 </td>
             </tr>
             <tr>
-                <td>License Checks</td>
+                <td><%=msg.getString("sysconfig.lic.lbl_checks")%></td>
                 <td>
                     <% if ("false".equalsIgnoreCase(_licEnabled)) { %>
-                    <span style="background:#757575;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">DISABLED</span>
-                    <span style="font-size:12px;color:#888;margin-left:8px;">All logins are permitted regardless of license</span>
+                    <span style="background:#757575;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;"><%=msg.getString("sysconfig.lic.status_disabled")%></span>
+                    <span style="font-size:12px;color:#888;margin-left:8px;"><%=msg.getString("sysconfig.lic.disabled_hint")%></span>
                     <% } else { %>
-                    <span style="background:#2e7d32;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">ENABLED</span>
+                    <span style="background:#2e7d32;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;"><%=msg.getString("sysconfig.lic.status_enabled")%></span>
                     <% } %>
                 </td>
             </tr>
             <tr>
-                <td>Server Reachability</td>
+                <td><%=msg.getString("sysconfig.lic.lbl_reachability")%></td>
                 <td>
                     <% if (_licStatus.noConfig) { %>
-                    <span style="background:#757575;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">N/A</span>
-                    <span style="font-size:12px;color:#888;margin-left:8px;">No URL configured</span>
+                    <span style="background:#757575;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;"><%=msg.getString("sysconfig.lic.status_na")%></span>
+                    <span style="font-size:12px;color:#888;margin-left:8px;"><%=msg.getString("sysconfig.lic.na_hint")%></span>
                     <% } else if (_licStatus.unreachable) { %>
-                    <span style="background:#e65100;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">UNREACHABLE</span>
-                    <span style="font-size:12px;color:#888;margin-left:8px;">Could not connect — logins are still allowed (fail-open)</span>
+                    <span style="background:#e65100;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;"><%=msg.getString("sysconfig.lic.status_unreachable")%></span>
+                    <span style="font-size:12px;color:#888;margin-left:8px;"><%=msg.getString("sysconfig.lic.unreachable_hint")%></span>
                     <% } else { %>
-                    <span style="background:#1565c0;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">CONNECTED</span>
+                    <span style="background:#1565c0;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;"><%=msg.getString("sysconfig.lic.status_connected")%></span>
                     <% } %>
                 </td>
             </tr>
             <% if (!_licStatus.noConfig && !_licStatus.unreachable) { %>
             <tr>
-                <td>License Validity</td>
+                <td><%=msg.getString("sysconfig.lic.lbl_validity")%></td>
                 <td>
                     <% if (_licStatus.valid) { %>
-                    <span style="background:#2e7d32;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">VALID</span>
+                    <span style="background:#2e7d32;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;"><%=msg.getString("sysconfig.lic.status_valid")%></span>
                     <% } else { %>
-                    <span style="background:#c62828;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">INVALID / EXPIRED</span>
+                    <span style="background:#c62828;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;"><%=msg.getString("sysconfig.lic.status_invalid")%></span>
                     <% } %>
                     <% if (_licStatus.message != null) { %>
                     <span style="font-size:12px;color:#888;margin-left:8px;"><%=esc.apply(_licStatus.message)%></span>
@@ -427,27 +425,27 @@
             </tr>
             <% if (_licStatus.licensee != null) { %>
             <tr>
-                <td>Licensee</td>
+                <td><%=msg.getString("sysconfig.lic.lbl_licensee")%></td>
                 <td><%=esc.apply(_licStatus.licensee)%></td>
             </tr>
             <% } %>
             <% if (_licStatus.licenseType != null) { %>
             <tr>
-                <td>License Type</td>
+                <td><%=msg.getString("sysconfig.lic.lbl_type")%></td>
                 <td><%=esc.apply(_licStatus.licenseType)%></td>
             </tr>
             <% } %>
             <% if (_licStatus.expiryDate != null) { %>
             <tr>
-                <td>Expiry Date</td>
+                <td><%=msg.getString("sysconfig.lic.lbl_expiry")%></td>
                 <td>
                     <%=esc.apply(_licStatus.expiryDate)%>
                     <% if (_licStatus.daysRemaining == -1) { %>
-                    <span style="font-size:12px;color:#888;margin-left:6px;">(Perpetual)</span>
+                    <span style="font-size:12px;color:#888;margin-left:6px;"><%=msg.getString("sysconfig.lic.perpetual")%></span>
                     <% } else if (_licStatus.daysRemaining >= 0) { %>
-                    <span style="font-size:12px;color:#2e7d32;margin-left:6px;"><%=_licStatus.daysRemaining%> day(s) remaining</span>
+                    <span style="font-size:12px;color:#2e7d32;margin-left:6px;"><%=_licStatus.daysRemaining%> <%=msg.getString("sysconfig.lic.days_remaining")%></span>
                     <% } else { %>
-                    <span style="font-size:12px;color:#c62828;margin-left:6px;">Expired <%=Math.abs(_licStatus.daysRemaining)%> day(s) ago</span>
+                    <span style="font-size:12px;color:#c62828;margin-left:6px;"><%=msg.getString("sysconfig.lic.expired_ago")%> <%=Math.abs(_licStatus.daysRemaining)%> <%=msg.getString("sysconfig.lic.expired_ago_suffix")%></span>
                     <% } %>
                 </td>
             </tr>
@@ -458,51 +456,49 @@
 
     <!-- Edit form -->
     <div class="sc-card">
-        <div class="sc-card-title">Update License Server Settings</div>
+        <div class="sc-card-title"><%=msg.getString("sysconfig.lic.card_edit")%></div>
         <% if (BuildConfig.IS_PROD) { %>
         <div class="sc-alert warn" style="margin-bottom:14px;">
-            &#128274;&nbsp;<strong>Production build</strong> — license enforcement is locked and cannot be disabled.
+            &#128274;&nbsp;<%=msg.getString("sysconfig.lic.prod_warning")%>
         </div>
         <% } %>
         <form method="post" action="<%=_ctxPath%>/SystemConfigController">
             <input type="hidden" name="action" value="saveLicenseProps">
             <div class="sc-row">
                 <div class="sc-field" style="flex:1;min-width:280px;">
-                    <label for="license.server.url">License Server URL</label>
+                    <label for="license.server.url"><%=msg.getString("sysconfig.lic.lbl_url")%></label>
                     <input type="text" name="license.server.url" id="license.server.url"
                            value="<%=esc.apply(_licUrl)%>"
                            placeholder="http://localhost:8085">
                 </div>
                 <div class="sc-field sc-sm">
-                    <label>License Checks</label>
+                    <label><%=msg.getString("sysconfig.lic.lbl_checks")%></label>
                     <% if (BuildConfig.IS_PROD) { %>
                     <%-- PROD: locked to ENABLED — no select rendered, hidden field forces value --%>
                     <input type="hidden" name="license.server.enabled" value="true">
                     <span style="background:#2e7d32;color:#fff;padding:5px 14px;border-radius:4px;
                                  font-size:13px;font-weight:600;display:inline-block;">
-                        &#128274; Enforced (PROD)
+                        &#128274; <%=msg.getString("sysconfig.lic.enforced_prod")%>
                     </span>
                     <% } else { %>
                     <select name="license.server.enabled" id="license.server.enabled">
-                        <option value="true"  <%="true".equalsIgnoreCase(_licEnabled) ?"selected":""%>>Enabled</option>
-                        <option value="false" <%="false".equalsIgnoreCase(_licEnabled)?"selected":""%>>Disabled</option>
+                        <option value="true"  <%="true".equalsIgnoreCase(_licEnabled) ?"selected":""%>><%=msg.getString("sysconfig.lic.option_enabled")%></option>
+                        <option value="false" <%="false".equalsIgnoreCase(_licEnabled)?"selected":""%>><%=msg.getString("sysconfig.lic.option_disabled")%></option>
                     </select>
                     <% } %>
                 </div>
                 <div style="align-self:flex-end;">
-                    <button type="submit" class="btn-sc-save">Save Settings</button>
+                    <button type="submit" class="btn-sc-save"><%=msg.getString("sysconfig.lic.btn_save")%></button>
                 </div>
             </div>
         </form>
         <hr class="sc-divider">
         <div style="font-size:12px;color:#666;">
-            <strong>URL</strong> — base URL of the running Sevak License Server, e.g.
-            <code>http://localhost:8085</code>. Leave blank to disable checks.<br>
+            <strong>URL</strong> — <%=msg.getString("sysconfig.lic.url_hint")%><br>
             <% if (BuildConfig.IS_DEV) { %>
-            <strong>License Checks Disabled</strong> — all users can log in regardless of license status.
-            Use only for local development.<br>
+            <%=msg.getString("sysconfig.lic.dev_checks_note")%><br>
             <% } %>
-            Changes are written to <code>application.properties</code> and take effect on the <strong>next login attempt</strong> — no server restart needed.
+            <%=msg.getString("sysconfig.lic.changes_note")%>
         </div>
     </div>
 </div>
