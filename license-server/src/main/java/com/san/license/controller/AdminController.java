@@ -15,7 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -34,9 +37,6 @@ import java.nio.file.StandardCopyOption;
 public class AdminController {
 
     private static final Logger log = LoggerFactory.getLogger(AdminController.class);
-
-    @Value("${license.admin.key}")
-    private String configuredAdminKey;
 
     @Value("${license.data.dir}")
     private String licenseDataDir;
@@ -70,14 +70,7 @@ public class AdminController {
             @RequestParam("licensee") String licensee,
             @RequestParam("licenseType") String licenseTypeStr,
             @RequestParam(value = "durationDays", defaultValue = "0") int durationDays,
-            @RequestParam(value = "adminKey", defaultValue = "") String formAdminKey,
-            @RequestHeader(value = "X-Admin-Key", defaultValue = "") String headerAdminKey,
             RedirectAttributes redirectAttributes) {
-
-        if (!isAuthorised(formAdminKey, headerAdminKey)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Invalid admin key. Access denied.");
-            return "redirect:/admin";
-        }
 
         if (licensee == null || licensee.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Licensee name must not be empty.");
@@ -111,14 +104,7 @@ public class AdminController {
     @PostMapping("/upload")
     public String uploadLicense(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "adminKey", defaultValue = "") String formAdminKey,
-            @RequestHeader(value = "X-Admin-Key", defaultValue = "") String headerAdminKey,
             RedirectAttributes redirectAttributes) {
-
-        if (!isAuthorised(formAdminKey, headerAdminKey)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Invalid admin key. Access denied.");
-            return "redirect:/admin";
-        }
 
         if (file == null || file.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "No file selected for upload.");
@@ -170,19 +156,4 @@ public class AdminController {
                 .body(resource);
     }
 
-    // ------------------------------------------------------------------ //
-    //  Private helpers
-    // ------------------------------------------------------------------ //
-
-    /**
-     * Returns {@code true} if either the form or header admin key matches the
-     * configured value.  An empty key always fails.
-     */
-    private boolean isAuthorised(String formKey, String headerKey) {
-        String configured = configuredAdminKey;
-        if (configured == null || configured.isEmpty()) {
-            return false;
-        }
-        return configured.equals(formKey) || configured.equals(headerKey);
-    }
 }

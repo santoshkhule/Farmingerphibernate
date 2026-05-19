@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sevak License Server — Admin Login</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f0;
+            color: #2d3a2d;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2e7d32, #43a047);
+            color: #fff;
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.25);
+        }
+        header .logo { font-size: 2rem; line-height: 1; }
+        header h1   { font-size: 1.5rem; font-weight: 600; letter-spacing: .5px; }
+        header small { display: block; font-size: .8rem; opacity: .85; font-weight: 400; }
+
+        .login-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 16px;
+        }
+
+        .login-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.13);
+            padding: 36px 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-card h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #2e7d32;
+            margin-bottom: 6px;
+        }
+        .login-card p.subtitle {
+            font-size: .84rem;
+            color: #757575;
+            margin-bottom: 24px;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #b71c1c;
+            border-left: 4px solid #c62828;
+            border-radius: 4px;
+            padding: 10px 14px;
+            font-size: .88rem;
+            font-weight: 500;
+            margin-bottom: 18px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        label {
+            display: block;
+            font-size: .84rem;
+            font-weight: 600;
+            color: #424242;
+            margin-bottom: 5px;
+        }
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1px solid #c8e6c9;
+            border-radius: 5px;
+            font-size: .92rem;
+            color: #2d3a2d;
+            background: #fafff9;
+            transition: border-color .2s, box-shadow .2s;
+            outline: none;
+        }
+        input[type="password"]:focus {
+            border-color: #43a047;
+            box-shadow: 0 0 0 2px rgba(67,160,71,.15);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 11px;
+            background: #2e7d32;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+            margin-top: 4px;
+        }
+        .btn-login:hover { background: #1b5e20; }
+
+        .lock-icon {
+            text-align: center;
+            font-size: 2.4rem;
+            margin-bottom: 14px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: .76rem;
+            color: #9e9e9e;
+            padding: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <span class="logo">&#x1f4bb;</span>
+    <div>
+        <h1>Sevak ERP &mdash; License Server</h1>
+        <small>Admin Authentication Required</small>
+    </div>
+</header>
+
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="lock-icon">&#128274;</div>
+        <h2>Admin Login</h2>
+        <p class="subtitle">Enter the admin key to access the license management dashboard.</p>
+
+        <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
+
+        <form action="/admin/login" method="post">
+            <div class="form-group">
+                <label for="adminKey">Admin Key</label>
+                <input id="adminKey" type="password" name="adminKey"
+                       placeholder="Enter admin key" required autofocus/>
+            </div>
+            <button type="submit" class="btn-login">&#128275; Sign In</button>
+        </form>
+    </div>
+</div>
+
+<footer>Sevak ERP License Server &bull; Port 8085</footer>
+
+</body>
+</html>

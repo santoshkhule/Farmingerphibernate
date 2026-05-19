@@ -175,6 +175,19 @@
             text-decoration: none;
         }
         .btn-outline:hover { background: #e8f5e9; }
+        .btn-logout {
+            background: rgba(255,255,255,.15);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.5);
+            padding: 7px 18px;
+            border-radius: 5px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s;
+        }
+        .btn-logout:hover { background: rgba(255,255,255,.28); }
 
         /* ── Download link ── */
         .download-link {
@@ -211,10 +224,11 @@
 <!-- ═══════════════════ HEADER ═══════════════════ -->
 <header>
     <span class="logo">&#x1f4bb;</span>
-    <div>
+    <div style="flex:1;">
         <h1>Sevak ERP &mdash; License Server</h1>
         <small>Manage software licenses &bull; Port 8085</small>
     </div>
+    <a href="/admin/logout" class="btn-logout">&#x1f6aa; Logout</a>
 </header>
 
 <main>
@@ -299,11 +313,6 @@
                     <option value="PERPETUAL">PERPETUAL (no expiry)</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="adminKey">Admin Key</label>
-                <input id="adminKey" type="password" name="adminKey"
-                       placeholder="Enter admin key" required/>
-            </div>
             <button type="submit" class="btn btn-primary">Generate &amp; Activate</button>
         </form>
     </div>
@@ -315,11 +324,6 @@
             <div class="form-group">
                 <label for="file">License JSON File</label>
                 <input id="file" type="file" name="file" accept=".json" required/>
-            </div>
-            <div class="form-group">
-                <label for="uploadAdminKey">Admin Key</label>
-                <input id="uploadAdminKey" type="password" name="adminKey"
-                       placeholder="Enter admin key" required/>
             </div>
             <button type="submit" class="btn btn-primary">Upload &amp; Activate</button>
         </form>

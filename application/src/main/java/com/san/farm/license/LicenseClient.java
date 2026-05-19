@@ -23,11 +23,13 @@ public class LicenseClient {
 
     /** Calls the license server and returns a {@link LicenseStatus}. Thread-safe, stateless. */
     public static LicenseStatus check() {
-        String baseUrl = readConfiguredUrl();
-        if (baseUrl == null || baseUrl.isEmpty()) {
-            return LicenseStatus.noConfig();
-        }
+        Properties config = readConfig();
+        if (config == null) return LicenseStatus.noConfig();
 
+        String baseUrl = config.getProperty("license.server.url", "").trim();
+        if (baseUrl.isEmpty()) return LicenseStatus.noConfig();
+
+        String apiKey  = config.getProperty("license.server.api.key", "").trim();
         String endpoint = baseUrl + "/api/license/validate";
         try {
             URL url = new URL(endpoint);
@@ -36,8 +38,15 @@ public class LicenseClient {
             conn.setReadTimeout(TIMEOUT_MS);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
+            if (!apiKey.isEmpty()) {
+                conn.setRequestProperty("X-Api-Key", apiKey);
+            }
 
             int code = conn.getResponseCode();
+            if (code == 401) {
+                log.warn("License server rejected API key (HTTP 401) at {}", endpoint);
+                return LicenseStatus.invalid("License server rejected the API key — check license.server.api.key configuration.");
+            }
             if (code != 200) {
                 return LicenseStatus.invalid("License server returned HTTP " + code);
             }
@@ -54,7 +63,7 @@ public class LicenseClient {
         }
     }
 
-    private static String readConfiguredUrl() {
+    private static Properties readConfig() {
         try (InputStream in = LicenseClient.class.getClassLoader()
                 .getResourceAsStream("application.properties")) {
             if (in == null) return null;
@@ -62,7 +71,7 @@ public class LicenseClient {
             p.load(in);
             String enabled = p.getProperty("license.server.enabled", "true").trim();
             if ("false".equalsIgnoreCase(enabled)) return null;
-            return p.getProperty("license.server.url", "").trim();
+            return p;
         } catch (Exception e) {
             log.warn("Could not read application.properties for license config: {}", e.getMessage());
             return null;
