@@ -6,4 +6,4 @@ out/
 gen/
 *.class
 /.idea/
-/target/
+target/
